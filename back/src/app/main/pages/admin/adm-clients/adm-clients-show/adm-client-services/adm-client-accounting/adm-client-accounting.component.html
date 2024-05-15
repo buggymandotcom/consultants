@@ -1,0 +1,446 @@
+<mat-tab-group id="accounting-wrapper">
+  <mat-tab [label]="'pages.clients.services.accounting.tab_norma43' | translate">
+    <mat-sidenav-container class="h-100-p">
+      <mat-sidenav
+        #normaFilterSidenav id="norma-filter-sidenav"
+        mode="over" position="end"
+      >
+        <mat-toolbar id="norma-sidenav-toolbar" class="compact">
+          <button (click)="normaFilterSidenav.toggle()" mat-button>
+            <mdi-icon>arrow-expand-right</mdi-icon>
+            <span class="ml-4">{{'toolbar.filter_hide'|translate}}</span>
+          </button>
+          <span fxFlex></span>
+          <button (click)="clearNormaFilter()" mat-button>
+            <mdi-icon>broom</mdi-icon>
+            <span class="ml-4">{{'toolbar.filter_clear'|translate}}</span>
+          </button>
+          <button (click)="searchNorma(true)" mat-raised-button color="accent">
+            <mdi-icon>filter</mdi-icon>
+            <span class="ml-4">{{'toolbar.filter_now'|translate}}</span>
+          </button>
+        </mat-toolbar>
+        <div fxLayout="column" fxLayoutAlign="start stretch" class="px-16">
+          <mat-form-field>
+            <mdi-icon matPrefix>magnify</mdi-icon>
+            <input matInput [(ngModel)]="newNormaFilter.search"
+                   type="text" (keyup.enter)="searchNorma(true)"
+                   placeholder="{{'app.search'|translate}}">
+
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput [matDatepicker]="normaCreatedAtMobile0" placeholder="Desde" [(ngModel)]="newNormaFilter.all.created_at[0]" [max]="newNormaFilter.all.created_at[1]">
+            <mat-datepicker-toggle matPrefix [for]="normaCreatedAtMobile0"></mat-datepicker-toggle>
+            <mat-datepicker #normaCreatedAtMobile0></mat-datepicker>
+            <mdi-icon *ngIf="newNormaFilter.all.created_at[0]" style="cursor:pointer;" matSuffix (click)="newNormaFilter.all.created_at[0]=null">broom</mdi-icon>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput [matDatepicker]="normaCreatedAtMobile1" placeholder="Hasta" [(ngModel)]="newNormaFilter.all.created_at[1]" [min]="newNormaFilter.all.created_at[0]">
+            <mat-datepicker-toggle matPrefix [for]="normaCreatedAtMobile1"></mat-datepicker-toggle>
+            <mat-datepicker #normaCreatedAtMobile1></mat-datepicker>
+            <mdi-icon *ngIf="newNormaFilter.all.created_at[1]" style="cursor:pointer;" matSuffix (click)="newNormaFilter.all.created_at[1]=null">broom</mdi-icon>
+          </mat-form-field>
+        </div>
+      </mat-sidenav>
+      <mat-sidenav-content class="sidenav-content">
+        <div class="files-list-wrapper" fusePerfectScrollbar="false">
+          <div class="files-list-content" fxLayout="row wrap">
+            <mat-card class="w-100-p mt-24 p-0">
+              <mat-card-content>
+                <mat-toolbar class="compact files-list-toolbar" color="primary"[class.has-adv-filter]="normaAdvFilter">
+                  <mat-toolbar-row>
+                    <mdi-icon class="mx-16">cloud-search</mdi-icon>
+                    <span class="font-size-14">{{ 'pages.services.accounting_norma.uploaded_files' | translate }}</span>
+                    <span fxFlex></span>
+                    <mat-form-field *ngIf="!isXs" floatLabel="never">
+                      <mdi-icon matPrefix>magnify</mdi-icon>
+                      <input matInput [(ngModel)]="newNormaFilter.search"
+                             type="text" (keyup.enter)="searchNorma(true)"
+                             placeholder="{{'app.search'|translate}}">
+                    </mat-form-field>
+                    <button *ngIf="!isXs" (click)="clearNormaFilter()" mat-button class="ml-16">
+                      <mdi-icon>broom</mdi-icon>
+                      <span class="ml-4">{{'toolbar.filter_clear'|translate}}</span>
+                    </button>
+                    <button *ngIf="!isXs" (click)="searchNorma()" mat-raised-button color="accent" class="ml-16">
+                      <mdi-icon>magnify</mdi-icon> <span>{{'toolbar.filter_now'|translate}}</span>
+                    </button>
+                    <button *ngIf="!isXs" (click)="normaAdvFilter = !normaAdvFilter" mat-button [color]="normaAdvFilter ? 'accent':null" class="toggle-adv-filter">
+                      <mdi-icon fontSize="24">chevron-down</mdi-icon>
+                    </button>
+                    <button *ngIf="isXs" (click)="normaFilterSidenav.open()" mat-button>
+                      <mdi-icon fontSize="24">filter</mdi-icon>
+                    </button>
+                  </mat-toolbar-row>
+                  <mat-toolbar-row *ngIf="!isXs" class="adv-filter" [class.show]="normaAdvFilter" fxLayoutAlign="end center">
+                    <mat-form-field fxFlex="0 1 auto" class="ml-16">
+                      <input matInput [matDatepicker]="normaCreatedAt0" placeholder="{{'app.from'|translate}}" [(ngModel)]="newNormaFilter.all.created_at[0]" [max]="newNormaFilter.all.created_at[1]">
+                      <mat-datepicker-toggle matPrefix [for]="normaCreatedAt0"></mat-datepicker-toggle>
+                      <mat-datepicker #normaCreatedAt0></mat-datepicker>
+                      <mdi-icon *ngIf="newNormaFilter.all.created_at[0]" style="cursor:pointer;" matSuffix (click)="newNormaFilter.all.created_at[0]=null">broom</mdi-icon>
+                    </mat-form-field>
+                    <mat-form-field fxFlex="0 1 auto" class="ml-16 mr-16">
+                      <input matInput [matDatepicker]="normaCreatedAt1" placeholder="{{'app.to'|translate}}" [(ngModel)]="newNormaFilter.all.created_at[1]" [min]="newNormaFilter.all.created_at[0]">
+                      <mat-datepicker-toggle matPrefix [for]="normaCreatedAt1"></mat-datepicker-toggle>
+                      <mat-datepicker #normaCreatedAt1></mat-datepicker>
+                      <mdi-icon *ngIf="newNormaFilter.all.created_at[1]" style="cursor:pointer;" matSuffix (click)="newNormaFilter.all.created_at[1]=null">broom</mdi-icon>
+                    </mat-form-field>
+                  </mat-toolbar-row>
+                </mat-toolbar>
+                <div class="grey-100-bg px-16 py-4"><span *ngIf="norma43Pagination && norma43Pagination.totalItems">{{'pagination.showing'|translate}} {{ norma43Pagination.from }} - {{ norma43Pagination.to }} / {{ norma43Pagination.totalItems }}</span></div>
+                <div class="files-list">
+                  <table cellspacing="0" cellpadding="0">
+                    <thead>
+                    <tr>
+                      <th class="id">
+                        <ai-custom-th sortField="id" [(filter)]="normaFilter" (sortChanged)="loadNorma43Data(1)">ID</ai-custom-th>
+                      </th>
+                      <th class="name" colspan="2">
+                        <ai-custom-th sortField="upload.original_name" [(filter)]="normaFilter" (sortChanged)="loadNorma43Data(1)">
+                          {{'app.name'|translate}}</ai-custom-th>
+                      </th>
+                      <th class="date">
+                        <ai-custom-th sortField="created_at" [(filter)]="normaFilter" (sortChanged)="loadNorma43Data(1)">
+                          {{'app.date'|translate}}</ai-custom-th>
+                      </th>
+                      <th class="actions"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr
+                        *ngFor="let au of norma43Uploads | paginate: norma43Pagination"
+                        [class.cancelled]="au.cancelled_at"
+                    >
+                      <td class="id">{{au.id}}</td>
+                      <td class="icon">
+                        <mdi-icon>{{ au.upload.getIcon() }}</mdi-icon>
+                      </td>
+                      <td class="name">
+                        <strong>{{ au.upload.original_name }}</strong>
+                      </td>
+                      <td class="date">
+                        <span class="grey-600-fg">{{ au.created_at | date : 'dd/MM/yyyy HH:mm:ss' }}</span>
+                      </td>
+                      <td class="actions">
+                        <button (click)="download($event,au)"
+                                mat-icon-button
+                        ><mdi-icon>download</mdi-icon></button>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                  <div class="loader" [class.hide]="!loadingNorma">
+                    <ai-loading-spinner></ai-loading-spinner>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+        <ai-pagination-template
+            class="fixed-pagination"
+            [pagination]="norma43Pagination"
+            (pageChange)="loadNorma43Data($event)"
+        ></ai-pagination-template>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </mat-tab>
+  <mat-tab [label]="'pages.clients.services.accounting.tab_invoices' | translate">
+    <mat-sidenav-container class="h-100-p">
+      <mat-sidenav
+        #fileSidenav id="file-sidenav"
+        [mode]="isMd ? 'over' : 'side'"
+      >
+        <mat-toolbar id="file-sidenav-toolbar">
+          <button *ngIf="isMd" (click)="fileSidenav.toggle()" mat-button>
+            <mdi-icon>arrow-expand-left</mdi-icon>
+            <span class="ml-4">{{'toolbar.document_hide'|translate}}</span>
+          </button>
+          <span fxFlex></span>
+          <button *ngIf="currentUpload" (click)="closeFile()" mat-button>
+            <mdi-icon>close</mdi-icon>
+            <span class="ml-4">{{'toolbar.document_close'|translate}}</span>
+          </button>
+        </mat-toolbar>
+        <div *ngIf="!currentUpload" class="text-center">
+          <p class="font-size-20">{{'info.upload.no_doc_selected'|translate}}</p>
+        </div>
+        <div *ngIf="currentUpload && uploadUrl" [ngSwitch]="currentUpload.upload.mime" class="file-wrapper">
+          <iframe *ngSwitchCase="'application/pdf'" [src]="uploadUrl" frameborder="0" class="file-iframe"></iframe>
+          <img *ngSwitchCase="'image/png'" [src]="uploadUrl" />
+          <img *ngSwitchCase="'image/jpeg'" [src]="uploadUrl" />
+        </div>
+      </mat-sidenav>
+      <mat-sidenav
+        #invoicesFilterSidenav id="invoices-filter-sidenav"
+        mode="over" position="end"
+      >
+        <mat-toolbar id="invoices-filter-sidenav-toolbar" class="compact">
+          <button (click)="invoicesFilterSidenav.toggle()" mat-button>
+            <mdi-icon>arrow-expand-right</mdi-icon>
+            <span class="ml-4">{{'toolbar.filter_hide'|translate}}</span>
+          </button>
+          <span fxFlex></span>
+          <button (click)="clearFilter()" mat-button>
+            <mdi-icon>broom</mdi-icon>
+            <span class="ml-4">{{'toolbar.filter_clear'|translate}}</span>
+          </button>
+          <button (click)="searchInvoices(true)" mat-raised-button color="accent">
+            <mdi-icon>filter</mdi-icon>
+            <span class="ml-4">{{'toolbar.filter_now'|translate}}</span>
+          </button>
+        </mat-toolbar>
+        <div fxLayout="column" fxLayoutAlign="start stretch" class="px-16">
+          <mat-form-field>
+            <mdi-icon matPrefix>magnify</mdi-icon>
+            <input matInput [(ngModel)]="newInvoicesFilter.search"
+                   type="text" (keyup.enter)="searchInvoices(true)"
+                   placeholder="{{'app.search'|translate}}">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-select [(ngModel)]="newInvoicesFilter.all.invoice_type" placeholder="{{'services.acct.invoice_type'|translate}}">
+              <mat-option [value]="null" selected>{{'services.acct.invoice_type.all' | translate}}</mat-option>
+              <mat-option value="purchase">{{'services.acct.invoice_type.purchase' | translate}}</mat-option>
+              <mat-option value="sale">{{'services.acct.invoice_type.sale' | translate}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput [matDatepicker]="createdAtMobile0" placeholder="Desde" [(ngModel)]="newInvoicesFilter.all.created_at[0]" [max]="newInvoicesFilter.all.created_at[1]">
+            <mat-datepicker-toggle matPrefix [for]="createdAtMobile0"></mat-datepicker-toggle>
+            <mat-datepicker #createdAtMobile0></mat-datepicker>
+            <mdi-icon *ngIf="newInvoicesFilter.all.created_at[0]" style="cursor:pointer;" matSuffix (click)="newInvoicesFilter.all.created_at[0]=null">broom</mdi-icon>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput [matDatepicker]="createdAtMobile1" placeholder="Hasta" [(ngModel)]="newInvoicesFilter.all.created_at[1]" [min]="newInvoicesFilter.all.created_at[0]">
+            <mat-datepicker-toggle matPrefix [for]="createdAtMobile1"></mat-datepicker-toggle>
+            <mat-datepicker #createdAtMobile1></mat-datepicker>
+            <mdi-icon *ngIf="newInvoicesFilter.all.created_at[1]" style="cursor:pointer;" matSuffix (click)="newInvoicesFilter.all.created_at[1]=null">broom</mdi-icon>
+          </mat-form-field>
+        </div>
+      </mat-sidenav>
+      <mat-sidenav-content class="sidenav-content">
+        <div class="files-list-wrapper" fusePerfectScrollbar="false">
+          <div class="files-list-content">
+            <mat-card class="mt-24 p-0">
+              <mat-card-content>
+                <mat-toolbar class="compact files-list-toolbar" color="primary" [class.has-adv-filter]="invAdvFilter">
+                  <mat-toolbar-row>
+                    <mdi-icon class="mx-16">cloud-search</mdi-icon>
+                    <h3 class="mat-headline">{{'info.upload.uploaded_files'|translate}}</h3>
+                    <span fxFlex></span>
+                    <mat-form-field *ngIf="!isXs" floatLabel="never">
+                      <mdi-icon matPrefix>magnify</mdi-icon>
+                      <input matInput [(ngModel)]="newInvoicesFilter.search"
+                             type="text" (keyup.enter)="searchInvoices(true)"
+                             placeholder="{{'app.search'|translate}}">
+                    </mat-form-field>
+                    <button *ngIf="!isXs" (click)="clearFilter()" mat-button class="ml-16">
+                      <mdi-icon>broom</mdi-icon>
+                      <span class="ml-4"></span>
+                    </button>
+                    <button *ngIf="!isXs" (click)="searchInvoices()" mat-raised-button color="accent" class="ml-16">
+                      <mdi-icon>magnify</mdi-icon> <span>{{'toolbar.filter_now'|translate}}</span>
+                    </button>
+                    <button *ngIf="!isXs" (click)="invAdvFilter = !invAdvFilter" mat-button [color]="invAdvFilter ? 'accent':null" class="toggle-adv-filter">
+                      <mdi-icon fontSize="24">chevron-down</mdi-icon>
+                    </button>
+                    <button *ngIf="isXs" (click)="invoicesFilterSidenav.open()" mat-button>
+                      <mdi-icon fontSize="24">filter</mdi-icon>
+                    </button>
+                  </mat-toolbar-row>
+                  <mat-toolbar-row *ngIf="!isXs" class="adv-filter" [class.show]="invAdvFilter">
+                    <mat-form-field fxFlex class="ml-16">
+                      <mat-select [(ngModel)]="newInvoicesFilter.all.invoice_type" placeholder="{{'services.acct.invoice_type'|translate}}">
+                        <mat-option [value]="['purchase','sale']" selected>{{'services.acct.invoice_type.all'|translate}}</mat-option>
+                        <mat-option value="purchase">{{'services.acct.invoice_type.purchase'|translate}}</mat-option>
+                        <mat-option value="sale">{{'services.acct.invoice_type.sale'|translate}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <mat-form-field fxFlex class="ml-16">
+                      <input matInput [matDatepicker]="createdAt0" placeholder="Desde" [(ngModel)]="newInvoicesFilter.all.created_at[0]" [max]="newInvoicesFilter.all.created_at[1]">
+                      <mat-datepicker-toggle matPrefix [for]="createdAt0"></mat-datepicker-toggle>
+                      <mat-datepicker #createdAt0></mat-datepicker>
+                      <mdi-icon *ngIf="newInvoicesFilter.all.created_at[0]" style="cursor:pointer;" matSuffix (click)="newInvoicesFilter.all.created_at[0]=null">broom</mdi-icon>
+                    </mat-form-field>
+                    <mat-form-field fxFlex class="ml-16 mr-16">
+                      <input matInput [matDatepicker]="createdAt1" placeholder="Hasta" [(ngModel)]="newInvoicesFilter.all.created_at[1]" [min]="newInvoicesFilter.all.created_at[0]">
+                      <mat-datepicker-toggle matPrefix [for]="createdAt1"></mat-datepicker-toggle>
+                      <mat-datepicker #createdAt1></mat-datepicker>
+                      <mdi-icon *ngIf="newInvoicesFilter.all.created_at[1]" style="cursor:pointer;" matSuffix (click)="newInvoicesFilter.all.created_at[1]=null">broom</mdi-icon>
+                    </mat-form-field>
+                  </mat-toolbar-row>
+                </mat-toolbar>
+                <div class="grey-100-bg px-16 py-4"><span *ngIf="invoicesPagination && invoicesPagination.totalItems">{{'pagination.showing'|translate}} {{ invoicesPagination.from }} - {{ invoicesPagination.to }} / {{ invoicesPagination.totalItems }}</span></div>
+                <div class="files-list">
+                  <table cellspacing="0" cellpadding="0">
+                    <thead>
+                    <tr>
+                      <th class="id">
+                        <ai-custom-th sortField="id" [(filter)]="invoicesFilter" (sortChanged)="loadInvoicesData(1)">ID</ai-custom-th>
+                      </th>
+                      <th class="name" colspan="2">
+                        <ai-custom-th sortField="upload.original_name" [(filter)]="invoicesFilter" (sortChanged)="loadInvoicesData(1)">
+                          {{'app.name'|translate}}</ai-custom-th>
+                      </th>
+                      <th class="type">
+                        <ai-custom-th sortField="invoice_type" [(filter)]="invoicesFilter" (sortChanged)="loadInvoicesData(1)">{{'app.type'|translate}}</ai-custom-th>
+                      </th>
+                      <th class="date">
+                        <ai-custom-th sortField="created_at" [(filter)]="invoicesFilter" (sortChanged)="loadInvoicesData(1)">{{'app.name'|translate}}</ai-custom-th>
+                      </th>
+                      <th class="actions"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr
+                        (click)="openFile(au.id)"
+                        *ngFor="let au of invoices | paginate: invoicesPagination"
+                        [class.cancelled]="au.cancelled_at"
+                    >
+                      <td class="id">{{au.id}}</td>
+                      <td class="icon">
+                        <mdi-icon>{{ au.upload.getIcon() }}</mdi-icon>
+                      </td>
+                      <td class="name">
+                        <strong>{{ au.upload.original_name }}</strong>
+                      </td>
+                      <td class="type">
+                        <mat-chip-list>
+                          <mat-chip *ngIf="au.invoice_type=='purchase'" (click)="directFilterInvoices('invoice_type','purchase')" class="blue-grey-500-bg white-fg">{{'services.acct.invoice_type.purchase' | translate}}</mat-chip>
+                          <mat-chip *ngIf="au.invoice_type=='sale'" (click)="directFilterInvoices('invoice_type','sale')" class="teal-600-bg white-fg">{{'services.acct.invoice_type.sale' | translate}}</mat-chip>
+                        </mat-chip-list>
+                      </td>
+                      <td class="date">
+                        <span class="grey-600-fg">{{ au.created_at | date : 'dd/MM/yyyy HH:mm:ss' }}</span>
+                      </td>
+                      <td class="actions">
+                        <div fxLayout="row">
+                          <button (click)="download($event,au)"
+                                  mat-icon-button
+                          ><mdi-icon>download</mdi-icon></button>
+                          <ai-delete-file-timer
+                              *ngIf="au.blocks_at && !au.cancelled_at"
+                              [time]="au.blocks_at"
+                              (requestDelete)="deleteFile($event, au.id)"
+                          ></ai-delete-file-timer>
+                          <button
+                              *ngIf="au.cancelled_at"
+                              mat-icon-button disabled
+                              matTooltip="{{'services.acct.canceled_file_not'|translate}}"
+                          ><mdi-icon>close</mdi-icon></button>
+                          <button
+                              *ngIf="au.c_comment"
+                              (click)="showComment($event,au,'read')"
+                              mat-icon-button
+                              matTooltip="{{'services.acct.show_comment'|translate}}"
+                          ><mdi-icon class="orange-500-fg">message-outline</mdi-icon></button>
+                        </div>
+
+
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                  <div class="loader" [class.hide]="!loadingInvoices">
+                    <ai-loading-spinner></ai-loading-spinner>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+        <ai-pagination-template
+            class="fixed-pagination"
+            [pagination]="invoicesPagination"
+            (pageChange)="loadInvoicesData($event)"
+        ></ai-pagination-template>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </mat-tab>
+  <mat-tab [label]="'pages.clients.services.accounting.tab_config' | translate">
+    <div fxLayout="row wrap" fxLayoutAlign="start start">
+      <div fxFlex="100%" fxFlex.gt-sm="50%" class="p-16 pl-md-0">
+        <mat-card class="pb-0" fxLayout="row wrap" fxLayoutAlign="start start">
+          <div fxFlex="100%" fxFlex.gt-xs="30%">
+            <img src="http://www.teamnl.tv/files/trifact365-2.png" alt="">
+          </div>
+          <div fxFlex="100%" fxFlex.gt-xs="70%">
+            <mat-card-header>
+              <mat-card-title>{{ 'pages.clients.services.accounting.trifact_config' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="px-16">
+              <form [formGroup]="trifactForm" fxLayout="row wrap" (submit)="saveConf('trifact')" fxLayoutAlign="start start">
+                <mat-form-field fxFlex="100%">
+                  <mat-label>{{ 'pages.clients.services.accounting.trifact_endpoint_email' |translate }}</mat-label>
+                  <mdi-icon matPrefix>email</mdi-icon>
+                  <input type="text" matInput  required email formControlName="endpoint_email" name="endpoint_email" />
+                </mat-form-field>
+              </form>
+            </mat-card-content>
+            <mat-card-actions align="end" class="mb-0">
+              <button mat-raised-button (click)="saveConf('trifact')" [disabled]="trifactForm.invalid" type="submit" color="primary">
+                <mdi-icon>content-save</mdi-icon>
+                <span>{{ 'pages.clients.services.accounting.save_trifact_config' | translate }}</span>
+              </button>
+            </mat-card-actions>
+          </div>
+        </mat-card>
+      </div>
+      <div fxFlex="100%" fxFlex.gt-sm="50%" class="p-16 pr-md-0">
+        <mat-card class="pb-0" fxLayout="row wrap" fxLayoutAlign="start start">
+          <div fxFlex="100%" fxFlex.gt-xs="30%">
+            <img src="http://logok.org/wp-content/uploads/2015/01/Exact-logo-880x660.png" alt="">
+          </div>
+          <div fxFlex="100%" fxFlex.gt-xs="70%">
+            <mat-card-header>
+              <mat-card-title>{{ 'pages.clients.services.accounting.exact_config' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="px-16">
+              <form [formGroup]="exactForm" (submit)="saveConf('exact')">
+                <mat-form-field fxFlex="100%">
+                  <mat-label>{{ 'pages.clients.services.accounting.exact_code' |translate }}</mat-label>
+                  <mdi-icon matPrefix>account</mdi-icon>
+                  <input type="text" required matInput formControlName="exact_code" name="exact_code" />
+                </mat-form-field>
+              </form>
+            </mat-card-content>
+            <mat-card-actions align="end" class="mb-0">
+              <button (click)="saveConf('exact')" [disabled]="exactForm.invalid" mat-raised-button  type="submit" color="primary">
+                <mdi-icon>content-save</mdi-icon>
+                <span>{{ 'pages.clients.services.accounting.save_exact_config' | translate }}</span>
+              </button>
+            </mat-card-actions>
+          </div>
+        </mat-card>
+      </div>
+      <div fxFlex="100%" fxFlex.gt-sm="50%" class="p-16 pl-md-0">
+        <mat-card class="pb-0" fxLayout="row wrap" fxLayoutAlign="start start">
+          <!--<div fxFlex="100%" fxFlex.gt-xs="30%">-->
+            <!--&lt;!&ndash;<img src="http://logok.org/wp-content/uploads/2015/01/Exact-logo-880x660.png" alt="">&ndash;&gt;-->
+          <!--</div>-->
+          <div fxFlex="100%" fxFlex.gt-xs="100%">
+            <mat-card-header>
+              <mat-card-title>{{ 'pages.clients.services.accounting.more_config' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="px-16">
+              <form [formGroup]="moreConfigForm" (submit)="saveConf('generic_conf')">
+                <mat-form-field fxFlex="100%">
+                  <mat-select formControlName="default_provider" name="defaultProvider" placeholder="{{'app.default_provider'|translate}}">
+                    <mat-option value="trifact">Trifact</mat-option>
+                    <mat-option value="exact">Exact</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </form>
+            </mat-card-content>
+            <mat-card-actions align="end" class="mb-0">
+              <button (click)="saveConf('generic_conf')" [disabled]="moreConfigForm.invalid" mat-raised-button  type="submit" color="primary">
+                <mdi-icon>content-save</mdi-icon>
+                <span>{{ 'app.save' | translate }}</span>
+              </button>
+            </mat-card-actions>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+  </mat-tab>
+</mat-tab-group>

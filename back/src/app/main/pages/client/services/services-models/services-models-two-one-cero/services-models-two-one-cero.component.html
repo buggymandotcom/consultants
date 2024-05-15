@@ -1,0 +1,2030 @@
+<div class="loader" [ngClass]="{'hidden':!loading}">
+    <ai-loading-spinner></ai-loading-spinner>
+</div>
+<!-- HEADER PANEL -->
+<mat-sidenav-container id="model-content-wrapper" *ngIf="!loadingDeclaration && declaration.declarant.additionalInfo">
+    <mat-sidenav #validationSidebar="matSidenav" id="validation-sidebar" mode="side" position="end" opened>
+
+        <!-- BOTÓN PARA CERRAR EL SLIDE -->
+        <mat-toolbar id="validation-sidebar-toolbar" class="compact">
+            <button (click)="validationSidebar.close()" mat-button>
+                <mat-icon svgIcon="arrow-collapse-right"></mat-icon> <span>{{ 'declaration.validation.hide_sidebar' | translate }}</span>
+            </button>
+        </mat-toolbar>
+
+        <!-- CONTENIDO DEL SLIDE -->
+        <div class="px-12 pt-4 validation-content">
+
+            <!-- SECCIÓN ACTUAL -->
+            <div fxLayoutAlign="center center" fxLayout="column">
+                <!-- ESTADO DEL BORRADOR -->
+                <div class="labels" fxLayout="row wrap" fxLayoutAlign="center center">
+                    <div class="label" fxLayout="row" fxLayoutAlign="start center" *ngIf="declaration.draft.state == 'active'">
+                        <div class="label-color blue-500" ></div>
+                        <div class="label-title">{{'draft.state' | translate}}: {{ 'model.state.active' | translate}}</div>
+                    </div>
+                    <div class="label" fxLayout="row" fxLayoutAlign="start center" *ngIf="declaration.draft.state == 'complete'">
+                        <div class="label-color yellow-500" ></div>
+                        <div class="label-title">{{'draft.state' | translate}}: {{ 'model.state.complete' | translate}}</div>
+                    </div>
+                    <div class="label" fxLayout="row" fxLayoutAlign="start center" *ngIf="declaration.draft.state == 'presented'">
+                        <div class="label-color green-500" ></div>
+                        <div class="label-title">{{'draft.state' | translate}}: {{ 'model.state.presented' | translate}}</div>
+                    </div>
+                </div>
+                <!-- SECCIÓN ACTUAL -->
+                <div *ngIf="declaration.currentSection < 11">{{'declaration.current.section' | translate }}: {{ declaration.currentSection+1 }}</div>
+            </div>
+
+            <!-- BOTÓN PARA EXPORTAR/CONFIRMAR DECLARACIÓN: SOLO VISIBLE CUANDO DECLARACIÓN CUMPLIMENTADA CORRECTAMENTE -->
+            <div class="w-100-p">
+                <div class="w-100-p p-8" fxLayout="row wrap" fxLayoutAlign="center center">
+                    <button mat-raised-button color="primary" (click)="saveDeclaration()" *ngIf="declaration.currentSection != 11">
+                        <mat-icon>check</mat-icon>
+                        {{ 'app.declaration.210.validate' | translate }} #{{ declaration.draft.id }}
+                    </button>
+                    <button mat-raised-button class="light-green-700 ml-4" (click)="complete()" *ngIf="declaration.isValid && declaration.draft.state == 'active'">
+                        <mat-icon>archive</mat-icon>
+                        {{ 'app.declaration.210.complete' | translate }}
+                    </button>
+                </div>
+                <label *ngIf="declaration.currentSection == 11" class="greenClass mt-8">{{'declaration.210.is.valid' | translate }}</label>
+            </div>
+
+            <!-- MSG ERRORES EN LA DECLARACIÓN -->
+            <div *ngIf="declaration.declarationErrors.length > 0" class="w-100-p" [ngClass]="declaration.colorError">
+                <span><small>{{'declaration.errors.in.section' | translate }}</small></span>
+            </div>
+
+            <!-- PROGRESO DECLARACIÓN -->
+            <mat-progress-bar mode="determinate" [value]="declaration.progress"></mat-progress-bar>
+            <div class="mb-16">
+                <strong>{{ 'app.declaration.progress' | translate }}: {{ declaration.progress }}%</strong>
+            </div>
+
+            <!-- LISTA DE ERRORES -->
+            <div class="redClass" *ngFor="let i of declaration.declarationErrors" fxLayout="column" fxLayoutAlign="center center">
+                <span>{{'app.error.in.section' | translate }} {{ i.section+1 }}: {{ i.name | translate }}</span>
+            </div>
+
+            <!-- LISTA DE ALERTAS -->
+            <!--            <div *ngFor="let i of declaration.declarationAlerts">-->
+            <!--                <span class="greenClass">{{ i.name | translate }}</span>-->
+            <!--            </div>-->
+
+            <!-- CONSIDERACIONES DE LA DECLARACIÓN -->
+
+<!--            &lt;!&ndash; ORIGEN DEL CLIENTE &ndash;&gt;-->
+<!--            <div fxLayout="column" class="pt-8 mb-16">-->
+<!--                <div><span><strong>{{'app.model.210.contributor' | translate}}</strong></span></div>-->
+
+<!--                &lt;!&ndash; NACIONALIDAD &ndash;&gt;-->
+<!--                <div class="mt-4" *ngIf="declaration.declarant.additionalInfo.getCountryCode()">-->
+<!--                    <span class="primary customDeviceClass">-->
+<!--                        {{ 'declaration.210.nationality' | translate }} <strong>{{declaration.declarant.additionalInfo.getCountryCode()}}</strong>-->
+<!--                    </span>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; RESIDENCIA FISCAL EN EL SISTEMA &ndash;&gt;-->
+<!--                <div class="mt-4" *ngIf="!declaration.declarant.additionalInfo.city.isEuropeanCountry()">-->
+<!--                    <span class="warn customDeviceClass">-->
+<!--                        {{ 'declaration.210.resident.type.24' | translate }} {{ 'declaration.210.system_residential' | translate }}-->
+<!--                        <strong>{{declaration.declarant.additionalInfo.city.country_code}}</strong>-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--                <div class="mt-4" *ngIf="declaration.declarant.additionalInfo.city.isEuropeanCountry()">-->
+<!--                    <span class="primary customDeviceClass">-->
+<!--                        {{ 'declaration.210.resident.type.19' | translate }} {{ 'declaration.210.system_residential' | translate }}-->
+<!--                        <strong>{{declaration.declarant.additionalInfo.city.country_code}}</strong>-->
+<!--                    </span>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; RESIDENCIA FISCAL EN EL EL MODELO &ndash;&gt;-->
+<!--                <div class="mt-4" *ngIf="declaration.contributor_fiscal_residential">-->
+
+<!--                    &lt;!&ndash; Europeo &ndash;&gt;-->
+<!--                    <div *ngIf="declaration.isEuropeanCountry()">-->
+<!--                        <span class="primary customDeviceClass">-->
+<!--                            {{ 'declaration.210.resident.type.19' | translate }} {{ 'declaration.210.model_residential' | translate }}-->
+<!--                            <strong>{{declaration.contributor_fiscal_residential}}</strong>-->
+<!--                        </span>-->
+<!--                    </div>-->
+
+<!--                    &lt;!&ndash; Extracomunitario &ndash;&gt;-->
+<!--                    <div *ngIf="!declaration.isEuropeanCountry()">-->
+<!--                        <span class="warn customDeviceClass">-->
+<!--                            {{ 'declaration.210.resident.type.24' | translate }} {{ 'declaration.210.model_residential' | translate }}-->
+<!--                            <strong>{{declaration.contributor_fiscal_residential}}</strong>-->
+<!--                        </span>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; MARCADO EN EL SISTEMA COMO RESIDENTE &ndash;&gt;-->
+<!--                <div class="mt-4" *ngIf="declaration.declarant.additionalInfo.resident || declaration.contributor_fiscal_residential == 'ES'">-->
+<!--                    <span class="warn customDeviceClass">-->
+<!--                        {{ 'declaration.210.residential.alert' | translate }}-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; DETALLES DE LA DECLARACIÓN &ndash;&gt;-->
+<!--            <div fxLayout="column" class="pt-8">-->
+<!--                <div><span><strong>{{'app.model.210.declaration_considerations' | translate}}</strong></span></div>-->
+<!--                <div class="mt-4" *ngIf="declaration.earn_period && declaration.currentSection > 1">-->
+<!--                    <span class="primary customDeviceClass">-->
+<!--                        {{ declaration.resume[0] | translate }} {{this.declaration.earn_period_year}}-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--                <div class="mt-4" *ngIf="declaration.rent_type && declaration.currentSection > 2">-->
+<!--                    <span class="primary customDeviceClass">-->
+<!--                        {{ 'app.model.210.rent_type' | translate }} {{ declaration.resume[1] }}-->
+<!--                        &lt;!&ndash; {{ declaration.resume[2] | translate }}&ndash;&gt;-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--                &lt;!&ndash; Método de pago &ndash;&gt;-->
+<!--                <div class="mt-4" *ngIf="declaration.currentSection > 9 && declaration.entry_payment_method">-->
+<!--                    <span class="primary customDeviceClass">-->
+<!--                        <span *ngIf="declaration.liq_result == 0">{{ 'declarant.210.declaration.negative.result' | translate}}</span>-->
+<!--                        <span *ngIf="declaration.liq_result > 0 && this.declaration.entry_payment_method == 2">{{ 'declaration.210.declaration.type.entry.debit' | translate}}</span>-->
+<!--                        <span *ngIf="declaration.liq_result > 0 && this.declaration.entry_payment_method == 3">{{ 'declaration.210.declaration.type.entry.advisory_transfer' | translate}}</span>-->
+<!--                        <span *ngIf="declaration.liq_result > 0 && this.declaration.entry_payment_method == 4">{{ 'declaration.210.declaration.type.foreign.entry.transfer' | translate}}</span>-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--                <div class="mt-8" *ngIf="declaration.rent_type && declaration.rent_type == '02' && declaration.currentSection > 7" fxLayout="column" fxLayoutAlign="start start">-->
+<!--                    <small>{{'declarant.210.det_tax_base_msg' | translate }}</small>-->
+<!--                    <span class="primary customDeviceClass" fxLayout="column" fxLayoutAlign="start start">-->
+<!--                        <strong>{{declaration.det_tax_base_i }}€&nbsp;</strong>-->
+<!--                        <small>{{ declaration.det_tax_base_i_original + ' + 20%'+declaration.property_cadastral_value}} {{declaration.det_full_returns_r ? '-'+declaration.det_full_returns_r : ''}}</small>-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--                <div class="mt-8" *ngIf="declaration.rent_type && declaration.rent_type != '02' && declaration.currentSection > 7" fxLayout="column" fxLayoutAlign="start start">-->
+<!--                    <small>{{'declarant.210.det_tax_base_msg' | translate }}</small>-->
+<!--                    <span class="primary customDeviceClass" fxLayout="column" fxLayoutAlign="start start">-->
+<!--                        <strong>{{declaration.det_tax_base_r }}€&nbsp;</strong>-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--                <div class="mt-8" *ngIf="declaration.currentSection > 8" fxLayout="column" fxLayoutAlign="start start">-->
+<!--                    <small>{{'declarant.210.liquidation' | translate }} ({{declaration.liq_irnr_law_tax_type}}%)</small>-->
+<!--                    <span class="primary customDeviceClass" fxLayout="column" fxLayoutAlign="start start">-->
+<!--                        <strong>{{declaration.liq_result }}€&nbsp;</strong>-->
+<!--                        <small *ngIf="declaration.rent_type == '02'">{{ declaration.liq_irnr_law_tax_type +'%'+ declaration.det_tax_base_i}} {{ declaration.liq_donation_deduction ? '-'+declaration.liq_donation_deduction : ''}}</small>-->
+<!--                        <small *ngIf="declaration.rent_type != '02'">{{ declaration.liq_irnr_law_tax_type +'%'+ declaration.det_tax_base_r}}</small>-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--            </div>-->
+
+        </div>
+    </mat-sidenav>
+
+    <!-- FORMULARIO DEL MODELO -->
+
+    <mat-sidenav-content id="model-content">
+        <div id="model-content-inner">
+            <div class="m-20" *ngIf="declaration">
+
+                <!-- ENCABEZADO -->
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <span title="{{ 'app.back' | translate }}"><a (click)="goToModels()" style="cursor: pointer;text-decoration: none;">{{'app.models.management' | translate}}</a> / {{'app.models.model' | translate}} 210</span>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                <span>{{ 'model.draft' | translate }} #{{draft_id}}</span>
+                                <span *ngIf="!declarationSaved" class="redClass"><small>&nbsp;{{ 'declaration.unsave.alert' | translate }}</small></span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+
+                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="80%">
+                                <input matInput placeholder="{{'client.name' | translate }}" readonly [(ngModel)]="declaration.declarant.full_name">
+                            </mat-form-field>
+
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                <input matInput placeholder="{{'client.identification' | translate }}" readonly [(ngModel)]="declaration.declarant.additionalInfo.identification">
+                            </mat-form-field>
+                        </div>
+
+                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                <input matInput placeholder="{{'draft.created' | translate }}" readonly
+                                       [ngModel]="declaration.draft.created_at ? (declaration.draft.created_at | date:'dd/MM/yyyy HH:mm') : ('draft.no.date' | translate)">
+                            </mat-form-field>
+
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                <input matInput placeholder="{{'draft.last.update' | translate }}" readonly
+                                       [ngModel]="declaration.updated_at ? (declaration.updated_at | date:'dd/MM/yyyy HH:mm') : ('draft.no.date' | translate)">
+                            </mat-form-field>
+
+                            <!--                <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">-->
+                            <!--                    <mat-select [(ngModel)]="declaration.draft.year" placeholder="{{'model.year' | translate }}" required>-->
+                            <!--                        <mat-option *ngFor="let year of years" [value]="year">-->
+                            <!--                            {{year}}-->
+                            <!--                        </mat-option>-->
+                            <!--                    </mat-select>-->
+                            <!--                </mat-form-field>-->
+                        </div>
+
+                        <!--            <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">-->
+                        <!--                <span><small>{{ 'declaration.tip.year.required' | translate }}</small></span>-->
+                        <!--            </div>-->
+
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </div>
+
+            <mat-card class="mx-20" *ngIf="declaration">
+
+                <div class="mt-16">
+
+                    <!-- ACORDEÓN -->
+                    <mat-accordion class="example-headers-align">
+
+                        <!-- SECCIÓN 1: PERSONA QUE REALIZA LA AUTOLIQUIDACIÓN -->
+
+                        <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <div class="w-100-p" fxLayout="row wrap">
+                                        <strong>{{'declarant.210.maker.person' | translate }}</strong>
+                                        <span [ngClass]="declaration.colorError" *ngIf="declaration.declarationErrors.length > 0 && declaration.currentSection == 0">
+                                            <small>&nbsp;{{'declaration.errors.in.section' | translate }}</small>
+                                        </span>
+                                    </div>
+                                </mat-panel-title>
+                                <mat-panel-description [ngClass]="declaration.currentSection > 0 ? 'greenClass' : 'redClass'">
+                                    <span></span>
+                                    {{'declaration.section' | translate }} 1
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+
+                            <form #dmakerPersonForm="ngForm">
+                                <!-- FILA 1 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.declarant_nif" #declarant_nif="ngModel"
+                                               placeholder="{{'declarant.210.declarant_nif' | translate}}"
+                                               type="text"
+                                               name="declarant_nif"
+                                               readonly
+                                               required>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="77%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.declarant_name" #declarant_name="ngModel"
+                                               placeholder="{{'declarant.210.declarant_name' | translate}}"
+                                               type="text"
+                                               name="declarant_name"
+                                               readonly
+                                               required>
+                                    </mat-form-field>
+                                </div>
+                                <!-- FILA 2 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                    <label class="mr-8">{{ 'declarant.210.in.condition.of' | translate }}: *</label>
+                                </div>
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                    <mat-radio-group [(ngModel)]="declaration.declarant_condition_isRepresentative"
+                                                     #declarant_condition="ngModel"
+                                                     name="declarant_condition"
+                                                     (change)="declaration.validate()"
+                                                     readonly
+                                                     required>
+                                        <mat-radio-button [value]="false" class="pr-8" disabled>{{ 'declarant.210.declarant.condition.taxpayer' | translate }}</mat-radio-button>
+                                        <mat-radio-button [value]="true">{{ 'declarant.210.declarant.condition.representative' | translate }}</mat-radio-button>
+                                    </mat-radio-group>
+                                </div>
+                                <!-- FILA 2 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-24">
+                                    <label class="mr-8">{{ 'declarant.210.solidarity' | translate }}:</label>
+                                </div>
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                    <mat-checkbox #deConditionPayer name="deConditionPayer" [disabled]="declaration.SolidarityDisabled || true" class="mr-8" [(ngModel)]="declaration.declarant_condition_payer">{{ 'declarant.210.declarant.condition.payer' | translate }}</mat-checkbox>
+                                    <mat-checkbox #deConditionHolder name="deConditionHolder" [disabled]="declaration.SolidarityDisabled || true" class="mr-8" [(ngModel)]="declaration.declarant_condition_holder">{{ 'declarant.210.declarant.condition.holder' | translate }}</mat-checkbox>
+                                    <mat-checkbox #deConditionManager name="deConditionManager" [disabled]="declaration.SolidarityDisabled || true" class="mr-8" [(ngModel)]="declaration.declarant_condition_manager">{{ 'declarant.210.declarant.condition.manager' | translate }}</mat-checkbox>
+                                    <mat-checkbox #deConditionKeeper name="deConditionKeeper" [disabled]="declaration.SolidarityDisabled || true" class="mr-8" [(ngModel)]="declaration.declarant_condition_keeper">{{ 'declarant.210.declarant.condition.keeper' | translate }}</mat-checkbox>
+                                </div>
+                            </form>
+                            <mat-action-row class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="saveDeclaration()" *ngIf="declaration.draft.state == 'active'">
+                                        <mat-icon>check</mat-icon>
+                                        {{ 'app.declaration.210.validate' | translate }}
+                                    </button>
+                                </div>
+                                <div fxLayout="row">
+                                    <button mat-raised-button color="primary" (click)="nextStep()">
+                                        <mat-icon>navigate_next</mat-icon>
+                                    </button>
+                                </div>
+                            </mat-action-row>
+                        </mat-expansion-panel>
+
+                        <!-- SECCIÓN 2: DEVENGO -->
+
+                        <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)" hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <div class="w-100-p" fxLayout="row wrap">
+                                        <strong>{{'declarant.210.earn' | translate }}</strong>
+                                        <span [ngClass]="declaration.colorError" *ngIf="declaration.declarationErrors.length > 0 && declaration.currentSection == 1">
+                                            <small>&nbsp;{{'declaration.errors.in.section' | translate }}</small>
+                                        </span>
+                                    </div>
+                                </mat-panel-title>
+                                <mat-panel-description [ngClass]="declaration.currentSection > 1 ? 'greenClass' : 'redClass'">
+                                    <span></span>
+                                    {{'declaration.section' | translate }} 2
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+
+                            <form #dEarnForm="ngForm">
+
+                                <!-- FILA 1 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                                    <label style="margin-left: 10px">{{ 'declarant.210.agrupation' | translate }}:</label>
+                                    <mat-checkbox #deAgrupation style="margin-left: 10px" name="deAgrupation" [(ngModel)]="declaration.earn_agrupation" (change)="agrupationChange()" ></mat-checkbox>
+                                </div>
+
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-24">
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                        <mat-select [(ngModel)]="declaration.earn_period"
+                                                    placeholder="{{'declaration.210.earn.period' | translate}}"
+                                                    #deEarnPeriod="ngModel"
+                                                    name="deEarnPeriod"
+                                                    required>
+                                            <mat-option *ngFor="let element of earnPeriodTypes" [value]="element.id">
+                                                <small>{{ element.text | translate }}</small>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                        <mat-select [(ngModel)]="declaration.earn_period_year" placeholder="{{'declaration.210.earn.period.year' | translate }}"
+                                                    #deEarnPeriodYear="ngModel"
+                                                    name="deEarnPeriodYear"
+                                                    (selectionChange)="onEarnPeriodChange()"
+                                                    required>
+                                            <mat-option *ngFor="let year of years" [value]="year">
+                                                {{year}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-md="20%">
+                                        <input type="text" name="earn_date"
+                                               [(ngModel)]="declaration.earn_period_date" matInput
+                                               placeholder="{{'declaration.210.earn_period_date' | translate }}"
+                                               readonly>
+                                    </mat-form-field>
+
+                                    <!--                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="10%">-->
+                                    <!--                                        <input matInput [matDatepicker]="inDate" #deEarnPeriodDate="ngModel"-->
+                                    <!--                                               [ngModel]="declaration.earn_period_date"-->
+                                    <!--                                               name="deEarnPeriodDate"-->
+                                    <!--                                               placeholder="{{'declaration.210.earn_period_date' | translate }}"-->
+                                    <!--                                               (dateInput)="earnPeriodDateValue($event)"-->
+                                    <!--                                               [disabled]="declaration.earn_agrupation"-->
+                                    <!--                                               required>-->
+                                    <!--                                        <mat-datepicker-toggle matSuffix [for]="inDate"></mat-datepicker-toggle>-->
+                                    <!--                                        <mat-datepicker touchUi #inDate></mat-datepicker>-->
+                                    <!--                                    </mat-form-field>-->
+                                </div>
+
+                            </form>
+                            <mat-action-row class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="prevStep()">
+                                        <mat-icon>navigate_before</mat-icon>
+                                    </button>
+                                </div>
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="saveDeclaration()" *ngIf="declaration.draft.state == 'active'">
+                                        <mat-icon>check</mat-icon>
+                                        {{ 'app.declaration.210.validate' | translate }}
+                                    </button>
+                                </div>
+                                <div fxLayout="row">
+                                    <button mat-raised-button color="primary" (click)="nextStep()">
+                                        <mat-icon>navigate_next</mat-icon>
+                                    </button>
+                                </div>
+                            </mat-action-row>
+
+                        </mat-expansion-panel>
+
+                        <!-- SECCIÓN 3: RENTA OBTENIDA -->
+
+                        <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)" hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <div class="w-100-p" fxLayout="row wrap">
+                                        <strong>{{'declarant.210.rent' | translate }}</strong>
+                                        <span [ngClass]="declaration.colorError" *ngIf="declaration.declarationErrors.length > 0 && declaration.currentSection == 2">
+                                <small>&nbsp;{{'declaration.errors.in.section' | translate }}</small>
+                            </span>
+                                    </div>
+                                </mat-panel-title>
+                                <mat-panel-description [ngClass]="declaration.currentSection > 2 ? 'greenClass' : 'redClass'">
+                                    <span></span>
+                                    {{'declaration.section' | translate }} 3
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+
+                            <form #dRentForm="ngForm">
+
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="80%">
+                                        <mat-select [(ngModel)]="declaration.rent_type"
+                                                    placeholder="{{'declaration.210.rent_type' | translate}}"
+                                                    #deRentType="ngModel"
+                                                    name="deRentType"
+                                                    (selectionChange)="onRentTypeSelected()"
+                                                    required>
+                                            <mat-option *ngFor="let element of rentTypes" [value]="element.id">
+                                                <small>{{ element.id | translate }} | {{ element.text | translate }}</small>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="17%">
+                                        <mat-select [(ngModel)]="declaration.rent_key_badge"
+                                                    placeholder="{{'declaration.210.rent_key_badge' | translate}}"
+                                                    #deRentKeyBadge="ngModel"
+                                                    name="deRentKeyBadge">
+                                            <mat-option *ngFor="let element of rentKeyBadgeTypes" [value]="element.id">
+                                                <small>{{ element.id | translate }} | {{ element.text | translate }}</small>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                </div>
+
+                            </form>
+                            <mat-action-row class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="prevStep()">
+                                        <mat-icon>navigate_before</mat-icon>
+                                    </button>
+                                </div>
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="saveDeclaration()" *ngIf="declaration.draft.state == 'active'">
+                                        <mat-icon>check</mat-icon>
+                                        {{ 'app.declaration.210.validate' | translate }}
+                                    </button>
+                                </div>
+                                <div fxLayout="row">
+                                    <button mat-raised-button color="primary" (click)="nextStep()">
+                                        <mat-icon>navigate_next</mat-icon>
+                                    </button>
+                                </div>
+                            </mat-action-row>
+
+                        </mat-expansion-panel>
+
+                        <!-- SECCIÓN 4: CONTIBUYENTE -->
+
+                        <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)" hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <div class="w-100-p" fxLayout="row wrap">
+                                        <strong>{{'declarant.210.contributor' | translate }}</strong>
+                                        <span [ngClass]="declaration.colorError" *ngIf="declaration.declarationErrors.length > 0 && declaration.currentSection == 3">
+                                            <small>&nbsp;{{'declaration.errors.in.section' | translate }}</small>
+                                        </span>
+                                    </div>
+                                </mat-panel-title>
+                                <mat-panel-description [ngClass]="declaration.currentSection > 3 ? 'greenClass' : 'redClass'">
+                                    <span></span>
+                                    {{'declaration.section' | translate }} 4
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+
+                            <form #dContributorForm="ngForm">
+
+                                <!-- FILA 1 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.contributor_nif" #contributor_nif="ngModel"
+                                               placeholder="{{'declarant.210.contributor_nif' | translate}}"
+                                               type="text"
+                                               name="contributor_nif"
+                                               readonly>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="10%">
+                                        <mat-select [(ngModel)]="declaration.contributor_fj"
+                                                    placeholder="{{'declaration.210.contributor_fj' | translate}}"
+                                                    #deContributorNif="ngModel"
+                                                    name="deContributorNif"
+                                                    required
+                                                    readonly>
+                                            <mat-option *ngFor="let element of personTypes" [value]="element.id" disabled>
+                                                <small>{{ element.id | translate }} | {{ element.text | translate }}</small>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="67%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.contributor_name" #deContributorName="ngModel"
+                                               placeholder="{{'declarant.210.contributor_name' | translate}}"
+                                               type="text"
+                                               readonly
+                                               name="deContributorName">
+                                    </mat-form-field>
+                                </div>
+
+                                <!-- FILA 2 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="15%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.contributor_residential_nif" #contributor_ResidentialNif="ngModel"
+                                               placeholder="{{'declarant.210.contributor_residential_nif' | translate}}"
+                                               type="text"
+                                               name="contributor_ResidentialNif"
+                                               readonly
+                                               disabled>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-md="20%" disabled>
+                                        <input name="contributorBornDate" [(ngModel)]="declaration.contributor_born_date" matInput [matDatepicker]="contributorBornDate" placeholder="{{'declaration.210.contributor_born_date' | translate }}" readonly>
+                                        <mat-datepicker-toggle matSuffix [for]="contributorBornDate"></mat-datepicker-toggle>
+                                    </mat-form-field>
+                                    <mat-datepicker disabled #contributorBornDate></mat-datepicker>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.contributor_born_locality" #contributorBornCity="ngModel"
+                                               placeholder="{{'declarant.210.contributor_born_city' | translate}}"
+                                               type="text"
+                                               name="contributorBornCity">
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="13%">
+                                        <mat-select [(ngModel)]="declaration.contributor_country_cod"
+                                                    placeholder="{{'declarant.210.contributor_country_cod' | translate}}"
+                                                    #declaration_contributor_country_cod="ngModel"
+                                                    name="declaration_contributor_country_cod">
+                                            <mat-option *ngFor="let element of countryCodes" [value]="element.cod">
+                                                <span>{{element.cod}} | <small>{{ element.value }}</small></span>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="25%">
+                                        <mat-select [(ngModel)]="declaration.contributor_fiscal_residential"
+                                                    placeholder="{{'declarant.210.contributor_fiscal_residential' | translate}}"
+                                                    #declaration_contributor_fiscal_residential="ngModel"
+                                                    name="declaration_contributor_fiscal_residential"
+                                                    (selectionChange)="onResidentialCountryChange()"
+                                                    required>
+                                            <mat-option *ngFor="let element of countryCodes" [value]="element.cod">
+                                                <span>{{element.cod}} | <small>{{ element.value }}</small></span>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
+                                <!-- FILA 3 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="center center" class="mt-16">
+                                    <fieldset class="w-100-p" style="border-color: rgba(255, 255, 255, 0.4);">
+                                        <legend>{{'declaration.210.address.in.residential.country' | translate }}&nbsp;</legend>
+
+                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="40%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.contributor_address" #contributorAddress="ngModel"
+                                                       placeholder="{{'declarant.210.contributor_address' | translate}}"
+                                                       type="text"
+                                                       name="contributorAddress">
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.contributor_complementary_address" #contributorComplementaryAddress="ngModel"
+                                                       placeholder="{{'declarant.210.contributor_complementary_address' | translate}}"
+                                                       type="text"
+                                                       name="contributorComplementaryAddress">
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="27%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.contributor_locality" #contributorLocality="ngModel"
+                                                       placeholder="{{'declarant.210.contributor_locality' | translate}}"
+                                                       type="text"
+                                                       name="contributorLocality">
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="100%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.contributor_email" #contributorEmail="ngModel"
+                                                       placeholder="{{'declarant.210.contributor_email' | translate}}"
+                                                       type="text"
+                                                       name="contributorEmail">
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.contributor_zip_code" #contributorZipCode="ngModel"
+                                                       placeholder="{{'declarant.210.contributor_zip_code' | translate}}"
+                                                       type="text"
+                                                       name="contributorZipCode">
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="50%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.contributor_state" #contributorState="ngModel"
+                                                       placeholder="{{'declarant.210.contributor_state' | translate}}"
+                                                       type="text"
+                                                       name="contributorState">
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="17%">
+                                                <mat-select [(ngModel)]="declaration.contributor_country"
+                                                            placeholder="{{'declarant.210.contributor_country' | translate}}"
+                                                            #declaration_contributor_country="ngModel"
+                                                            name="declaration_contributor_country">
+                                                    <mat-option *ngFor="let element of countryCodes" [value]="element.cod">
+                                                        <span>{{element.cod}} | <small>{{ element.value }}</small></span>
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%">
+                                                <input matInput
+                                                       placeholder="{{'declarant.210.contributor_phone' | translate}}"
+                                                       [(ngModel)]="declaration.contributor_phone" #ContributorPhone="ngModel"
+                                                       name="ContributorPhone"
+                                                       type="text"
+                                                       maxlength="9"
+                                                       minlength="9">
+                                                <mat-hint align="end">{{declaration.contributor_phone ? declaration.contributor_phone.length : 0}} / 9</mat-hint>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%">
+                                                <input matInput
+                                                       placeholder="{{'declarant.210.contributor_mobile_phone' | translate}}"
+                                                       [(ngModel)]="declaration.contributor_mobile_phone" #ContributorMobilePhone="ngModel"
+                                                       name="ContributorMobilePhone"
+                                                       type="text"
+                                                       maxlength="9"
+                                                       minlength="9">
+                                                <mat-hint align="end">{{declaration.contributor_mobile_phone ? declaration.contributor_mobile_phone.length : 0}} / 9</mat-hint>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%">
+                                                <input matInput
+                                                       placeholder="{{'declarant.210.contributor_fax' | translate}}"
+                                                       [(ngModel)]="declaration.contributor_fax" #ContributorFax="ngModel"
+                                                       name="ContributorFax"
+                                                       type="text"
+                                                       maxlength="9"
+                                                       minlength="9">
+                                                <mat-hint align="end">{{declaration.contributor_fax ? declaration.contributor_fax.length : 0}} / 9</mat-hint>
+                                            </mat-form-field>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </form>
+                            <mat-action-row class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="prevStep()">
+                                        <mat-icon>navigate_before</mat-icon>
+                                    </button>
+                                </div>
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="saveDeclaration()" *ngIf="declaration.draft.state == 'active'">
+                                        <mat-icon>check</mat-icon>
+                                        {{ 'app.declaration.210.validate' | translate }}
+                                    </button>
+                                </div>
+                                <div fxLayout="row">
+                                    <button mat-raised-button color="primary" (click)="nextStep()">
+                                        <mat-icon>navigate_next</mat-icon>
+                                    </button>
+                                </div>
+                            </mat-action-row>
+
+                        </mat-expansion-panel>
+
+                        <!-- SECCIÓN 5: AGENTE -->
+
+                        <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)" hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <div class="w-100-p" fxLayout="row wrap">
+                                        <strong>{{'declarant.210.agent' | translate }}</strong>
+                                        <span [ngClass]="declaration.colorError" *ngIf="declaration.declarationErrors.length > 0 && declaration.currentSection == 4">
+                                            <small>&nbsp;{{'declaration.errors.in.section' | translate }}</small>
+                                        </span>
+                                    </div>
+                                </mat-panel-title>
+                                <mat-panel-description [ngClass]="declaration.currentSection > 4 ? 'greenClass' : 'redClass'">
+                                    <span></span>
+                                    {{'declaration.section' | translate }} 5
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+
+                            <form #dAgentForm="ngForm">
+
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="center center" class="mt-16">
+                                    <span class="mb-12">{{ 'declaration.210.section.no.necessary.alert' | translate }}</span>
+                                </div>
+
+                                <!-- FILA 1 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="15%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.agent_nif" #agent_nif="ngModel"
+                                               placeholder="{{'declarant.210.agent_nif' | translate}}"
+                                               type="text"
+                                               name="agent_nif"
+                                               readonly>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="15%">
+                                        <mat-select [(ngModel)]="declaration.agent_fj"
+                                                    placeholder="{{'declaration.210.agent_fj' | translate}}"
+                                                    #agent_fj="ngModel"
+                                                    name="agent_fj"
+                                                    disabled>
+                                            <mat-option *ngFor="let element of personTypes" [value]="element.id">
+                                                <small>{{ element.id }} | {{ element.text | translate }}</small>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="52%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.agent_name" #agent_name="ngModel"
+                                               placeholder="{{'declarant.210.agent_name' | translate}}"
+                                               type="text"
+                                               name="agent_name"
+                                               readonly>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="15%">
+                                        <mat-select [(ngModel)]="declaration.agent_represent"
+                                                    placeholder="{{'declaration.210.agent_represent' | translate}}"
+                                                    #agent_represent="ngModel"
+                                                    name="agent_represent"
+                                                    disabled>
+                                            <mat-option *ngFor="let element of representTypes" [value]="element.id">
+                                                <small>{{ element.id }} | {{ element.text | translate }}</small>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
+                                <!-- FIELDSET DOMICILIO DEL AGENTE -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="center center" class="mt-16">
+                                    <fieldset class="w-100-p" style="border-color: rgba(255, 255, 255, 0.4);">
+                                        <legend>{{'declaration.210.address' | translate }}&nbsp;</legend>
+                                        <!-- FILA 1 -->
+                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                                <mat-select [(ngModel)]="declaration.agent_road_type"
+                                                            placeholder="{{'declaration.210.agent_road_type' | translate}}"
+                                                            #agent_road_type="ngModel"
+                                                            name="agent_road_type"
+                                                            disabled>
+                                                    <mat-option *ngFor="let element of homeWayTypes" [value]="element.key">
+                                                        <small>{{ element.name | translate }}</small>
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="77%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.agent_address" #agent_address="ngModel"
+                                                       placeholder="{{'declarant.210.property_address_road_name' | translate}}"
+                                                       type="text"
+                                                       name="agent_address"
+                                                       readonly>
+                                            </mat-form-field>
+                                        </div>
+                                        <!-- FILA 2 -->
+                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                                <mat-select [(ngModel)]="declaration.agent_numeration_type"
+                                                            placeholder="{{'declaration.210.agent_numeration_type' | translate}}"
+                                                            #agent_numeration_type="ngModel"
+                                                            name="agent_numeration_type"
+                                                            disabled>
+                                                    <mat-option *ngFor="let element of homeNumerationTypes" [value]="element.id">
+                                                        <small>{{ element.text | translate }}</small>
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="25%" fxFlex.gt-sm="10%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.agent_address_number" #property_address_road_name="ngModel"
+                                                       placeholder="{{'declarant.210.agent_address_number' | translate}}"
+                                                       type="text"
+                                                       name="agent_address_number"
+                                                       readonly>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="25%" fxFlex.gt-sm="15%">
+                                                <mat-select [(ngModel)]="declaration.agent_address_qualifier_number"
+                                                            placeholder="{{'declaration.210.agent_address_qualifier_number' | translate}}"
+                                                            #agent_address_qualifier_number="ngModel"
+                                                            name="agent_address_qualifier_number"
+                                                            disabled>
+                                                    <mat-option *ngFor="let element of qualifierTypes" [value]="element.id">
+                                                        <small>{{ element.text | translate }}</small>
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="25%" fxFlex.gt-sm="10%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.agent_address_block" #agent_address_block="ngModel"
+                                                       placeholder="{{'declarant.210.agent_address_block' | translate}}"
+                                                       type="text"
+                                                       name="agent_address_block"
+                                                       readonly>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="25%" fxFlex.gt-sm="10%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.agent_address_portal" #agent_address_portal="ngModel"
+                                                       placeholder="{{'declarant.210.agent_address_portal' | translate}}"
+                                                       type="text"
+                                                       name="agent_address_portal"
+                                                       readonly>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="25%" fxFlex.gt-sm="10%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.agent_address_stairs" #agent_address_stairs="ngModel"
+                                                       placeholder="{{'declarant.210.agent_address_stairs' | translate}}"
+                                                       type="text"
+                                                       name="agent_address_stairs"
+                                                       readonly>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="25%" fxFlex.gt-sm="10%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.agent_address_floor" #agent_address_floor="ngModel"
+                                                       placeholder="{{'declarant.210.agent_address_floor' | translate}}"
+                                                       type="text"
+                                                       name="agent_address_floor"
+                                                       readonly>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="25%" fxFlex.gt-sm="10%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.agent_address_door" #agent_address_door="ngModel"
+                                                       placeholder="{{'declarant.210.agent_address_door' | translate}}"
+                                                       type="text"
+                                                       name="agent_address_door"
+                                                       readonly>
+                                            </mat-form-field>
+                                        </div>
+                                        <!-- FILA 3 -->
+                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="70%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.agent_address_complementary" #agent_address_complementary="ngModel"
+                                                       placeholder="{{'declarant.210.agent_address_complementary' | translate}}"
+                                                       type="text"
+                                                       name="agent_address_complementary"
+                                                       readonly>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="27%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.agent_address_locality" #agent_address_locality="ngModel"
+                                                       placeholder="{{'declarant.210.agent_address_locality' | translate}}"
+                                                       type="text"
+                                                       name="agent_address_locality"
+                                                       readonly>
+                                            </mat-form-field>
+                                        </div>
+                                        <!-- FILA 4 -->
+                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                                <mat-select [(ngModel)]="declaration.agent_address_state"
+                                                            placeholder="{{'declaration.210.agent_address_state' | translate}}"
+                                                            #agent_address_state="ngModel"
+                                                            (selectionChange)="onAgentStateSelected()"
+                                                            name="agent_address_state"
+                                                            disabled>
+                                                    <mat-option *ngFor="let element of spainAgentProvinces" [value]="element.code">
+                                                        <small>{{ element.name | translate }}</small>
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                                <mat-select [(ngModel)]="declaration.agent_address_municipality"
+                                                            placeholder="{{'declaration.210.agent_address_municipality' | translate}}"
+                                                            #agent_address_state="ngModel"
+                                                            name="agent_address_municipality"
+                                                            disabled>
+                                                    <mat-option *ngFor="let element of spainAgentMunicipalities" [value]="element.code">
+                                                        <small>{{ element.name | translate }}</small>
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.agent_address_zip_code" #agent_address_zip_code="ngModel"
+                                                       placeholder="{{'declarant.210.agent_address_zip_code' | translate}}"
+                                                       type="text"
+                                                       name="agent_address_zip_code"
+                                                       readonly>
+                                            </mat-form-field>
+                                        </div>
+                                        <!-- FILA 5 -->
+                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%">
+                                                <input matInput
+                                                       placeholder="{{'declarant.210.agent_phone' | translate}}"
+                                                       [(ngModel)]="declaration.agent_phone" #agent_phone="ngModel"
+                                                       name="agent_phone"
+                                                       type="text"
+                                                       maxlength="9"
+                                                       minlength="9"
+                                                       readonly>
+                                                <mat-hint align="end">{{declaration.agent_phone ? declaration.agent_phone.length : 0}} / 9</mat-hint>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%">
+                                                <input matInput
+                                                       placeholder="{{'declarant.210.agent_mobile_phone' | translate}}"
+                                                       [(ngModel)]="declaration.agent_mobile_phone" #agent_mobile_phone="ngModel"
+                                                       name="agent_mobile_phone"
+                                                       type="text"
+                                                       maxlength="9"
+                                                       minlength="9"
+                                                       readonly>
+                                                <mat-hint align="end">{{declaration.agent_mobile_phone ? declaration.agent_mobile_phone.length : 0}} / 9</mat-hint>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%">
+                                                <input matInput
+                                                       placeholder="{{'declarant.210.agent_fax' | translate}}"
+                                                       [(ngModel)]="declaration.agent_fax" #agent_fax="ngModel"
+                                                       name="agent_fax"
+                                                       type="text"
+                                                       maxlength="9"
+                                                       minlength="9"
+                                                       readonly>
+                                                <mat-hint align="end">{{declaration.agent_fax ? declaration.agent_fax.length : 0}} / 9</mat-hint>
+                                            </mat-form-field>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </form>
+                            <mat-action-row class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="prevStep()">
+                                        <mat-icon>navigate_before</mat-icon>
+                                    </button>
+                                </div>
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="saveDeclaration()" *ngIf="declaration.draft.state == 'active'">
+                                        <mat-icon>check</mat-icon>
+                                        {{ 'app.declaration.210.validate' | translate }}
+                                    </button>
+                                </div>
+                                <div fxLayout="row">
+                                    <button mat-raised-button color="primary" (click)="nextStep()">
+                                        <mat-icon>navigate_next</mat-icon>
+                                    </button>
+                                </div>
+                            </mat-action-row>
+                        </mat-expansion-panel>
+
+                        <!-- SECCIÓN 6: AGENTE -->
+
+                        <mat-expansion-panel [expanded]="step === 5" (opened)="setStep(5)" hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <div class="w-100-p" fxLayout="row wrap">
+                                        <strong>{{'declarant.210.payer' | translate }}</strong>
+                                        <span [ngClass]="declaration.colorError" *ngIf="declaration.declarationErrors.length > 0 && declaration.currentSection == 5">
+                                <small>&nbsp;{{'declaration.errors.in.section' | translate }}</small>
+                            </span>
+                                    </div>
+                                </mat-panel-title>
+                                <mat-panel-description [ngClass]="declaration.currentSection > 5 ? 'greenClass' : 'redClass'">
+                                    <span></span>
+                                    {{'declaration.section' | translate }} 6
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+
+                            <form #dPayerForm="ngForm">
+                                <!--                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="center center" class="mt-16">-->
+                                <!--                                    <span class="mb-12">{{ 'declaration.210.section.no.necessary.alert' | translate }}</span>-->
+                                <!--                                </div>-->
+                                <!-- FILA 1 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.payer_nif" #payer_nif="ngModel"
+                                               placeholder="{{'declarant.210.payer_nif' | translate}}"
+                                               type="text"
+                                               name="payer_nif">
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="10%">
+                                        <mat-select [(ngModel)]="declaration.payer_fj"
+                                                    placeholder="{{'declaration.210.payer_fj' | translate}}"
+                                                    #payer_fj="ngModel"
+                                                    name="payer_fj">
+                                            <mat-option *ngFor="let element of personTypes" [value]="element.id">
+                                                <small>{{ element.id | translate }} | {{ element.text | translate }}</small>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="67%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.payer_name" #payer_name="ngModel"
+                                               placeholder="{{'declarant.210.payer_name' | translate}}"
+                                               type="text"
+                                               name="payer_name">
+                                    </mat-form-field>
+                                </div>
+                            </form>
+                            <mat-action-row class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="prevStep()">
+                                        <mat-icon>navigate_before</mat-icon>
+                                    </button>
+                                </div>
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="saveDeclaration()" *ngIf="declaration.draft.state == 'active'">
+                                        <mat-icon>check</mat-icon>
+                                        {{ 'app.declaration.210.validate' | translate }}
+                                    </button>
+                                </div>
+                                <div fxLayout="row">
+                                    <button mat-raised-button color="primary" (click)="nextStep()">
+                                        <mat-icon>navigate_next</mat-icon>
+                                    </button>
+                                </div>
+                            </mat-action-row>
+                        </mat-expansion-panel>
+
+                        <!-- SECCIÓN 7: SITUACIÓN DEL INMUEBLE -->
+
+                        <mat-expansion-panel [expanded]="step === 6" (opened)="setStep(6)" hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <div class="w-100-p" fxLayout="row wrap">
+                                        <strong>{{'declarant.210.det_tax' | translate }}</strong>
+                                        <span [ngClass]="declaration.colorError" *ngIf="declaration.declarationErrors.length > 0 && declaration.currentSection == 6">
+                                            <small>&nbsp;{{'declaration.errors.in.section' | translate }}</small>
+                                        </span>
+                                    </div>
+                                </mat-panel-title>
+                                <mat-panel-description [ngClass]="declaration.currentSection > 6 ? 'greenClass' : 'redClass'">
+                                    <span></span>
+                                    {{'declaration.section' | translate }} 7
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+
+                            <form #PropertyForm="ngForm">
+
+                                <!-- FILA 1 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                        <mat-select [(ngModel)]="declaration.property_address_road_type"
+                                                    placeholder="{{'declaration.210.agent_road_type' | translate}}"
+                                                    #property_address_road_type="ngModel"
+                                                    name="property_address_road_type">
+                                            <mat-option *ngFor="let element of homeWayTypes" [value]="element.key">
+                                                <small>{{ element.name | translate }}</small>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="77%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.property_address_road_name" #property_address_road_name="ngModel"
+                                               placeholder="{{'declarant.210.property_address_road_name' | translate}}"
+                                               type="text"
+                                               name="property_address_road_name"
+                                               required>
+                                    </mat-form-field>
+                                </div>
+                                <!-- FILA 2 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                        <mat-select [(ngModel)]="declaration.property_address_numeration_type"
+                                                    placeholder="{{'declaration.210.agent_numeration_type' | translate}}"
+                                                    #property_address_numeration_type="ngModel"
+                                                    name="property_address_numeration_type">
+                                            <mat-option *ngFor="let element of homeNumerationTypes" [value]="element.id">
+                                                <small>{{ element.text | translate }}</small>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="25%" fxFlex.gt-sm="10%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.property_address_number" #property_address_number="ngModel"
+                                               placeholder="{{'declarant.210.agent_address_number' | translate}}"
+                                               type="text"
+                                               name="property_address_number"
+                                               required>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="25%" fxFlex.gt-sm="15%">
+                                        <mat-select [(ngModel)]="declaration.property_address_qualifier_number"
+                                                    placeholder="{{'declaration.210.agent_address_qualifier_number' | translate}}"
+                                                    #property_address_qualifier_number="ngModel"
+                                                    name="property_address_qualifier_number">
+                                            <mat-option *ngFor="let element of qualifierTypes" [value]="element.id">
+                                                <small>{{ element.text | translate }}</small>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="25%" fxFlex.gt-sm="10%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.property_address_block" #property_address_block="ngModel"
+                                               placeholder="{{'declarant.210.agent_address_block' | translate}}"
+                                               type="text"
+                                               name="property_address_block">
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="25%" fxFlex.gt-sm="10%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.property_address_portal" #property_address_portal="ngModel"
+                                               placeholder="{{'declarant.210.agent_address_portal' | translate}}"
+                                               type="text"
+                                               name="property_address_portal">
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="25%" fxFlex.gt-sm="10%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.property_address_stairs" #property_address_stairs="ngModel"
+                                               placeholder="{{'declarant.210.agent_address_stairs' | translate}}"
+                                               type="text"
+                                               name="property_address_stairs">
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="25%" fxFlex.gt-sm="10%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.property_address_floor" #property_address_floor="ngModel"
+                                               placeholder="{{'declarant.210.agent_address_floor' | translate}}"
+                                               type="text"
+                                               name="property_address_floor">
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="25%" fxFlex.gt-sm="10%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.property_address_door" #property_address_door="ngModel"
+                                               placeholder="{{'declarant.210.agent_address_door' | translate}}"
+                                               type="text"
+                                               name="property_address_door">
+                                    </mat-form-field>
+                                </div>
+                                <!-- FILA 3 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="70%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.property_address_complementary" #property_address_complementary="ngModel"
+                                               placeholder="{{'declarant.210.agent_address_complementary' | translate}}"
+                                               type="text"
+                                               name="property_address_complementary">
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="27%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.property_address_locality" #property_address_locality="ngModel"
+                                               placeholder="{{'declarant.210.agent_address_locality' | translate}}"
+                                               type="text"
+                                               name="property_address_locality">
+                                    </mat-form-field>
+                                </div>
+                                <!-- FILA 4 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                        <mat-select [(ngModel)]="declaration.property_address_state"
+                                                    placeholder="{{'declaration.210.agent_address_state' | translate}}"
+                                                    #property_address_state="ngModel"
+                                                    (selectionChange)="onPropertyStateSelected()"
+                                                    name="agent_address_state"
+                                                    required>
+                                            <mat-option *ngFor="let element of spainPropertyProvinces" [value]="element.code">
+                                                <small>{{ element.name | translate }}</small>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                        <mat-select [(ngModel)]="declaration.property_address_municipality"
+                                                    placeholder="{{'declaration.210.agent_address_municipality' | translate}}"
+                                                    #property_address_municipality="ngModel"
+                                                    name="property_address_municipality"
+                                                    required>
+                                            <mat-option *ngFor="let element of spainPropertyMunicipalities" [value]="element.code">
+                                                <small>{{ element.name | translate }}</small>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.property_address_zip_code" #property_address_zip_code="ngModel"
+                                               placeholder="{{'declarant.210.agent_address_zip_code' | translate}}"
+                                               type="text"
+                                               name="property_address_zip_code"
+                                               maxlength="5"
+                                               minlength="5"
+                                               required>
+                                        <mat-hint align="end">{{declaration.property_address_zip_code ? declaration.property_address_zip_code.length : 0}} / 5</mat-hint>
+                                    </mat-form-field>
+                                </div>
+                                <div class="w-100-p" fxLayout="column wrap" fxLayoutAlign="center center" class="mt-16">
+                                    <span class="mb-12">{{ 'declaration.property.decimal.alert' | translate }}</span>
+                                </div>
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-8">
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="60%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.property_address_cadastral_ref" #property_address_cadastral_ref="ngModel"
+                                               placeholder="{{'declarant.210.property_address_cadastral_ref' | translate}}"
+                                               type="text"
+                                               name="property_address_cadastral_ref"
+                                               maxlength="20"
+                                               minlength="20"
+                                               required>
+                                        <mat-hint align="end">{{declaration.property_address_cadastral_ref ? declaration.property_address_cadastral_ref.length : 0}} / 20</mat-hint>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="37%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.property_cadastral_value" #property_cadastral_value="ngModel"
+                                               placeholder="{{'declarant.210.property_cadastral_value' | translate}}"
+                                               type="text"
+                                               name="property_cadastral_value"
+                                               (change)="castralValueChange($event)"
+                                               [required]="declaration.CadastralValueDisabled">
+                                    </mat-form-field>
+                                </div>
+                            </form>
+                            <mat-action-row class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="prevStep()">
+                                        <mat-icon>navigate_before</mat-icon>
+                                    </button>
+                                </div>
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="saveDeclaration()" *ngIf="declaration.draft.state == 'active'">
+                                        <mat-icon>check</mat-icon>
+                                        {{ 'app.declaration.210.validate' | translate }}
+                                    </button>
+                                </div>
+                                <div fxLayout="row">
+                                    <button mat-raised-button color="primary" (click)="nextStep()">
+                                        <mat-icon>navigate_next</mat-icon>
+                                    </button>
+                                </div>
+                            </mat-action-row>
+
+                        </mat-expansion-panel>
+
+                        <!-- SECCIÓN 8: DETERMINACIÓN DE LA BASE IMPONIBLE -->
+
+                        <mat-expansion-panel [expanded]="step === 7" (opened)="setStep(7)" hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <div class="w-100-p" fxLayout="row wrap">
+                                        <strong>{{'declarant.210.det_tax_base' | translate }}</strong>
+                                        <span [ngClass]="declaration.colorError" *ngIf="declaration.declarationErrors.length > 0 && declaration.currentSection == 7">
+                                            <small>&nbsp;{{'declaration.errors.in.section' | translate }}</small>
+                                        </span>
+                                    </div>
+                                </mat-panel-title>
+                                <mat-panel-description [ngClass]="declaration.currentSection > 7 ? 'greenClass' : 'redClass'">
+                                    <span></span>
+                                    {{'declaration.section' | translate }} 8
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+
+                            <!-- FORMULARIO DETERMINACIÓN DE BASE IMPONIBLE: TIPO 02 -->
+                            <form #DetTaxBaseType2="ngForm" *ngIf="declaration.DetTaxBase2">
+                                <div class="w-100-p" fxLayout="column wrap" fxLayoutAlign="center center" class="mt-16">
+                                    <span class="mb-12">{{ 'declaration.property.decimal.alert' | translate }}</span>
+                                    <span class="mb-12">{{ 'declaration.210.cadastral.count.alert' | translate }}</span>
+                                    <div class="mb-12">
+                                        <span>{{ 'declarant.210.property_cadastral_value_current' | translate }}:&nbsp;</span>
+                                        <span><strong>{{ declaration.property_cadastral_value ? declaration.property_cadastral_value : ('app.value_null' | translate)}}€</strong></span>
+                                    </div>
+                                </div>
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                    <fieldset class="w-100-p" style="border-color: rgba(255, 255, 255, 0.4);">
+                                        <legend>{{'declaration.210.detTaxBase2.text' | translate }}&nbsp;</legend>
+
+                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="50%" appearance="outline">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.det_tax_base_i_original" #det_tax_base_i_original="ngModel"
+                                                       type="text"
+                                                       (change)="detTaxBaseIChange($event)"
+                                                       name="det_tax_base_i_original"
+                                                       required>
+                                                <mat-hint>{{'declarant.210.det_tax_base_i' | translate}}*</mat-hint>
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="50%" appearance="fill">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.det_tax_base_i" #det_tax_base_i="ngModel"
+                                                       type="text"
+                                                       name="det_tax_base_i"
+                                                       readonly>
+                                                <mat-icon matSuffix>money</mat-icon>
+                                                <mat-hint>{{'declarant.210.det_tax_base_i.final' | translate}}</mat-hint>
+                                            </mat-form-field>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </form>
+
+                            <!-- FORMULARIO DETERMINACIÓN DE BASE IMPONIBLE: TIPOS 01 Y 35 -->
+                            <form #DetTaxBaseType1="ngForm" *ngIf="declaration.DetTaxBase1">
+                                <div class="w-100-p" fxLayout="column" fxLayoutAlign="center center" class="mt-16">
+                                    <span>{{ 'declaration.property.decimal.alert' | translate }}</span>
+                                    <span *ngIf="declaration.rent_type == '01'">{{ 'declaration.model.210.60_percent_discount_alert' | translate }}</span>
+                                </div>
+                                <!-- FILA 1 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                    <fieldset class="w-100-p" style="border-color: rgba(255, 255, 255, 0.4);">
+                                        <legend>{{'declaration.210.detTaxBase1.text' | translate }}&nbsp;</legend>
+
+                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-12">
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.det_full_returns_r" #det_full_returns_r="ngModel"
+                                                       placeholder="{{'declarant.210.det_full_returns_r' | translate}} [05]"
+                                                       type="text"
+                                                       (change)="detTaxBaseFullReturnsRChange($event)"
+                                                       name="det_full_returns_r">
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.det_deductible_expenses_r" #det_deductible_expenses_r="ngModel"
+                                                       placeholder="{{'declarant.210.det_deductible_expenses_r' | translate}} [07]"
+                                                       type="text"
+                                                       (change)="detTaxBaseDeductibleExpensesRChange($event)"
+                                                       [disabled]="!this.declaration.declarant.additionalInfo.isEuropean()"
+                                                       name="det_deductible_expenses_r">
+                                            </mat-form-field>
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="57%">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.det_dividends_applied_ext_r" #det_dividends_applied_ext_r="ngModel"
+                                                       placeholder="{{'declarant.210.det_dividends_applied_ext_r' | translate}} [06]"
+                                                       type="text"
+                                                       (change)="detTaxBaseDividensAppliedRChange($event)"
+                                                       disabled
+                                                       name="det_dividends_applied_ext_r">
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%" appearance="fill">
+                                                <input matInput
+                                                       [(ngModel)]="declaration.det_tax_base_r" #det_tax_base_r="ngModel"
+                                                       type="text"
+                                                       name="det_tax_base_r"
+                                                       readonly>
+                                                <mat-icon matSuffix>money</mat-icon>
+                                                <mat-hint>{{'declarant.210.det_tax_base_r' | translate}}</mat-hint>
+                                            </mat-form-field>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </form>
+                            <mat-action-row class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="prevStep()">
+                                        <mat-icon>navigate_before</mat-icon>
+                                    </button>
+                                </div>
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="saveDeclaration()" *ngIf="declaration.draft.state == 'active'">
+                                        <mat-icon>check</mat-icon>
+                                        {{ 'app.declaration.210.validate' | translate }}
+                                    </button>
+                                </div>
+                                <div fxLayout="row">
+                                    <button mat-raised-button color="primary" (click)="nextStep()">
+                                        <mat-icon>navigate_next</mat-icon>
+                                    </button>
+                                </div>
+                            </mat-action-row>
+                        </mat-expansion-panel>
+
+                        <!-- SECCIÓN 9: LIQUIDACIÓN -->
+
+                        <mat-expansion-panel [expanded]="step === 8" (opened)="setStep(8)" hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <div class="w-100-p" fxLayout="row wrap">
+                                        <strong>{{'declarant.210.liquidation' | translate }}</strong>
+                                        <span [ngClass]="declaration.colorError" *ngIf="declaration.declarationErrors.length > 0 && declaration.currentSection == 8">
+                                <small>&nbsp;{{'declaration.errors.in.section' | translate }}</small>
+                            </span>
+                                    </div>
+                                </mat-panel-title>
+                                <mat-panel-description [ngClass]="declaration.currentSection > 8 ? 'greenClass' : 'redClass'">
+                                    <span></span>
+                                    {{'declaration.section' | translate }} 9
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+
+                            <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">
+                                <span>{{ 'declaration.210.liquidation.exemptions' | translate }}:</span>
+                            </div>
+                            <!-- FORMULARIO DETERMINACIÓN DE BASE IMPONIBLE: TIPO 02 -->
+                            <form #liquidation="ngForm">
+                                <!--                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">-->
+                                <!--                                    <label style="margin-left: 10px">{{ 'declarant.210.liq_irnr_law' | translate }}:&nbsp;</label>-->
+                                <!--                                    {{ '[19]' }}<mat-checkbox #liq_irnr_law style="margin-left: 10px" name="liq_irnr_law" [(ngModel)]="declaration.liq_irnr_law" (change)="liqIrnrlawChange()"></mat-checkbox>-->
+                                <!--                                </div>-->
+                                <!--                                <div class="w-100-p mt-16" fxLayout="row wrap" fxLayoutAlign="start start">-->
+                                <!--                                    <label style="margin-left: 10px">{{ 'declarant.210.liq_convention' | translate }}:&nbsp;</label>-->
+                                <!--                                    {{ '[20]' }}<mat-checkbox #liq_convention style="margin-left: 10px" name="liq_convention" [(ngModel)]="declaration.liq_convention" (change)="liqConventionChange()"></mat-checkbox>-->
+                                <!--                                </div>-->
+                                <div class="w-100-p mt-24" fxLayout="row wrap" fxLayoutAlign="start start">
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="40%">
+                                        <mat-select [(ngModel)]="declaration.liq_irnr_law_tax_type"
+                                                    placeholder="{{'declaration.210.liq_irnr_law_tax_type' | translate}} [21]"
+                                                    #liq_irnr_law_tax_type="ngModel"
+                                                    name="liq_irnr_law_tax_type"
+                                                    (selectionChange)="calculateLiqResultI()"
+                                                    required>
+                                            <mat-option *ngFor="let element of residentTypes" [value]="element.id">
+                                                <small>{{ element.id }}% | {{ element.text | translate }}</small>
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="40%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.liq_donation_deduction" #liq_donation_deduction="ngModel"
+                                               placeholder="{{'declarant.210.liq_donation_deduction' | translate}} [23]"
+                                               type="text"
+                                               (change)="liqDonationSelectedI($event)"
+                                               name="liq_donation_deduction">
+                                    </mat-form-field>
+                                </div>
+                                <!--                                <div class="w-100-p mt-16" fxLayout="row wrap" fxLayoutAlign="start start">-->
+                                <!--                                    <fieldset class="w-100-p" style="border-color: rgba(255, 255, 255, 0.4);">-->
+                                <!--                                        <legend>{{ 'declaration.210.liq_irnr_law_fee' | translate }}</legend>-->
+                                <!--                                        <div class="w-100-p mt-16" fxLayout="row wrap" fxLayoutAlign="start start">-->
+                                <!--                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%">-->
+                                <!--                                                <input matInput-->
+                                <!--                                                       [(ngModel)]="declaration.liq_convention_percentage" #liq_convention_percentage="ngModel"-->
+                                <!--                                                       placeholder="{{'declaration.210.liq_convention_percentage' | translate}} [25]"-->
+                                <!--                                                       type="text"-->
+                                <!--                                                       name="liq_convention_percentage"-->
+                                <!--                                                       disabled>-->
+                                <!--                                            </mat-form-field>-->
+                                <!--                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%">-->
+                                <!--                                                <input matInput-->
+                                <!--                                                       [(ngModel)]="declaration.liq_convention_limit" #liq_convention_limit="ngModel"-->
+                                <!--                                                       placeholder="{{'declaration.210.liq_convention_limit' | translate}} [26]"-->
+                                <!--                                                       type="text"-->
+                                <!--                                                       name="liq_convention_limit"-->
+                                <!--                                                       disabled>-->
+                                <!--                                            </mat-form-field>-->
+                                <!--                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%">-->
+                                <!--                                                <input matInput-->
+                                <!--                                                       [(ngModel)]="declaration.liq_convention_reduction" #liq_convention_reduction="ngModel"-->
+                                <!--                                                       placeholder="{{'declaration.210.liq_convention_reduction' | translate}} [27]"-->
+                                <!--                                                       type="text"-->
+                                <!--                                                       name="liq_convention_reduction"-->
+                                <!--                                                       disabled>-->
+                                <!--                                            </mat-form-field>-->
+                                <!--                                        </div>-->
+                                <!--                                        <div class="w-100-p mt-16" fxLayout="row wrap" fxLayoutAlign="start start">-->
+                                <!--                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="40%"  appearance="fill">-->
+                                <!--                                                <input matInput-->
+                                <!--                                                       [(ngModel)]="declaration.liq_irnr_law_fee" #liq_irnr_law_fee="ngModel"-->
+                                <!--                                                       type="text"-->
+                                <!--                                                       name="liq_irnr_law_fee"-->
+                                <!--                                                       readonly>-->
+                                <!--                                                <mat-icon matSuffix>money</mat-icon>-->
+                                <!--                                                <mat-hint>{{'declaration.210.liq_irnr_law_fee' | translate}} [22] - [23]</mat-hint>-->
+                                <!--                                            </mat-form-field>-->
+                                <!--                                        </div>-->
+                                <!--                                    </fieldset>-->
+                                <!--                                </div>-->
+                                <!--                                <div class="w-100-p mt-16" fxLayout="row wrap" fxLayoutAlign="start start">-->
+                                <!--                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">-->
+                                <!--                                        <input matInput-->
+                                <!--                                               [(ngModel)]="declaration.liq_retentions_income" #liq_retentions_income="ngModel"-->
+                                <!--                                               placeholder="{{'declarant.210.liq_retentions_income' | translate}} [29]"-->
+                                <!--                                               type="text"-->
+                                <!--                                               name="liq_retentions_income"-->
+                                <!--                                               disabled>-->
+                                <!--                                    </mat-form-field>-->
+                                <!--                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="60%">-->
+                                <!--                                        <input matInput-->
+                                <!--                                               [(ngModel)]="declaration.liq_previous_income_return" #liq_previous_income_return="ngModel"-->
+                                <!--                                               placeholder="{{'declarant.210.liq_previous_income_return' | translate}} [30]"-->
+                                <!--                                               type="text"-->
+                                <!--                                               name="liq_previous_income_return"-->
+                                <!--                                               disabled>-->
+                                <!--                                    </mat-form-field>-->
+                                <!--                                </div>-->
+                                <div class="w-100-p mt-16" fxLayout="row wrap" fxLayoutAlign="start start">
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%" appearance="fill">
+                                        <input matInput
+                                               [(ngModel)]="declaration.liq_integral_fee" #liq_integral_fee="ngModel"
+                                               type="text"
+                                               name="liq_integral_fee"
+                                               readonly>
+                                        <mat-icon matSuffix>money</mat-icon>
+                                        <mat-hint>{{'declarant.210.liq_integral_fee' | translate}}</mat-hint>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%" appearance="fill">
+                                        <input matInput
+                                               [(ngModel)]="declaration.liq_reduced_integral_fee" #liq_reduced_integral_fee="ngModel"
+                                               type="text"
+                                               name="liq_reduced_integral_fee"
+                                               readonly>
+                                        <mat-icon matSuffix>money</mat-icon>
+                                        <mat-hint>{{'declarant.210.liq_reduced_integral_fee' | translate}}</mat-hint>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%" appearance="fill">
+                                        <input matInput
+                                               [(ngModel)]="declaration.liq_result" #liq_result="ngModel"
+                                               type="text"
+                                               name="liq_result"
+                                               readonly>
+                                        <mat-icon matSuffix>money</mat-icon>
+                                        <mat-hint>{{'declarant.210.liq_result' | translate}}</mat-hint>
+                                    </mat-form-field>
+                                </div>
+                            </form>
+                            <mat-action-row class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="prevStep()">
+                                        <mat-icon>navigate_before</mat-icon>
+                                    </button>
+                                </div>
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="saveDeclaration()" *ngIf="declaration.draft.state == 'active'">
+                                        <mat-icon>check</mat-icon>
+                                        {{ 'app.declaration.210.validate' | translate }}
+                                    </button>
+                                </div>
+                                <div fxLayout="row">
+                                    <button mat-raised-button color="primary" (click)="nextStep()">
+                                        <mat-icon>navigate_next</mat-icon>
+                                    </button>
+                                </div>
+                            </mat-action-row>
+                        </mat-expansion-panel>
+
+                        <!-- SECCIÓN 10: DECLARACIÓN COMPLEMENTARIA -->
+
+                        <mat-expansion-panel [expanded]="step === 9" (opened)="setStep(9)" hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <div class="w-100-p" fxLayout="row wrap">
+                                        <strong>{{'declaration.210.complementary.declaration' | translate }}</strong>
+                                        <span [ngClass]="declaration.colorError" *ngIf="declaration.declarationErrors.length > 0 && declaration.currentSection == 9">
+                                <small>&nbsp;{{'declaration.errors.in.section' | translate }}</small>
+                            </span>
+                                    </div>
+                                </mat-panel-title>
+                                <mat-panel-description [ngClass]="declaration.currentSection > 9 ? 'greenClass' : 'redClass'">
+                                    <span></span>
+                                    {{'declaration.section' | translate }} 10
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+
+                            <form #ComplementaryForm="ngForm">
+
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                                    <label style="margin-left: 10px">{{ 'declarant.210.aliq_complementary' | translate }}:&nbsp;</label>
+                                    <mat-checkbox #aliq_complementary style="margin-left: 10px" name="liq_irnr_law" [(ngModel)]="declaration.aliq_complementary" (change)="aliqComplementaryChange()"></mat-checkbox>
+                                </div>
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="60%">
+                                        <input matInput
+                                               [(ngModel)]="declaration.aliq_complementary_previous_number" #liq_previous_income_return="ngModel"
+                                               placeholder="{{ 'declarant.210.aliq_complementary_previous_number' | translate }}"
+                                               type="text"
+                                               name="aliq_complementary_previous_number"
+                                               [required]="!declaration.AliqComplementaryDisabled"
+                                               [disabled]="declaration.AliqComplementaryDisabled">
+                                    </mat-form-field>
+                                </div>
+
+                            </form>
+
+                            <mat-action-row class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="prevStep()">
+                                        <mat-icon>navigate_before</mat-icon>
+                                    </button>
+                                </div>
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="saveDeclaration()" *ngIf="declaration.draft.state == 'active'">
+                                        <mat-icon>check</mat-icon>
+                                        {{ 'app.declaration.210.validate' | translate }}
+                                    </button>
+                                </div>
+                                <div fxLayout="row">
+                                    <button mat-raised-button color="primary" (click)="nextStep()">
+                                        <mat-icon>navigate_next</mat-icon>
+                                    </button>
+                                </div>
+                            </mat-action-row>
+
+                        </mat-expansion-panel>
+
+                        <!-- SECCIÓN 11: TIPO DE DECLARACIÓN -->
+
+                        <mat-expansion-panel [expanded]="step === 10" (opened)="setStep(10)" hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <div class="w-100-p" fxLayout="row wrap">
+                                        <strong>{{'declaration.210.declaration.type' | translate }}</strong>
+                                        <span [ngClass]="declaration.colorError" *ngIf="declaration.declarationErrors.length > 0 && declaration.currentSection == 10">
+                                            <small>&nbsp;{{'declaration.errors.in.section' | translate }}</small>
+                                        </span>
+                                    </div>
+                                </mat-panel-title>
+                                <mat-panel-description [ngClass]="declaration.currentSection > 10 ? 'greenClass' : 'redClass'">
+                                    <span></span>
+                                    {{'declaration.section' | translate }} 11
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+
+                            <form #DeclarationTypeForm="ngForm">
+                                <!-- TRES CASOS: 0, POSITIVO O NEGATIVO -->
+
+                                <!-- CASO 1: RESULTADO 0 -->
+                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" *ngIf="declaration.liq_result == 0 || declaration.liq_result == null">
+                                    <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                                        <label style="margin-left: 10px">{{ 'declarant.210.declaration.negative.result' | translate }}:&nbsp;</label>
+                                        <mat-checkbox #dec_result style="margin-left: 10px" name="liq_irnr_law" [checked]="true" [disableRipple]="true"></mat-checkbox>
+                                    </div>
+                                </div>
+
+                                <div class="w-100-p" fxLayout="column" fxLayoutAlign="start start" class="mt-16" *ngIf="declaration.liq_result > 0">
+                                    <label>{{ 'declaration.210.declaration.positive_liq_result' | translate }}</label>
+                                    <!--                                    <label>{{ 'declaration.210.declaration.positive_liq_result_info' | translate }}</label>-->
+                                </div>
+
+                                <!-- CASO 2: Provisional, resultado positivo -->
+                                <div class="w-100-p mt-8" fxLayout="row wrap" fxLayoutAlign="start start" *ngIf="declaration.liq_result > 0">
+                                    <div class="w-100-p" fxLayout="column" fxLayoutAlign="start start">
+                                        <label class="mb-8">{{ 'declarant.210.declaration.client_positive_result_msg' | translate }}</label>
+                                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                            <input matInput
+                                                   [(ngModel)]="declaration.liq_result" #liq_result_total="ngModel"
+                                                   placeholder="{{ 'declarant.210.liq_result_total' | translate }}"
+                                                   type="text"
+                                                   name="liq_result_total"
+                                                   readonly>
+                                            <mat-icon matSuffix>euro_symbol</mat-icon>
+                                        </mat-form-field>
+                                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="77%" [style.display]="'none'">
+                                            <input matInput
+                                                   [(ngModel)]="declaration.entry_owner_iban" #entry_owner_iban="ngModel"
+                                                   placeholder="{{ 'declarant.210.entry_owner_iban' | translate }}"
+                                                   type="text"
+                                                   name="entry_owner_iban"
+                                                   required
+                                                   readonly>
+                                        </mat-form-field>
+                                        <button mat-raised-button class="light-green-700" (click)="complete()" *ngIf="declaration.isValid && declaration.draft.state == 'active'">
+                                            <mat-icon>archive</mat-icon>
+                                            {{ 'app.declaration.210.complete' | translate }}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- CASO 2: RESULTADO > 0, A ingresar -->
+                                <!--                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" *ngIf="declaration.liq_result > 0">-->
+
+                                <!--                                    <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">-->
+                                <!--                                        &lt;!&ndash; FILA 1: TIPO DE INGRESO &ndash;&gt;-->
+                                <!--                                        <mat-radio-group [(ngModel)]="declaration.entry_payment_method"-->
+                                <!--                                                         #entry_payment_method="ngModel"-->
+                                <!--                                                         name="entry_payment_method"-->
+                                <!--                                                         (change)="entryMethodChange()"-->
+                                <!--                                                         required>-->
+                                <!--                                            <mat-radio-button value=2 class="pr-8">{{ 'declaration.210.declaration.type.entry.debit' | translate }}</mat-radio-button>-->
+                                <!--                                            <mat-radio-button value=4>{{ 'declaration.210.declaration.type.foreign.entry.transfer' | translate }}</mat-radio-button>-->
+                                <!--                                        </mat-radio-group>-->
+                                <!--                                    </div>-->
+
+                                <!--                                    <div class="w-100-p" *ngIf="declaration.EntryDebitPaymentMethodDisabled">-->
+
+                                <!--                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="center center" class="mt-16">-->
+                                <!--                                            <label>{{ 'declaration.210.declaration.type_alert_msg' | translate }}</label>-->
+                                <!--                                        </div>-->
+
+                                <!--                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-8">-->
+                                <!--                                            <label>{{ 'declarant.210.declaration.payment.type.message' | translate }}:&nbsp;</label>-->
+                                <!--                                        </div>-->
+
+                                <!--                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-8">-->
+                                <!--                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">-->
+                                <!--                                                <input matInput-->
+                                <!--                                                       [(ngModel)]="declaration.liq_result" #liq_result_total="ngModel"-->
+                                <!--                                                       placeholder="{{ 'declarant.210.liq_result_total' | translate }}"-->
+                                <!--                                                       type="text"-->
+                                <!--                                                       name="liq_result_total"-->
+                                <!--                                                       readonly>-->
+                                <!--                                            </mat-form-field>-->
+                                <!--                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="77%">-->
+                                <!--                                                <input matInput-->
+                                <!--                                                       [(ngModel)]="declaration.entry_owner_iban" #entry_owner_iban="ngModel"-->
+                                <!--                                                       placeholder="{{ 'declarant.210.entry_owner_iban' | translate }}"-->
+                                <!--                                                       type="text"-->
+                                <!--                                                       name="entry_owner_iban"-->
+                                <!--                                                       required-->
+                                <!--                                                       readonly>-->
+                                <!--&lt;!&ndash;                                                <mat-hint>{{ 'declaration.210.declaration.type.entry.transfer.message' | translate }}</mat-hint>&ndash;&gt;-->
+                                <!--                                            </mat-form-field>-->
+                                <!--                                        </div>-->
+
+                                <!--                                        <div class="w-100-p" fxLayout="column" fxLayoutAlign="center center">-->
+                                <!--                                            <a (click)="getClientIBAN()" style="cursor: pointer;text-decoration: none">-->
+                                <!--                                                <span>{{'app.declaration.210.get_data_profile' | translate}}</span>-->
+                                <!--                                            </a>-->
+                                <!--                                            <a (click)="goToProfile()" style="cursor: pointer;text-decoration: none">-->
+                                <!--                                                &nbsp;<span>{{'app.declaration.210.change_data_profile' | translate}}</span>-->
+                                <!--                                            </a>-->
+                                <!--                                        </div>-->
+                                <!--                                    </div>-->
+
+                                <!--                                    <div class="w-100-p" *ngIf="declaration.EntryTransferPaymentMethodDisabled">-->
+
+                                <!--                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16">-->
+                                <!--                                            <label>{{ 'declarant.210.declaration.payment.type.message' | translate }}:&nbsp;</label>-->
+                                <!--                                        </div>-->
+
+                                <!--                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-8">-->
+                                <!--                                            <label>{{ 'declaration.210.declaration.type.transfer.debit.data' | translate }}</label>-->
+                                <!--                                        </div>-->
+
+                                <!--                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-8">-->
+
+                                <!--                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%">-->
+                                <!--                                                <input matInput-->
+                                <!--                                                       [(ngModel)]="declaration.entry_owner_identification" #entry_owner_identification="ngModel"-->
+                                <!--                                                       placeholder="{{ 'declarant.210.entry_owner_identification' | translate }}"-->
+                                <!--                                                       type="text"-->
+                                <!--                                                       name="entry_owner_identification"-->
+                                <!--                                                       readonly-->
+                                <!--                                                       required>-->
+                                <!--                                            </mat-form-field>-->
+                                <!--                                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="67%">-->
+                                <!--                                                <input matInput-->
+                                <!--                                                       [(ngModel)]="declaration.entry_owner_name" #entry_owner_name="ngModel"-->
+                                <!--                                                       placeholder="{{ 'declarant.210.entry_owner_name' | translate }}"-->
+                                <!--                                                       type="text"-->
+                                <!--                                                       name="entry_owner_name"-->
+                                <!--                                                       readonly-->
+                                <!--                                                       required>-->
+                                <!--                                            </mat-form-field>-->
+                                <!--                                        </div>-->
+
+                                <!--                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">-->
+                                <!--                                            &lt;!&ndash; FILA 1: TIPO DE INGRESO &ndash;&gt;-->
+                                <!--                                            <mat-radio-group [(ngModel)]="declaration.BankOrigin"-->
+                                <!--                                                             #bank_origin="ngModel"-->
+                                <!--                                                             name="bank_origin"-->
+                                <!--                                                             (change)="bankOriginChange()">-->
+                                <!--                                                <mat-radio-button [value]="0" class="pr-8">{{ 'declaration.210.ue' | translate }}</mat-radio-button>-->
+                                <!--                                                <mat-radio-button [value]="1">{{ 'declaration.210.no.ue' | translate }}</mat-radio-button>-->
+                                <!--                                            </mat-radio-group>-->
+                                <!--                                        </div>-->
+
+                                <!--                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16" *ngIf="declaration.BankOriginURForm">-->
+                                <!--                                            <fieldset class="w-100-p" style="border-color: rgba(255, 255, 255, 0.4);">-->
+                                <!--                                                <legend>-->
+                                <!--                                                    {{ 'declaration.210.ue' | translate }}-->
+                                <!--                                                </legend>-->
+
+                                <!--                                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-4">-->
+                                <!--                                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="77%">-->
+                                <!--                                                        <input matInput-->
+                                <!--                                                               [(ngModel)]="declaration.entry_owner_iban" #entry_owner_iban_2="ngModel"-->
+                                <!--                                                               placeholder="{{ 'declarant.210.entry_owner_iban' | translate }}"-->
+                                <!--                                                               type="text"-->
+                                <!--                                                               [required]="declaration.BankOriginURForm"-->
+                                <!--                                                               name="entry_owner_iban_2">-->
+                                <!--                                                    </mat-form-field>-->
+                                <!--                                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">-->
+                                <!--                                                        <input matInput-->
+                                <!--                                                               [(ngModel)]="declaration.entry_owner_ue_bic_code" #entry_owner_ue_bic_code="ngModel"-->
+                                <!--                                                               placeholder="{{ 'declarant.210.entry_owner_ue_bic_code' | translate }}"-->
+                                <!--                                                               type="text"-->
+                                <!--                                                               [required]="declaration.BankOriginURForm"-->
+                                <!--                                                               name="entry_owner_ue_bic_code">-->
+                                <!--                                                    </mat-form-field>-->
+                                <!--                                                    <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="center center">-->
+                                <!--                                                        <a (click)="getClientIBAN()" style="cursor: pointer;text-decoration: none">-->
+                                <!--                                                            <span>{{'app.declaration.210.get_data_profile' | translate}}</span>-->
+                                <!--                                                        </a>-->
+                                <!--                                                        &nbsp;/&nbsp;-->
+                                <!--                                                        <a (click)="goToProfile()" style="cursor: pointer;text-decoration: none">-->
+                                <!--                                                            &nbsp;<span>{{'app.declaration.210.change_data_profile' | translate}}</span>-->
+                                <!--                                                        </a>-->
+                                <!--                                                    </div>-->
+                                <!--                                                </div>-->
+
+                                <!--                                            </fieldset>-->
+                                <!--                                        </div>-->
+
+                                <!--                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16" *ngIf="declaration.BankOriginOtherForm">-->
+                                <!--                                            <fieldset class="w-100-p" style="border-color: rgba(255, 255, 255, 0.4);">-->
+                                <!--                                                <legend>-->
+                                <!--                                                    {{ 'declaration.210.no.ue' | translate }}-->
+                                <!--                                                </legend>-->
+
+                                <!--                                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-4">-->
+                                <!--                                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="77%">-->
+                                <!--                                                        <input matInput-->
+                                <!--                                                               [(ngModel)]="declaration.entry_owner_no_ue_account_number" #entry_owner_no_ue_account_number="ngModel"-->
+                                <!--                                                               placeholder="{{ 'declarant.210.entry_owner_no_ue_account_number' | translate }}"-->
+                                <!--                                                               type="text"-->
+                                <!--                                                               [required]="declaration.BankOriginOtherForm"-->
+                                <!--                                                               name="entry_owner_no_ue_account_number">-->
+                                <!--                                                    </mat-form-field>-->
+                                <!--                                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">-->
+                                <!--                                                        <input matInput-->
+                                <!--                                                               [(ngModel)]="declaration.entry_owner_no_ue_bic_code" #entry_owner_no_ue_bic_code="ngModel"-->
+                                <!--                                                               placeholder="{{ 'declarant.210.entry_owner_no_ue_bic_code' | translate }}"-->
+                                <!--                                                               type="text"-->
+                                <!--                                                               [required]="declaration.BankOriginOtherForm"-->
+                                <!--                                                               name="entry_owner_no_ue_bic_code">-->
+                                <!--                                                    </mat-form-field>-->
+                                <!--                                                </div>-->
+
+                                <!--                                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-4">-->
+                                <!--                                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%">-->
+                                <!--                                                        <input matInput-->
+                                <!--                                                               [(ngModel)]="declaration.entry_owner_no_ue_bank_name" #entry_owner_no_ue_bank_name="ngModel"-->
+                                <!--                                                               placeholder="{{ 'declarant.210.entry_owner_no_ue_bank_name' | translate }}"-->
+                                <!--                                                               type="text"-->
+                                <!--                                                               [required]="declaration.BankOriginOtherForm"-->
+                                <!--                                                               name="entry_owner_no_ue_bank_name">-->
+                                <!--                                                    </mat-form-field>-->
+                                <!--                                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="67%">-->
+                                <!--                                                        <input matInput-->
+                                <!--                                                               [(ngModel)]="declaration.entry_owner_no_ue_bank_address" #entry_owner_no_ue_bank_address="ngModel"-->
+                                <!--                                                               placeholder="{{ 'declarant.210.entry_owner_no_ue_bank_address' | translate }}"-->
+                                <!--                                                               type="text"-->
+                                <!--                                                               [required]="declaration.BankOriginOtherForm"-->
+                                <!--                                                               name="entry_owner_no_ue_bank_address">-->
+                                <!--                                                    </mat-form-field>-->
+                                <!--                                                </div>-->
+
+                                <!--                                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-4">-->
+                                <!--                                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">-->
+                                <!--                                                        <input matInput-->
+                                <!--                                                               [(ngModel)]="declaration.entry_owner_no_ue_bank_city" #entry_owner_no_ue_bank_city="ngModel"-->
+                                <!--                                                               placeholder="{{ 'declarant.210.entry_owner_no_ue_bank_city' | translate }}"-->
+                                <!--                                                               type="text"-->
+                                <!--                                                               [required]="declaration.BankOriginOtherForm"-->
+                                <!--                                                               name="entry_owner_no_ue_bank_city">-->
+                                <!--                                                    </mat-form-field>-->
+                                <!--                                                    <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">-->
+                                <!--                                                        <mat-select [(ngModel)]="declaration.entry_owner_no_ue_bank_country_code"-->
+                                <!--                                                                    placeholder="{{'declarant.210.entry_owner_no_ue_bank_country_code' | translate}}"-->
+                                <!--                                                                    #entry_owner_no_ue_bank_country_code="ngModel"-->
+                                <!--                                                                    [required]="declaration.BankOriginOtherForm"-->
+                                <!--                                                                    name="entry_owner_no_ue_bank_country_code">-->
+                                <!--                                                            <mat-option *ngFor="let element of countryCodes" [value]="element.cod">-->
+                                <!--                                                                <span>{{element.cod}} | <small>{{ element.value }}</small></span>-->
+                                <!--                                                            </mat-option>-->
+                                <!--                                                        </mat-select>-->
+                                <!--                                                    </mat-form-field>-->
+                                <!--                                                </div>-->
+
+                                <!--                                            </fieldset>-->
+                                <!--                                        </div>-->
+
+                                <!--                                    </div>-->
+
+                                <!--                                </div>-->
+
+                                <!-- CASO 3: RESULTADO < 0, Realizar devolución -->
+
+
+                                <!-- TODO TEMPORALMENTE DESACTIVAREMOS ESTA OPCIÓN -->
+                                <div class="w-100-p" *ngIf="declaration.liq_result < 0">
+
+                                    <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                                        <span>{{ 'declaractiion.210.negative_result_provisional_msg' | translate }}</span>
+                                    </div>
+
+                                    <!--                                    <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">-->
+                                    <!--                                        <mat-radio-group [(ngModel)]="declaration.refund_renounce"-->
+                                    <!--                                                         #bank_origin="ngModel"-->
+                                    <!--                                                         name="bank_origin"-->
+                                    <!--                                                         (change)="bankOriginChange()">-->
+                                    <!--                                            <mat-radio-button [value]="true" class="pr-8">{{ 'declaration.210.refund.yes' | translate }}</mat-radio-button>-->
+                                    <!--                                            <mat-radio-button [value]="false">{{ 'declaration.210.refund.no' | translate }}</mat-radio-button>-->
+                                    <!--                                        </mat-radio-group>-->
+                                    <!--                                    </div>-->
+
+                                    <!--                                    <div class="w-100-p" *ngIf="!declaration.refund_renounce">-->
+
+                                    <!--                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">-->
+                                    <!--                                            &lt;!&ndash; FILA 1: TIPO DE INGRESO &ndash;&gt;-->
+                                    <!--                                            <mat-radio-group [(ngModel)]="declaration.BankOriginRefund"-->
+                                    <!--                                                             #bank_origin_refund="ngModel"-->
+                                    <!--                                                             name="bank_origin_refund"-->
+                                    <!--                                                             (change)="bankOriginRefundChange()">-->
+                                    <!--                                                <mat-radio-button [value]="0" class="pr-8">{{ 'declaration.210.ue' | translate }}</mat-radio-button>-->
+                                    <!--                                                <mat-radio-button [value]="1">{{ 'declaration.210.no.ue' | translate }}</mat-radio-button>-->
+                                    <!--                                            </mat-radio-group>-->
+                                    <!--                                        </div>-->
+
+                                    <!--                                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-16" *ngIf="declaration.BankOriginURFormRefund">-->
+                                    <!--                                            <fieldset class="w-100-p" style="border-color: rgba(255, 255, 255, 0.4);">-->
+                                    <!--                                                <legend>-->
+                                    <!--                                                    {{ 'declaration.210.ue' | translate }}-->
+                                    <!--                                                </legend>-->
+
+                                    <!--                                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" class="mt-4">-->
+                                    <!--                                                    &lt;!&ndash;                                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="77%">&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                            <input matInput&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                                   [(ngModel)]="declaration.entry_owner_iban" #entry_owner_iban_2="ngModel"&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                                   placeholder="{{ 'declarant.210.entry_owner_iban' | translate }}"&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                                   type="text"&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                                   [required]="declaration.BankOriginURForm"&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                                   name="entry_owner_iban_2">&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                        </mat-form-field>&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                            <input matInput&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                                   [(ngModel)]="declaration.entry_owner_ue_bic_code" #entry_owner_ue_bic_code="ngModel"&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                                   placeholder="{{ 'declarant.210.entry_owner_ue_bic_code' | translate }}"&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                                   type="text"&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                                   [required]="declaration.BankOriginURForm"&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                                   name="entry_owner_ue_bic_code">&ndash;&gt;-->
+                                    <!--                                                    &lt;!&ndash;                                        </mat-form-field>&ndash;&gt;-->
+                                    <!--                                                </div>-->
+
+                                    <!--                                            </fieldset>-->
+                                    <!--                                        </div>-->
+
+                                    <!--                                    </div>-->
+                                </div>
+                            </form>
+
+                            <mat-action-row class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="prevStep()">
+                                        <mat-icon>navigate_before</mat-icon>
+                                    </button>
+                                </div>
+                                <div fxLayout="row" class="pr-4">
+                                    <button mat-raised-button color="primary" (click)="saveDeclaration()" *ngIf="declaration.draft.state == 'active'">
+                                        <mat-icon>check</mat-icon>
+                                        {{ 'app.declaration.210.validate' | translate }}
+                                    </button>
+                                </div>
+                            </mat-action-row>
+                        </mat-expansion-panel>
+
+                    </mat-accordion>
+                </div>
+
+            </mat-card>
+        </div>
+
+        <!-- ERRORS PANEL -->
+
+        <!--<div class="m-20" *ngIf="declaration">
+            <mat-accordion>
+                <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <span [ngClass]="declaration.colorError">{{ 'app.log.errors' | translate }}: {{ declaration.declarationErrors.length }}</span>
+                            &lt;!&ndash;                    <span *ngIf="!declarationSaved" class="redClass"><small>&nbsp;{{ 'declaration.unsave.alert' | translate }}</small></span>&ndash;&gt;
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div fxLayout="row" fxLayoutAlign="space-around center">
+                        <span><strong>{{ 'app.declaration.progress' | translate }}: {{ declaration.progress }}%</strong></span>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="space-around center">
+                        <div *ngFor="let i of declaration.declarationErrors">
+                            <span class="redClass">{{'app.error.in.section' | translate }} {{ i.section+1 }}: {{ i.name | translate }}</span>
+                        </div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="space-around center">
+                        <div fxLayout="column" fxLayoutAlign="center center">
+                            <div *ngFor="let i of declaration.declarationAlerts">
+                                <span class="greenClass">{{ i.name | translate }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="space-around center" class="pt-4">
+                        <mat-progress-bar mode="determinate" [value]="declaration.progress"></mat-progress-bar>
+                    </div>
+                </mat-expansion-panel>
+            </mat-accordion>
+        </div>-->
+
+        <!-- CONTENT PANEL -->
+        <ul class="model-actions">
+            <li class="action">
+                <button *ngIf="!declarationSaved && this.declaration.draft.state == 'active'" id="button-save-changes" class="red-600-bg" mat-fab
+                        mat-raised-button
+                        (click)="saveDeclaration()"
+                        #unsaveToolTip="matTooltip"
+                        matTooltip="{{'declaration.unsave.alert' | translate }}"
+                        matTooltipPosition="left"
+                >
+                    <mat-icon>save</mat-icon>
+                </button>
+            </li>
+            <li class="action">
+                <button *ngIf="!validationSidebar.opened" class="grey-100-bg grey-800-fg" mat-fab
+                        mat-raised-button
+                        (click)="validationSidebar.open()"
+                        matTooltip="{{'declaration.validation.show_sidebar' | translate }}"
+                        matTooltipPosition="left"
+                >
+                    <mat-icon svgIcon="arrow-expand-left"></mat-icon>
+                </button>
+            </li>
+        </ul>
+    </mat-sidenav-content>
+</mat-sidenav-container>

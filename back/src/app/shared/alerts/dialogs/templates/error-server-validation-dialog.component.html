@@ -1,0 +1,17 @@
+<div>
+    <mat-dialog-content>
+        <mat-icon  class="orange-400-fg" svgIcon="information"></mat-icon>
+        <!--<h3 class="title" *ngIf="data.title">{{ data.title | translate}}</h3>-->
+        <p class="text" *ngIf="data.title">{{ data.title }}</p>
+      <pre>{{ errors }}</pre>
+        <div *ngFor="let err of errors">
+            <span class="grey-600-fg font-size-14">{{err.field}}</span>
+            <p *ngFor="let msg of err.messages" class="grey-800-fg font-size-12">{{msg}}</p>
+        </div>
+        <!--todo Juanluis Mejorar-->
+
+    </mat-dialog-content>
+    <mat-dialog-actions align="center">
+        <button mat-raised-button color="primary" class="btn-w-md" (click)="dialogRef.close(true)">Aceptar</button>
+    </mat-dialog-actions>
+</div>

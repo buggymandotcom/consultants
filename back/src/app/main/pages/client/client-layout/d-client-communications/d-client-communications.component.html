@@ -1,0 +1,79 @@
+<mat-sidenav-container id="help-sidenav-container">
+    <mat-sidenav id="help-sidenav" mode="side" position="start" opened>
+        <div class="issues-wrapper" fxLayout="column nowrap" fxLayoutAlign="start stretch">
+            <mat-toolbar class="border-bottom">
+                <mat-form-field fxFlex appearance="outline" floatLabel="never" class="dense ai-white-bg">
+                    <input type="text" matInput [(ngModel)]="filter.search" placeholder="Buscar...">
+                </mat-form-field>
+                <button mat-raised-button color="primary" class="mat-elevation-z0 py-4">
+                    <mat-icon svgIcon="plus"></mat-icon>
+                </button>
+            </mat-toolbar>
+            <div #issuesList fxFlex class="issues" fusePerfectScrollbar>
+                <div *ngIf="loading" class="text-center py-72">
+                    <ai-loading-spinner></ai-loading-spinner>
+                </div>
+                <div *ngIf="loaded && !loading && issues.length == 0" class="text-center px-12 py-24">
+                    <mat-icon svgIcon="check-circle-outline" class="grey-300-fg loading-result-icon"></mat-icon>
+                    <h3 class="font-size-24 grey-700-fg">No hay ninguna incidencia registrada.</h3>
+                    <button mat-raised-button color="primary">
+                        <mat-icon svgIcon="plus"></mat-icon>
+                        <span>Crear incidencia</span>
+                    </button>
+                </div>
+                <mat-list *ngIf="loaded && !loading && issues.length > 0" class="issues-list">
+                    <mat-list-item *ngFor="let issue of issues | paginate: paginationConfig; let i = index" (click)="loadIssue(issue.id)">
+                        <mat-icon mat-list-icon [svgIcon]="issue.statusIcon()" [style.color]="issue.statusColor()"></mat-icon>
+                        <h3 mat-line class="subject">{{ issue.subject }}</h3>
+                        <p mat-line class="date">{{ issue.created_at | date: 'dd/MM/yyyy HH:mm' }}</p>
+                    </mat-list-item>
+                </mat-list>
+            </div>
+            <ai-pagination-template class="border-top"
+                                    (pageChange)="loadData($event)" [pagination]="paginationConfig"
+                                    [disableNumbers]="true">
+            </ai-pagination-template>
+        </div>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <div *ngIf="loadingCurrent" class="text-center py-72">
+            <ai-loading-spinner></ai-loading-spinner>
+        </div>
+        <div *ngIf="!loadingCurrent && !currentIssue" class="text-center px-12 py-24">
+            <mat-icon svgIcon="arrow-left" class="grey-300-fg loading-result-icon"></mat-icon>
+            <h3 class="font-size-24 grey-700-fg">Elige una incidencia de la barra lateral.</h3>
+        </div>
+        <div *ngIf="!loadingCurrent && currentIssue" class="current-issue" fxLayout="column nowrap" fxLayoutAlign="start stretch">
+            <mat-toolbar class="issue-header border-bottom">
+                <button mat-icon-button><mat-icon>close</mat-icon></button>
+                <span>{{ currentIssue.subject }}</span>
+                <span fxFlex></span>
+                <button mat-icon-button><mat-icon>check</mat-icon></button>
+            </mat-toolbar>
+            <div fxFlex #messagesList class="messages-list" fusePerfectScrollbar>
+                <div *ngFor="let message of currentIssue.messages; let i = index" class="message"
+                     [ngClass]="{'self': message.senderType == 'client', 'last': isLastOfGroup(i)}">
+                    <div class="header">
+                        <span *ngIf="message.sender && message.senderType == 'company'" class="sender">{{ message.sender.name }}</span>
+                        <span class="spacer"></span>
+                        <span class="date">
+                            <span *ngIf="message.created_at">{{ message.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+                            <mat-icon *ngIf="!message.created_at" class="mdi-spin" svgIcon="loading"></mat-icon>
+                        </span>
+                    </div>
+                    <div class="content">{{ message.message }}</div>
+                </div>
+            </div>
+            <form [formGroup]="messageForm" class="message-form border-top" fxLayout="row nowrap" fxLayoutAlign="start center">
+                <label for="message-input" fxFlex class="input-wrapper">
+                    <textarea id="message-input" formControlName="message" rows="1" cdkTextareaAutosize
+                          (keyup.enter)="sendMessage($event)"
+                          placeholder="Escribe un mensaje aquí"></textarea>
+                </label>
+                <button mat-icon-button="" (click)="sendMessage()">
+                    <mat-icon svgIcon="send"></mat-icon>
+                </button>
+            </form>
+        </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>

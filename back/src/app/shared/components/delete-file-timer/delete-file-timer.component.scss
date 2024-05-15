@@ -1,0 +1,56 @@
+.delete {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+
+  .circle {
+    position: relative;
+    display: inline-block;
+    padding: 2px;
+    z-index: 1;
+    background-color: #f8f8f8;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      /deep/ circle  {
+        stroke: #f0f0f0 !important;
+        -webkit-transition: stroke .25s ease;
+        -moz-transition: stroke .25s ease;
+        -ms-transition: stroke .25s ease;
+        -o-transition: stroke .25s ease;
+        transition: stroke .25s ease;
+      }
+    }
+    .icon {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+  }
+  .remaining {
+    display: inline-block;
+    margin-right: 6px;
+    margin-left: -24px;
+    padding: 4px 12px 4px 30px;
+    background-color: #f0f0f0;
+    -webkit-transition: background-color .25s ease;
+    -moz-transition: background-color .25s ease;
+    -ms-transition: background-color .25s ease;
+    -o-transition: background-color .25s ease;
+    transition: background-color .25s ease;
+  }
+  &:hover,
+  &:focus {
+    .circle .background /deep/ circle {
+      stroke: #e0e0e0 !important;
+    }
+    .remaining {
+      background-color: #e0e0e0;
+    }
+  }
+}

@@ -1,0 +1,27 @@
+//i, mat-icon {
+//  color: inherit;
+//}
+:host{
+  width: 1em;
+  height: 1em;
+  font-size: inherit;
+  line-height: 1em;
+  i, mat-icon {
+    display: block;
+    font-size: inherit;
+    color: inherit;
+    text-align: center;
+  }
+  i {
+    width: 1em;
+    min-width: 1em;
+    height: 1em;
+    min-height: 1em;
+    line-height: 1em;
+  }
+  .mdi {
+    &:before {
+      display: block;
+    }
+  }
+}

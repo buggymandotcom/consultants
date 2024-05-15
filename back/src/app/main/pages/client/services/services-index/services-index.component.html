@@ -1,0 +1,114 @@
+<div class="pt-12 px-12 pb-48">
+    <h2 class="mat-display-1 my-12 text-center">{{ 'app.client_services.hired_services' | translate }}</h2>
+    <div *ngIf="loadingHired" class="text-center mt-24 mb-72"><ai-loading-spinner></ai-loading-spinner></div>
+    <section *ngIf="!loadingHired && servicesHired.length > 0" id="hired-services" fxLayout="row wrap" fxLayoutAlign="center start">
+        <!-- SERVICIOS CONTRATADOS -->
+        <div class="service p-8" *ngFor="let service of servicesHired; let i = index" fxFlex="100%" fxFlex.gt-sm="33%">
+            <div class="fuse-card">
+                <!-- SERVICIO -->
+                <div class="p-16" fxLayout="row" fxLayoutAlign="start center">
+                    <img (click)="goToService(service)" style="cursor: pointer" *ngIf="service.name == 'accounting'" class="w-40 h-40 border-radius-100" src="assets/images/services/accounting/sv_acct_th.jpg">
+                    <img (click)="goToService(service)" style="cursor: pointer" *ngIf="service.name == 'models'" class="w-40 h-40 border-radius-100" src="assets/images/services/models/sv_models_th.jpg">
+
+                    <div class="ml-16" style="cursor: pointer" (click)="goToService(service)">
+                        <div class="text-bold">{{service.trans().name}}</div>
+                        <div class="h5 text-bold secondary-text">{{service.trans().description}}</div>
+                    </div>
+
+                </div>
+                <!-- / SERVICIO -->
+                <!-- GESTIÓN DE MODELOS -->
+                <div class="px-16 pb-16 pt-0 line-height-1" *ngIf="service.name == 'models' && modelsAvailable">
+                    <!-- MODELOS ACTIVOS -->
+                    <table class="simple clickable" *ngIf="modelsAvailable.length > 0">
+                        <thead>
+                        <tr>
+                            <th><span>{{ 'app.client.available_models' | translate }}</span></th>
+                            <th class="text-right"><span>{{ 'app.created_at' | translate }}</span></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let d of modelsAvailable" [routerLink]="'/client/services/models/'+d.id">
+                            <td><small>{{ d.trans().name }}</small></td>
+                            <td class="text-right"><small>{{ d.created_at | date: 'dd/MM/yyyy' }}</small></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <!-- / MODELOS ACTIVOS -->
+
+                    <!-- COMPRAR MODELOS -->
+                    <!--            <div class="mt-8" fxLayoutAlign="start start" style="cursor: pointer">-->
+                    <!--                <div class="text-boxed pink m-0">-->
+                    <!--                    {{'app.models.buy' | translate }}-->
+                    <!--                </div>-->
+                    <!--            </div>-->
+                    <!-- / COMPRAR MODELOS -->
+
+                    <!-- ACTIVIDAD RECIENTE DE BORRADORES -->
+                    <table class="simple clickable mt-8" *ngIf="lastModelsUpdates.length > 0">
+                        <thead>
+                        <tr>
+                            <th><span>{{ 'app.client.last.updates' | translate }}</span></th>
+                            <th class="text-right"><mat-icon>label</mat-icon></th>
+                            <th class="text-right"><mat-icon>update</mat-icon></th>
+                            <th class="text-right"><mat-icon>date_range</mat-icon></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let d of lastModelsUpdates"
+                            [routerLink]="'/client/services/models/'+d.model_id+'/draft'+d.model.name+'/'+d.id">
+                            <td><small>{{ d.model.trans().name }}</small></td>
+                            <td class="text-right"><small>{{ d.id }}</small></td>
+                            <td class="text-right"><small>{{ d.updated_at | date: 'dd/MM/yyyy HH:mm' }}</small></td>
+                            <td class="text-right"><small>{{ d.year }}</small></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <!-- LINK AL CONJUNTO DE BORRADORES  -->
+                    <div class="mt-8" fxLayoutAlign="center center" style="cursor: pointer"  *ngIf="modelsAvailable.length > 0">
+                        <div class="text-boxed accent m-0" [routerLink]="'/client/services/models/'">
+                            {{'app.models.show_all' | translate }}
+                        </div>
+                    </div>
+                    <!-- / ACTIVIDAD RECIENTE DE BORRADORES -->
+                    <div *ngIf="modelsAvailable.length == 0" fxLayoutAlign="center center">
+                        <label>{{'app.models.no_models_availables' | translate}}</label>
+                    </div>
+                </div>
+                <!-- / GESTIÓN DE MODELOS -->
+            </div>
+        </div>
+        <!-- SERVICIOS CONTRATADOS -->
+    </section>
+    <div *ngIf="!loadingHired && servicesHired.length == 0" class="mb-48">
+        <p class="font-size-24 grey-500-fg text-center">{{ 'app.client_services.no_service_hired' | translate }}</p>
+    </div>
+    <div *ngIf="loadingAvailable" class="text-center mt-24 mb-72"><ai-loading-spinner></ai-loading-spinner></div>
+    <div *ngIf="!loadingAvailable && servicesAvailable.length > 0">
+        <h2 class="mat-display-1 mb-12 text-center">{{ 'app.client_services.available_services' | translate }}</h2>
+        <section id="available-services" fxLayout="row wrap" fxLayoutAlign="center start">
+            <!-- SERVICIOS CONTRATADOS -->
+            <div class="p-8 service" *ngFor="let service of servicesAvailable; let i = index" fxFlex="100%" fxFlex.gt-xs="50%" fxFlex.gt-md="33%">
+                <!-- SERVICIO -->
+                <div class="w-100-p p-0 fuse-card">
+                    <div class="p-8 content">
+                        <div fxLayout="row" fxLayoutAlign="space-between center" class="service-info">
+                            <img *ngIf="service.name == 'accounting'" class="w-40 h-40 border-radius-100" src="assets/images/services/accounting/sv_acct_th.jpg">
+                            <img *ngIf="service.name == 'models'" class="w-40 h-40 border-radius-100" src="assets/images/services/models/sv_models_th.jpg">
+
+                            <div class="ml-16" fxFlex>
+                                <div class="text-bold">{{service.trans().name}}</div>
+                                <div class="h5 text-bold secondary-text">{{service.trans().description}}</div>
+                            </div>
+                        </div>
+                        <button (click)="hireService(service.id)" mat-raised-button color="accent" class="hire-service">
+                            <mat-icon svgIcon="plus"></mat-icon>
+                            <span>Contratar</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- / SERVICIO -->
+            </div>
+        </section>
+    </div>
+</div>

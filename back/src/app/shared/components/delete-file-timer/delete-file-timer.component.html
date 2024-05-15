@@ -1,0 +1,10 @@
+<div *ngIf="diff > 0 && start" class="delete" (click)="deleteFile($event)" matTooltip="El archivo no se ha procesado y se puede borrar. Pulsa para borrar.">
+  <div class="circle">
+    <mat-progress-spinner mode="determinate" value="100" diameter="36" strokeWidth="6" class="background"></mat-progress-spinner>
+    <mat-progress-spinner mode="determinate" [value]="(120 - diff) * 100 / 120" diameter="32" strokeWidth="3" [color]="diff <= 40 ? 'warn' : 'accent'"></mat-progress-spinner>
+    <mdi-icon class="icon mat-accent" fontSize="16">delete</mdi-icon>
+  </div>
+
+  <!--<span class="remaining" *ngIf="getDiff() > 0">{{ minutes < 10 ? '0'+minutes : minutes }}:{{ seconds < 10 ? '0'+seconds : seconds }}</span>-->
+</div>
+<button *ngIf="diff <= 0" mat-icon-button disabled matTooltip="El archivo ya se ha procesado."><mdi-icon>lock</mdi-icon></button>

@@ -1,0 +1,137 @@
+<mat-toolbar class="profile-toolbar">
+    <span>Información de cuenta</span>
+</mat-toolbar>
+<div class="p-8"
+     fxLayout="column" fxLayoutAlign="start stretch"
+     fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="center start">
+    <div class="p-12" fxFlex="100%" fxFlex.gt-sm="80%" fxFlex.gt-md="60%" fxFlex.gt-lg="40%">
+        <mat-card class="p-0 client-profile-info-wrapper">
+            <mat-card-content>
+                <mat-toolbar class="compact" color="primary">
+                    <h3 class="ml-12">{{ 'app.client.personal_info' | translate }}</h3>
+                    <span fxFlex></span>
+                    <button (click)="toggleEdit()" mat-button>{{ editable ? 'Cancelar' : 'Editar' }}</button>
+                    <button (click)="save()" mat-raised-button color="accent" [disabled]="!editable || !profileForm.valid">Actualizar</button>
+                </mat-toolbar>
+                <ai-loading-spinner *ngIf="loading" class="py-48"></ai-loading-spinner>
+                <mat-list *ngIf="!editable && !loading && client" class="client-profile-info">
+                    <mat-list-item>
+                        <mat-icon mat-list-icon svgIcon="account"></mat-icon>
+                        <h4 mat-line><strong>{{ 'models.user_profile.fullname' | translate }}</strong></h4>
+                        <p mat-line>{{ client.full_name || ('app.client.no_data' | translate) }}</p>
+                    </mat-list-item>
+                    <mat-list-item>
+                        <mat-icon mat-list-icon svgIcon="email"></mat-icon>
+                        <h4 mat-line><strong>{{'models.user_profile.email' | translate}}</strong></h4>
+                        <p mat-line>{{ client.email ? client.email : 'app.client.no_data' | translate }}</p>
+                    </mat-list-item>
+                    <mat-list-item>
+                        <mat-icon mat-list-icon svgIcon="phone"></mat-icon>
+                        <h4 mat-line><strong>{{'models.user_profile.phone' | translate}}</strong></h4>
+                        <p mat-line>{{ client.phone ? client.phone : 'app.client.no_data' | translate }}</p>
+                    </mat-list-item>
+                    <mat-list-item>
+                        <mat-icon mat-list-icon svgIcon="calendar-range"></mat-icon>
+                        <h4 mat-line><strong>{{'models.user_profile.birth_date' | translate}}</strong></h4>
+                        <p mat-line>{{ client.additionalInfo && client.additionalInfo.birth_date ? client.additionalInfo.birth_date  : ('app.client.no_data' | translate) }}</p>
+                    </mat-list-item>
+                    <mat-list-item>
+                        <mat-icon mat-list-icon svgIcon="card-account-details"></mat-icon>
+                        <h4 mat-line><strong>{{'models.user_profile.identification' | translate }}</strong></h4>
+                        <p mat-line>{{ client.additionalInfo && client.additionalInfo.identification ? client.additionalInfo.identification : 'app.client.no_data' | translate }}</p>
+                    </mat-list-item>
+                    <mat-list-item>
+                        <mat-icon mat-list-icon svgIcon="account-group"></mat-icon>
+                        <h4 mat-line><strong>{{'models.user_profile.civil_status' | translate}}</strong></h4>
+                        <p mat-line>{{ (client.additionalInfo && client.additionalInfo.civil_status ? ('models.user_profile.' + client.additionalInfo.civil_status) : 'app.client.no_data') | translate }}</p>
+                    </mat-list-item>
+                    <mat-list-item>
+                        <mat-icon mat-list-icon svgIcon="handshake"></mat-icon>
+                        <h4 mat-line><strong>{{'models.user_profile.regime' | translate}}</strong></h4>
+                        <p mat-line>{{ (client.additionalInfo && client.additionalInfo.regime ? 'models.user_profile.' + client.additionalInfo.regime : 'app.client.no_data') | translate }}</p>
+                    </mat-list-item>
+                    <mat-list-item>
+                        <mat-icon mat-list-icon svgIcon="briefcase"></mat-icon>
+                        <h4 mat-line><strong>{{'models.user_profile.ocupation' | translate}}</strong></h4>
+                        <p mat-line>{{ client.additionalInfo && client.additionalInfo.ocupation ? client.additionalInfo.ocupation : 'app.client.no_data' | translate }}</p>
+                    </mat-list-item>
+                    <mat-list-item>
+                        <mat-icon mat-list-icon svgIcon="bank"></mat-icon>
+                        <h4 mat-line><strong>{{'models.user_profile.bank' | translate}}</strong></h4>
+                        <p mat-line>{{ client.additionalInfo && client.additionalInfo.bank ? client.additionalInfo.bank : 'app.client.no_data' | translate }}</p>
+                    </mat-list-item>
+                    <mat-list-item>
+                        <mat-icon mat-list-icon svgIcon="bank-transfer"></mat-icon>
+                        <h4 mat-line><strong>{{'models.user_profile.iban' | translate}}</strong></h4>
+                        <p mat-line>{{ client.additionalInfo && client.additionalInfo.iban ? client.additionalInfo.iban : 'app.client.no_data' | translate }}</p>
+                    </mat-list-item>
+                </mat-list>
+                <div *ngIf="!loading && !editable && !client">Error al obtener cliente</div>
+                <form *ngIf="editable" [formGroup]="profileForm">
+                    <div fxLayout="row wrap" fxLayoutAlign="start start" class="pt-16 px-16">
+                        <div fxFlex="100%" fxLayoutAlign="center center" class="pb-8">
+                            <span>{{ 'app.client_profile.require_fields' | translate }}</span>
+                        </div>
+                        <mat-form-field appearance="outline" fxFlex="100%" fxFlex.gt-sm="50%" fxFlex.gt-lg="50%">
+                            <mat-label>{{ 'models.user_profile.firstname' | translate }}</mat-label>
+                            <input type="text" matInput formControlName="firstname" name="firstname">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" fxFlex="100%" fxFlex.gt-sm="50%" fxFlex.gt-lg="50%">
+                            <mat-label>{{ 'models.user_profile.lastname' | translate }}</mat-label>
+                            <input type="text" matInput formControlName="lastname" name="lastname">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" fxFlex="100%" fxFlex.gt-sm="50%" fxFlex.gt-lg="50%">
+                            <mat-label>{{ 'models.user_profile.phone' | translate }}</mat-label>
+                            <input type="tel" matInput formControlName="phone" name="phone" maxlength="9">
+                        </mat-form-field>
+<!--                        <mat-form-field appearance="outline" fxFlex="100%" fxFlex.gt-sm="50%" fxFlex.gt-lg="50%">-->
+<!--                            <mat-label>{{ 'models.user_profile.birth_date' | translate }}</mat-label>-->
+<!--                            <input type="text" matInput formControlName="birth_date" name="birth_date" maxlength="10"-->
+<!--                                   (focus)="showBirthDateHint = true" (blur)="showBirthDateHint = false"-->
+<!--                            >-->
+<!--                            <mat-hint *ngIf="showBirthDateHint">{{ 'app.profile.birth_date_hint' | translate }}</mat-hint>-->
+<!--                        </mat-form-field>-->
+                        <mat-form-field appearance="outline" fxFlex="100%" fxFlex.gt-sm="50%" fxFlex.gt-lg="50%">
+                            <mat-label>{{ 'models.user_profile.birth_date' | translate }}</mat-label>
+                            <input matInput formControlName="birth_date" name="birth_date" maxlength="10"
+                                   [matDatepicker]="contributorBornDate">
+                            <mat-datepicker-toggle matSuffix [for]="contributorBornDate"></mat-datepicker-toggle>
+                        </mat-form-field>
+                        <mat-datepicker  #contributorBornDate></mat-datepicker>
+                        <mat-form-field appearance="outline" fxFlex="100%" fxFlex.gt-sm="50%" fxFlex.gt-lg="50%">
+                            <mat-label>{{ 'models.user_profile.identification' | translate }}</mat-label>
+                            <input type="text" matInput formControlName="identification" name="identification">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" fxFlex="100%" fxFlex.gt-sm="50%" fxFlex.gt-lg="50%">
+                            <mat-label>{{ 'models.user_profile.civil_status' | translate }}</mat-label>
+                            <mat-select formControlName="civil_status">
+                                <mat-option *ngFor="let status of CIVIL_STATUSES" [value]="status.value">{{ status.text | translate }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" fxFlex="100%" fxFlex.gt-sm="50%" fxFlex.gt-lg="50%">
+                            <mat-label>{{ 'models.user_profile.regime' | translate }}</mat-label>
+                            <mat-select formControlName="regime">
+                                <mat-option *ngFor="let regime of REGIME_AVAILABLES" [value]="regime.value">{{ regime.text | translate }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" fxFlex="100%" fxFlex.gt-sm="50%" fxFlex.gt-lg="50%">
+                            <mat-label>{{ 'models.user_profile.ocupation' | translate }}</mat-label>
+                            <input type="text" matInput formControlName="ocupation" name="ocupation">
+                        </mat-form-field>
+                        <div fxFlex="100%" fxLayoutAlign="center center" class="pb-8">
+                            <span>{{ 'app.client_profile.optional_fields' | translate }}</span>
+                        </div>
+                        <mat-form-field appearance="outline" fxFlex="100%">
+                            <mat-label>{{ 'models.user_profile.bank' | translate }}</mat-label>
+                            <input type="text" matInput formControlName="bank" name="bank">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" fxFlex="100%">
+                            <mat-label>{{ 'models.user_profile.iban' | translate }}</mat-label>
+                            <input type="text" matInput formControlName="iban" name="iban" maxlength="34">
+                        </mat-form-field>
+                    </div>
+                </form>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

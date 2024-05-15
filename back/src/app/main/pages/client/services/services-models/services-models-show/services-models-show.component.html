@@ -1,0 +1,141 @@
+<div id="products" class="page-layout carded fullwidth inner-scroll" *ngIf="drafts">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent"
+             fxLayout="column" fxLayoutAlign="center center"
+             fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+
+            <!-- APP TITLE -->
+            <div class="logo mb-24 mb-md-0"
+                 fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    insert_drive_file
+                </mat-icon>
+                <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    {{'app.models.my_drafts' | translate}}
+                </span>
+            </div>
+            <!-- / APP TITLE -->
+
+            <!-- ADD BUTTON -->
+            <button mat-raised-button
+                    class="add-product-button fuse-white mt-24 mt-md-0"
+                    (click)="newDraft()">
+                <span>{{ 'app.models.new_draft' | translate }}</span>
+            </button>
+            <!-- / ADD BUTTON -->
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <div class="content p-24">
+                <div class="px-16 py-4">
+                    <div fxLayout="row" *ngIf="taxModels.length > 0">
+                        <div>
+                            <button mat-button class="toggle-complete-button" (click)="filterModel(-1)"
+                                    aria-label="Toggle completed" fxFlex="0 1 auto">
+                                <mat-icon *ngIf="filterBy == -1">check_box</mat-icon>
+                                <mat-icon *ngIf="filterBy != -1">check_box_outline_blank</mat-icon>
+                                <span class="ml-8">{{'app.model.show_all' | translate}}</span>
+                            </button>
+                        </div>
+                        <div *ngFor="let model of taxModels">
+                            <button mat-button class="toggle-complete-button" (click)="filterModel(model.id)"
+                                    aria-label="Toggle completed" fxFlex="0 1 auto">
+                                <mat-icon *ngIf="filterBy == model.id">check_box</mat-icon>
+                                <mat-icon *ngIf="filterBy != model.id">check_box_outline_blank</mat-icon>
+                                <span class="ml-8">{{model.trans().name}}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <table class="simple products-table">
+                    <thead>
+                    <tr>
+                        <th><ai-custom-th sortField="id" [(filter)]="filter" (sortChanged)="loadDrafts(1)">#</ai-custom-th></th>
+                        <th><ai-custom-th sortField="model_id" [(filter)]="filter" (sortChanged)="loadDrafts(1)">{{ 'model.type' | translate }}</ai-custom-th></th>
+                        <th><ai-custom-th sortField="updated_at" [(filter)]="filter" (sortChanged)="loadDrafts(1)">{{ 'model.updated_at' | translate }}</ai-custom-th></th>
+                        <th><ai-custom-th sortField="state" [(filter)]="filter" (sortChanged)="loadDrafts(1)">{{ 'model.state' | translate }}</ai-custom-th></th>
+                        <th><ai-custom-th sortField="year" [(filter)]="filter" (sortChanged)="loadDrafts(1)">{{ 'model.year' | translate }}</ai-custom-th></th>
+                        <th><ai-custom-th>{{ 'model.declaration.import' | translate }}</ai-custom-th></th>
+                        <th><ai-custom-th>{{ 'model.draft.identification' | translate }}</ai-custom-th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let t of drafts | paginate :  paginationConfig" [routerLink]="'/client/services/models/'+t.model_id+'/draft'+t.model.name+'/'+t.id">
+                        <td>{{ t.id }}</td>
+                        <td>{{ t.model.trans().name }}</td>
+                        <td>{{ t.declaration.updated_at ? (t.declaration.updated_at | date:'dd/MM/yyyy HH:mm') : null }}</td>
+                        <td>
+                            <div class="labels mt-8" fxLayout="row wrap">
+                                <div class="label" fxLayout="row" fxLayoutAlign="start center" *ngIf="t.state == 'active'">
+                                    <div class="label-color blue-500" ></div>
+                                    <div class="label-title">{{ 'model.state.active' | translate}}</div>
+                                </div>
+                                <div class="label" fxLayout="row" fxLayoutAlign="start center" *ngIf="t.state == 'complete'">
+                                    <div class="label-color yellow-500" ></div>
+                                    <div class="label-title">{{ 'model.state.complete' | translate}}</div>
+                                </div>
+                                <div class="label" fxLayout="row" fxLayoutAlign="start center" *ngIf="t.state == 'presented'">
+                                    <div class="label-color green-500" ></div>
+                                    <div class="label-title">{{ 'model.state.presented' | translate}}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ t.declaration.earn_period_year ? t.declaration.earn_period_year : '-' }}</td>
+                        <td>{{ t.declaration.liq_result ? t.declaration.liq_result : '-' }}</td>
+                        <td>{{ t.declaration.declarant_nif ? (t.id+'-'+t.model.name+'-'+t.declaration.declarant_nif) : '-' }}</td>
+                        <td>
+                            <button
+                                [disabled]="t.state != 'active'"
+                                mat-raised-button color="warn"
+                                class="create-trip"
+                                (click)="deleteDraft($event,t.id)"
+                                title="{{ 'model.delete' | translate }}">
+                                    <mdi-icon [fontSize]="20">delete</mdi-icon>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div fxHide fxShow.gt-xs class="pt-4">
+                    <div class="labels mt-8" fxLayout="row wrap">
+                        <div class="label" fxLayout="row" fxLayoutAlign="start center">
+                            <div class="label-color blue-500" ></div>
+                            <div class="label-title">{{ 'model.state.active' | translate}}</div>
+                        </div>
+                        <div class="label" fxLayout="row" fxLayoutAlign="start center">
+                            <div class="label-color yellow-500" ></div>
+                            <div class="label-title">{{ 'model.state.complete' | translate}}</div>
+                        </div>
+                        <div class="label" fxLayout="row" fxLayoutAlign="start center">
+                            <div class="label-color green-500" ></div>
+                            <div class="label-title">{{ 'model.state.presented' | translate}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div fxLayoutAlign="center center" fxLayout="row">
+                    <span *ngIf="paginationConfig && paginationConfig.totalItems">{{ 'app.table.showing' | translate }} {{ paginationConfig.from }} - {{ paginationConfig.to }} / {{ paginationConfig.totalItems }}</span>
+                </div>
+                <ai-pagination-template
+                    [pagination]="paginationConfig"
+                    (pageChange)="loadDrafts($event)">
+                </ai-pagination-template>
+            </div>
+
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

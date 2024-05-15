@@ -1,0 +1,34 @@
+<mat-card class="px-0 pb-0">
+  <mat-card-title fxLayoutAlign="space-between center" class="px-16">
+    <span>{{group.name}}</span>
+    <span class="badge mat-green-300-bg" style="color:#ffffff" >{{group.translations.length}}</span>
+  </mat-card-title>
+
+  <mat-card-content fxLayout="column">
+
+    <div *ngIf="open" fxLayout="column" class="px-16">
+      <div fxLayout="row nowrap" fxFlex="100%"  fxLayoutAlign="start center" *ngFor="let trans of group.translations">
+          <mat-form-field class="m-5" fxFlex>
+            <input readonly #keyEl [(ngModel)]="trans.key" name="key" matInput placeholder="Key">
+          </mat-form-field>
+          <!--<button mat-icon-button   matTooltip="Copiar al portapapeles"><mdi-icon>content-copy</mdi-icon></button>-->
+          <button mat-icon-button [ngxClipboard]="keyEl" (cbOnSuccess)="showCopied()" matTooltip="Copiar al portapapeles"><mdi-icon>content-copy</mdi-icon></button>
+          <mat-form-field class="m-5" fxFlex>
+            <input matInput [(ngModel)]="trans.text" placeholder="Text">
+          </mat-form-field>
+          <button mat-button color="warn" (click)="deleteTrans(trans)"><mat-icon>delete</mat-icon></button>
+      </div>
+
+      <button fxflex="10%" (click)="updateGroupTrans()" mat-raised-button color="primary" class="mat-grey-200-bg" >{{"app.save"|translate}}</button>
+
+
+    </div>
+    <button class="trans-test" mat-button (click)="toogleOpen()" class="toggle-open">
+      <mat-icon *ngIf="!open">expand_more</mat-icon>
+      <mat-icon *ngIf="open">expand_less</mat-icon>
+    </button>
+    <!--<mat-divider></mat-divider>-->
+
+  </mat-card-content>
+
+</mat-card>

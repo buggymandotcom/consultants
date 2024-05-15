@@ -1,0 +1,94 @@
+<mat-sidenav-container [hasBackdrop]="isSm" class="h-100-p page-layout simple">
+  <mat-sidenav
+    id="sv-available-sidenav" #svAvailableSidenav
+    mode="over" position="end">
+    <mat-toolbar class="compact">
+      <span fxFlex></span>
+      <button (click)="svAvailableSidenav.close()" mat-button>
+        <mdi-icon>arrow-expand-right</mdi-icon>
+        <span>{{ 'app.hide' | translate }}</span>
+      </button>
+    </mat-toolbar>
+    <mat-list *ngFor="let svAv of servicesAvailable">
+      <mat-list-item>
+        <p mat-line>{{ svAv.trans().name }}</p>
+        <button (click)="addService(svAv.id)" mat-button>
+          <mdi-icon>plus</mdi-icon>
+        </button>
+      </mat-list-item>
+    </mat-list>
+    <p class="mt-20 ml-12" *ngIf="servicesAvailable.length==0">{{'msg.client.services.there_are_no_services_available'|translate}}</p>
+  </mat-sidenav>
+  <div class="services-hired p-16"
+       fxLayout="row wrap" fxLayoutAlign="start stretch"
+       fxLayoutGap="16px"
+  >
+      <div class="fuse-card" *ngFor="let s of servicesHired" fxFlex="50%" fxFlex.gt-sm="33%" fxFlex.gt-md="20%"
+           [routerLink]="['/admin/clients/',id,'services',s.route]" style="cursor: pointer">
+
+          <img [src]="s?.name=='accounting'?'assets/images/services/accounting/sv_acct_th.png':'assets/images/services/models/sv_models_th.png'" [alt]="s.trans().name">
+
+          <div class="p-16">
+              <div class="h1">{{ s.trans().name }}</div>
+              <div class="h4 secondary-text">{{ s.trans().description }}</div>
+          </div>
+
+          <div class="p-8 pt-0" fxLayout="row" fxLayoutAlign="space-between center">
+              <div fxLayout="row" fxLayoutAlign="start center">
+                  <button (click)="removeService(s.id, $event)" mat-button color="warn">{{'app.remove.service' | translate}}</button>
+              </div>
+
+<!--              <button mat-icon-button aria-label="expand card"-->
+<!--                      (click)="card10Expanded = !card10Expanded">-->
+<!--                  <mat-icon *ngIf="card10Expanded">keyboard_arrow_up</mat-icon>-->
+<!--                  <mat-icon *ngIf="!card10Expanded">keyboard_arrow_down</mat-icon>-->
+<!--              </button>-->
+          </div>
+
+<!--          <div class="card-expand-area" *ngIf="card10Expanded" [@expandCollapse]>-->
+<!--              <div class="card-expanded-content">-->
+<!--                  Card content that exceeds the maximum card height is truncated and does not-->
+<!--                  scroll, but the card can be expanded. Once expanded, the card may exceed the-->
+<!--                  maximum height of the view. In this case, the card will scroll with the card-->
+<!--                  collection.-->
+<!--              </div>-->
+<!--          </div>-->
+
+      </div>
+
+<!--    <mat-card *ngFor="let s of servicesHired" fxFlex="50%" fxFlex.gt-sm="33%" fxFlex.gt-md="20%">-->
+<!--      <mat-card-content>-->
+<!--        <a [routerLink]="['/admin/clients/',id,'services',s.route]">-->
+<!--            <img mat-card-image [src]="s?.name=='accounting'?'assets/images/services/accounting/sv_acct_th.png':'assets/images/services/models/sv_models_th.png'" [alt]="s.trans().name">-->
+<!--        </a>-->
+<!--        <mat-card-header fxLayout="row" fxLayoutAlign="space-around center">-->
+<!--          <a fxFlex="80%" [routerLink]="['/admin/clients/',id,'services',s.route]">{{ s.trans().name }}</a>-->
+<!--          <div fxFlex="20%">-->
+<!--              <button-->
+<!--                  mat-mini-fab-->
+<!--                  color="primary"-->
+<!--                  (click)="removeService(s.id)"-->
+<!--                  title="{{ 'services.remove' }}"-->
+<!--              >-->
+<!--                    <mdi-icon>delete</mdi-icon>-->
+<!--              </button>-->
+<!--          </div>-->
+<!--        </mat-card-header>-->
+<!--        <mat-card-content>-->
+<!--          <p>{{ s.trans().description }}</p>-->
+<!--        </mat-card-content>-->
+<!--      </mat-card-content>-->
+<!--    </mat-card>-->
+    <mat-card fxFlex="50%" fxFlex.gt-sm="33%" fxFlex.gt-md="20%" class="add-service">
+      <mat-card-content>
+        <button
+            mat-button class="add-service-btn"
+            (click)="svAvailableSidenav.open()"
+        >
+          <mdi-icon fontSize="72">plus</mdi-icon>
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+</mat-sidenav-container>

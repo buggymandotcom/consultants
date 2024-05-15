@@ -1,0 +1,72 @@
+$font-size: 16px;
+$vgrid: $font-size * 1.5;
+.ai-pagination {
+  text-align: center;
+  list-style: none;
+  padding: 0;
+  margin: $vgrid 0;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: stretch;
+  justify-content: center;
+  li {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    > a,
+    > span {
+      display: block;
+      width: $vgrid * 2;
+      height: auto;
+      line-height: $vgrid * 2;
+      text-align: center;
+      font-weight: 700;
+      -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .24px);
+      -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, .24px);
+      box-shadow: 0 1px 1px rgba(0, 0, 0, .24px);
+    }
+    a {
+      cursor: pointer;
+      text-decoration: none;
+      -webkit-transition: color .25s ease, background-color .25s ease;
+      -moz-transition: color .25s ease, background-color .25s ease;
+      -ms-transition: color .25s ease, background-color .25s ease;
+      -o-transition: color .25s ease, background-color .25s ease;
+      transition: color .25s ease, background-color .25s ease;
+      &:hover,
+      &:focus,
+      &:active {
+        color: #ffffff;
+        background-color: #039be5;
+        text-decoration: none !important;
+      }
+    }
+    .mat-icon {
+      display: block;
+      width: $vgrid * 2;
+      font-size: 2rem;
+      height: auto;
+      line-height: $vgrid * 2;
+      i {
+        width: 100%;
+        height: $vgrid * 2;
+        line-height: $vgrid * 2;
+        &:before {
+          display: block;
+        }
+      }
+    }
+    &.current {
+      > span {
+        color: #ffffff;
+        background-color: #039be5;
+      }
+    }
+    &.disabled {
+      > span {
+        color: #404040;
+        background-color: rgba(#000, .12);
+      }
+    }
+  }
+}

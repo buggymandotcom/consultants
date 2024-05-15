@@ -1,0 +1,13 @@
+<div>
+    <mat-dialog-content>
+        <mat-icon  class="orange-400-fg" svgIcon="information"></mat-icon>
+        <!--<h3 class="title" *ngIf="data.title">{{ data.title | translate}}</h3>-->
+        <p class="text" *ngIf="data.title">{{ data.title }}</p>
+        <div *ngFor="let err of errors | objNgFor"><span class="grey-800-fg font-size-14">{{errors[err]}}</span></div>
+        <!--todo Juanluis Mejorar-->
+
+    </mat-dialog-content>
+    <mat-dialog-actions align="center">
+        <button mat-raised-button color="primary" class="btn-w-md" (click)="dialogRef.close(true)">Aceptar</button>
+    </mat-dialog-actions>
+</div>

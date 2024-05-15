@@ -1,0 +1,17 @@
+
+
+<!--<div fxLayout="row wrap" fxFlex="100%"  fxLayoutAlign="center center" class="mt-20 mb-60">-->
+    <!--<md-card fxFlex="90%">-->
+
+    <div fxLayout="column" fxLayoutAlign="center center">
+        <mat-progress-spinner *ngIf="isUploading"></mat-progress-spinner>
+        <label *ngIf="!isUploading" for="{{idInput}}">
+            <!--<md-icon md-font-icon="icon-upload"></md-icon>-->
+            <input style="display:none" id="{{idInput}}" type="file" ng2FileSelect  [uploader]="uploader"/>
+            <a mat-raised-button color="{{config.color}}" [ngClass]="config.class" >{{config.text | translate}}</a>
+        </label>
+        <span *ngIf="file">{{file.original_name}}</span>
+    </div>
+
+    <!--</md-card>-->
+<!--</div>-->

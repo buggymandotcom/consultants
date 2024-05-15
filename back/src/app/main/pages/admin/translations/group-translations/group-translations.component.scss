@@ -1,0 +1,16 @@
+
+.badge{
+
+  font-size: 14px;
+  padding: 4px 15px;
+  line-height: 15px;
+  border-radius: 5px;
+}
+
+.mat-button.toggle-open {
+  border-radius: 0;
+  width: 100%;
+  background-color: rgba(0,0,0,.03);
+  border-bottom: 1px solid rgba(0,0,0,.12);
+  margin-top: 24px;
+}

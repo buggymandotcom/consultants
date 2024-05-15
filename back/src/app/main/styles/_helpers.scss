@@ -1,0 +1,1676 @@
+$font-size: 16px;
+$vgrid: $font-size / 2;
+$vheight: $vgrid * 3;
+
+$contrastsMap: (
+    'dark': rgba(0, 0, 0, 0.87),
+    'light': rgba(255, 255, 255, 0.87),
+    'strong-light': rgb(255, 255, 255)
+);
+
+$materialColorsMap: (
+    'red': (
+        'hues':(
+            '50': #FFEBEE,
+            '100': #FFCDD2,
+            '200': #EF9A9A,
+            '300': #E57373,
+            '400': #EF5350,
+            '500': #F44336,
+            '600': #E53935,
+            '700': #D32F2F,
+            '800': #C62828,
+            '900': #B71C1C,
+            'A100': #FF8A80,
+            'A200': #FF5252,
+            'A400': #FF1744,
+            'A700': #D50000
+        ),
+        'contrasts':(
+            '50': 'dark',
+            '100': 'dark',
+            '200': 'dark',
+            '300': 'dark',
+            '400': 'strong-light',
+            '500': 'strong-light',
+            '600': 'strong-light',
+            '700': 'strong-light',
+            '800': 'light', // default
+            '900': 'light', // default
+            'A100':'dark',
+            'A200': 'strong-light',
+            'A400': 'strong-light',
+            'A700': 'strong-light',
+        )
+    ),
+    'pink': (
+        'hues':(
+            '50': #FCE4EC,
+            '100': #F8BBD0,
+            '200': #F48FB1,
+            '300': #F06292,
+            '400': #EC407A,
+            '500': #E91E63,
+            '600': #D81B60,
+            '700': #C2185B,
+            '800': #AD1457,
+            '900': #880E4F,
+            'A100': #FF80AB,
+            'A200': #FF4081,
+            'A400': #F50057,
+            'A700': #C51162
+        ),
+        'contrasts':(
+            '50': 'dark',
+            '100': 'dark',
+            '200': 'dark',
+            '300': 'light', // default
+            '400': 'light', // default
+            '500': 'strong-light',
+            '600': 'strong-light',
+            '700': 'light', // default
+            '800': 'light', // default
+            '900': 'light', // default
+            'A100': 'dark',
+            'A200': 'strong-light',
+            'A400': 'strong-light',
+            'A700': 'strong-light',
+        )
+    ),
+    'purple': (
+        'hues':(
+            '50': #F3E5F5,
+            '100': #E1BEE7,
+            '200': #CE93D8,
+            '300': #BA68C8,
+            '400': #AB47BC,
+            '500': #9C27B0,
+            '600': #8E24AA,
+            '700': #7B1FA2,
+            '800': #6A1B9A,
+            '900': #4A148C,
+            'A100': #EA80FC,
+            'A200': #E040FB,
+            'A400': #D500F9,
+            'A700': #AA00FF
+        ),
+        'contrasts':(
+            '50': 'dark',
+            '100': 'dark',
+            '200': 'dark',
+            '300': 'strong-light',
+            '400': 'strong-light',
+            '500': 'light', // default
+            '600': 'light', // default
+            '700': 'light', // default
+            '800': 'light', // default
+            '900': 'light', // default
+            'A100': 'dark',
+            'A200': 'strong-light',
+            'A400': 'strong-light',
+            'A700': 'strong-light',
+        )
+    ),
+    'deep-purple': (
+        'hues':(
+            '50': #EDE7F6,
+            '100': #D1C4E9,
+            '200': #B39DDB,
+            '300': #9575CD,
+            '400': #7E57C2,
+            '500': #673AB7,
+            '600': #5E35B1,
+            '700': #512DA8,
+            '800': #4527A0,
+            '900': #311B92,
+            'A100': #B388FF,
+            'A200': #7C4DFF,
+            'A400': #651FFF,
+            'A700': #6200EA
+        ),
+        'contrasts':(
+            '50': 'dark',
+            '100': 'dark',
+            '200': 'dark',
+            '300': 'strong-light',
+            '400': 'strong-light',
+            '500': 'light', // default
+            '600': 'light', // default
+            '700': 'light', // default
+            '800': 'light', // default
+            '900': 'light', // default
+            'A100': 'dark',
+            'A200': 'strong-light',
+            'A400': 'light', // default
+            'A700': 'light' // default
+        )
+    ),
+    'indigo': (
+        'hues':(
+            '50': #E8EAF6,
+            '100': #C5CAE9,
+            '200': #9FA8DA,
+            '300': #7986CB,
+            '400': #5C6BC0,
+            '500': #3F51B5,
+            '600': #3949AB,
+            '700': #303F9F,
+            '800': #283593,
+            '900': #1A237E,
+            'A100': #8C9EFF,
+            'A200': #536DFE,
+            'A400': #3D5AFE,
+            'A700': #304FFE
+        ),
+        'contrasts':(
+            '50': 'dark',
+            '100': 'dark',
+            '200': 'dark',
+            '300': 'strong-light',
+            '400': 'strong-light',
+            '500': 'light', // default
+            '600': 'light', // default
+            '700': 'light', // default
+            '800': 'light', // default
+            '900': 'light', // default
+            'A100': 'dark',
+            'A200': 'strong-light',
+            'A400': 'strong-light',
+            'A700': 'light' // default
+        )
+    ),
+    'blue': (
+        'hues':(
+            '50': #E3F2FD,
+            '100': #BBDEFB,
+            '200': #90CAF9,
+            '300': #64B5F6,
+            '400': #42A5F5,
+            '500': #2196F3,
+            '600': #1E88E5,
+            '700': #1976D2,
+            '800': #1565C0,
+            '900': #0D47A1,
+            'A100': #82B1FF,
+            'A200': #448AFF,
+            'A400': #2979FF,
+            'A700': #2962FF
+        ),
+        'contrasts':(
+            '50': 'dark',
+            '100': 'dark',
+            '200': 'dark',
+            '300': 'dark',
+            '400': 'dark',
+            '500': 'strong-light',
+            '600': 'strong-light',
+            '700': 'strong-light',
+            '800': 'light', // default
+            '900': 'light', // default
+            'A100': 'dark',
+            'A200': 'strong-light',
+            'A400': 'strong-light',
+            'A700': 'strong-light'
+        )
+    ),
+    'light-blue': (
+        'hues':(
+            '50': #E1F5FE,
+            '100': #B3E5FC,
+            '200': #81D4FA,
+            '300': #4FC3F7,
+            '400': #29B6F6,
+            '500': #03A9F4,
+            '600': #039BE5,
+            '700': #0288D1,
+            '800': #0277BD,
+            '900': #01579B,
+            'A100': #80D8FF,
+            'A200': #40C4FF,
+            'A400': #00B0FF,
+            'A700': #0091EA
+        ),
+        'contrasts':(
+            '50': 'dark', // default
+            '100': 'dark', // default
+            '200': 'dark', // default
+            '300': 'dark', // default
+            '400': 'dark', // default
+            '500': 'dark', // default
+            '600': 'strong-light',
+            '700': 'strong-light',
+            '800': 'strong-light',
+            '900': 'strong-light',
+            'A100': 'dark', // default
+            'A200': 'dark', // default
+            'A400': 'dark', // default
+            'A700': 'strong-light'
+        )
+    ),
+    'cyan': (
+        'hues':(
+            '50': #E0F7FA,
+            '100': #B2EBF2,
+            '200': #80DEEA,
+            '300': #4DD0E1,
+            '400': #26C6DA,
+            '500': #00BCD4,
+            '600': #00ACC1,
+            '700': #0097A7,
+            '800': #00838F,
+            '900': #006064,
+            'A100': #84FFFF,
+            'A200': #18FFFF,
+            'A400': #00E5FF,
+            'A700': #00B8D4
+        ),
+        'contrasts':(
+            '50': 'dark', // default
+            '100': 'dark', // default
+            '200': 'dark', // default
+            '300': 'dark', // default
+            '400': 'dark', // default
+            '500': 'dark', // default
+            '600': 'dark', // default
+            '700': 'strong-light',
+            '800': 'strong-light',
+            '900': 'strong-light',
+            'A100': 'dark', // default
+            'A200': 'dark', // default
+            'A400': 'dark', // default
+            'A700': 'dark' // default
+        )
+    ),
+    'teal': (
+        'hues':(
+            '50': #E0F2F1,
+            '100': #B2DFDB,
+            '200': #80CBC4,
+            '300': #4DB6AC,
+            '400': #26A69A,
+            '500': #009688,
+            '600': #00897B,
+            '700': #00796B,
+            '800': #00695C,
+            '900': #004D40,
+            'A100': #A7FFEB,
+            'A200': #64FFDA,
+            'A400': #1DE9B6,
+            'A700': #00BFA5
+        ),
+        'contrasts':(
+            '50': 'dark', // default
+            '100': 'dark', // default
+            '200': 'dark', // default
+            '300': 'dark', // default
+            '400': 'dark', // default
+            '500': 'strong-light',
+            '600': 'strong-light',
+            '700': 'strong-light',
+            '800': 'light',
+            '900': 'light',
+            'A100': 'dark', // default
+            'A200': 'dark', // default
+            'A400': 'dark', // default
+            'A700': 'dark' // default
+        )
+    ),
+    'green': (
+        'hues':(
+            '50': #E8F5E9,
+            '100': #C8E6C9,
+            '200': #A5D6A7,
+            '300': #81C784,
+            '400': #66BB6A,
+            '500': #4CAF50,
+            '600': #43A047,
+            '700': #388E3C,
+            '800': #2E7D32,
+            '900': #1B5E20,
+            'A100': #B9F6CA,
+            'A200': #69F0AE,
+            'A400': #00E676,
+            'A700': #00C853
+        ),
+        'contrasts':(
+            '50': 'dark', // default
+            '100': 'dark', // default
+            '200': 'dark', // default
+            '300': 'dark', // default
+            '400': 'dark', // default
+            '500': 'dark', // default
+            '600': 'strong-light',
+            '700': 'strong-light',
+            '800': 'light',
+            '900': 'light',
+            'A100': 'dark', // default
+            'A200': 'dark', // default
+            'A400': 'dark', // default
+            'A700': 'dark' // default
+        )
+    ),
+    'light-green': (
+        'hues':(
+            '50': #F1F8E9,
+            '100': #DCEDC8,
+            '200': #C5E1A5,
+            '300': #AED581,
+            '400': #9CCC65,
+            '500': #8BC34A,
+            '600': #7CB342,
+            '700': #689F38,
+            '800': #558B2F,
+            '900': #33691E,
+            'A100': #CCFF90,
+            'A200': #B2FF59,
+            'A400': #76FF03,
+            'A700': #64DD17
+        ),
+        'contrasts':(
+            '50': 'dark', // default
+            '100': 'dark', // default
+            '200': 'dark', // default
+            '300': 'dark', // default
+            '400': 'dark', // default
+            '500': 'dark', // default
+            '600': 'dark', // default
+            '700': 'strong-light',
+            '800': 'strong-light',
+            '900': 'strong-light',
+            'A100': 'dark', // default
+            'A200': 'dark', // default
+            'A400': 'dark', // default
+            'A700': 'dark' // default
+        )
+    ),
+    'lime': (
+        'hues':(
+            '50': #F9FBE7,
+            '100': #F0F4C3,
+            '200': #E6EE9C,
+            '300': #DCE775,
+            '400': #D4E157,
+            '500': #CDDC39,
+            '600': #C0CA33,
+            '700': #AFB42B,
+            '800': #9E9D24,
+            '900': #827717,
+            'A100': #F4FF81,
+            'A200': #EEFF41,
+            'A400': #C6FF00,
+            'A700': #AEEA00
+        ),
+        'contrasts':(
+            '50': 'dark', // default
+            '100': 'dark', // default
+            '200': 'dark', // default
+            '300': 'dark', // default
+            '400': 'dark', // default
+            '500': 'dark', // default
+            '600': 'dark', // default
+            '700': 'dark', // default
+            '800': 'dark', // default
+            '900': 'strong-light',
+            'A100': 'dark', // default
+            'A200': 'dark', // default
+            'A400': 'dark', // default
+            'A700': 'dark' // default
+        )
+    ),
+    'yellow': (
+        'hues':(
+            '50': #FFFDE7,
+            '100': #FFF9C4,
+            '200': #FFF59D,
+            '300': #FFF176,
+            '400': #FFEE58,
+            '500': #FFEB3B,
+            '600': #FDD835,
+            '700': #FBC02D,
+            '800': #F9A825,
+            '900': #F57F17,
+            'A100': #FFFF8D,
+            'A200': #FFFF00,
+            'A400': #FFEA00,
+            'A700': #FFD600
+        ),
+        'contrasts':(
+            '50': 'dark', // default
+            '100': 'dark', // default
+            '200': 'dark', // default
+            '300': 'dark', // default
+            '400': 'dark', // default
+            '500': 'dark', // default
+            '600': 'dark', // default
+            '700': 'dark', // default
+            '800': 'dark', // default
+            '900': 'dark', // default
+            'A100': 'dark', // default
+            'A200': 'dark', // default
+            'A400': 'dark', // default
+            'A700': 'dark' // default
+        )
+    ),
+    'amber': (
+        'hues':(
+            '50': #FFF8E1,
+            '100': #FFECB3,
+            '200': #FFE082,
+            '300': #FFD54F,
+            '400': #FFCA28,
+            '500': #FFC107,
+            '600': #FFB300,
+            '700': #FFA000,
+            '800': #FF8F00,
+            '900': #FF6F00,
+            'A100': #FFE57F,
+            'A200': #FFD740,
+            'A400': #FFC400,
+            'A700': #FFAB00
+        ),
+        'contrasts':(
+            '50': 'dark', // default
+            '100': 'dark', // default
+            '200': 'dark', // default
+            '300': 'dark', // default
+            '400': 'dark', // default
+            '500': 'dark', // default
+            '600': 'dark', // default
+            '700': 'dark', // default
+            '800': 'dark', // default
+            '900': 'dark', // default
+            'A100': 'dark', // default
+            'A200': 'dark', // default
+            'A400': 'dark', // default
+            'A700': 'dark' // default
+        )
+    ),
+    'orange': (
+        'hues':(
+            '50': #FFF3E0,
+            '100': #FFE0B2,
+            '200': #FFCC80,
+            '300': #FFB74D,
+            '400': #FFA726,
+            '500': #FF9800,
+            '600': #FB8C00,
+            '700': #F57C00,
+            '800': #EF6C00,
+            '900': #E65100,
+            'A100': #FFD180,
+            'A200': #FFAB40,
+            'A400': #FF9100,
+            'A700': #FF6D00
+        ),
+        'contrasts':(
+            '50': 'dark', // default
+            '100': 'dark', // default
+            '200': 'dark', // default
+            '300': 'dark', // default
+            '400': 'dark', // default
+            '500': 'dark', // default
+            '600': 'dark', // default
+            '700': 'dark', // default
+            '800': 'strong-light',
+            '900': 'strong-light',
+            'A100': 'dark', // default
+            'A200': 'dark', // default
+            'A400': 'dark', // default
+            'A700': 'dark' // default
+        )
+    ),
+    'deep-orange': (
+        'hues':(
+            '50': #FBE9E7,
+            '100': #FFCCBC,
+            '200': #FFAB91,
+            '300': #FF8A65,
+            '400': #FF7043,
+            '500': #FF5722,
+            '600': #F4511E,
+            '700': #E64A19,
+            '800': #D84315,
+            '900': #BF360C,
+            'A100': #FF9E80,
+            'A200': #FF6E40,
+            'A400': #FF3D00,
+            'A700': #DD2C00
+        ),
+        'contrasts':(
+            '50': 'dark',
+            '100': 'dark',
+            '200': 'dark',
+            '300': 'dark',
+            '400': 'dark',
+            '500': 'strong-light',
+            '600': 'strong-light',
+            '700': 'strong-light',
+            '800': 'strong-light',
+            '900': 'strong-light',
+            'A100': 'dark',
+            'A200': 'dark',
+            'A400': 'strong-light',
+            'A700': 'strong-light'
+        )
+    ),
+    'brown': (
+        'hues':(
+            '50': #EFEBE9,
+            '100': #D7CCC8,
+            '200': #BCAAA4,
+            '300': #A1887F,
+            '400': #8D6E63,
+            '500': #795548,
+            '600': #6D4C41,
+            '700': #5D4037,
+            '800': #4E342E,
+            '900': #3E2723,
+            'A100': #D7CCC8,
+            'A200': #BCAAA4,
+            'A400': #8D6E63,
+            'A700': #5D4037,
+        ),
+        'contrasts':(
+            '50': 'dark',
+            '100': 'dark',
+            '200': 'dark',
+            '300': 'strong-light',
+            '400': 'strong-light',
+            '500': 'light', // default
+            '600': 'light', // default
+            '700': 'light', // default
+            '800': 'light', // default
+            '900': 'light', // default
+            'A100': 'light', // default
+            'A200': 'light', // default
+            'A400': 'light', // default
+            'A700': 'light' // default
+        )
+    ),
+    'grey': (
+        'hues':(
+            '50': #FAFAFA,
+            '100': #F5F5F5,
+            '200': #EEEEEE,
+            '300': #E0E0E0,
+            '400': #BDBDBD,
+            '500': #9E9E9E,
+            '600': #757575,
+            '700': #616161,
+            '800': #424242,
+            '900': #212121,
+            '1000': #000000,
+            'A100': #FFFFFF,
+            'A200': #EEEEEE,
+            'A400': #BDBDBD,
+            'A700': #616161,
+        ),
+        'contrasts':(
+            '50': 'dark', // default
+            '100': 'dark', // default
+            '200': 'dark', // default
+            '300': 'dark', // default
+            '400': 'dark', // default
+            '500': 'dark', // default
+            '600': 'light',
+            '700': 'light',
+            '800': 'light',
+            '900': 'light',
+            'A100': 'dark', // default
+            'A200': 'dark', // default
+            'A400': 'dark', // default
+            'A700': 'dark' // default
+        )
+    ),
+    'blue-grey': (
+        'hues':(
+            '50': #ECEFF1,
+            '100': #CFD8DC,
+            '200': #B0BEC5,
+            '300': #90A4AE,
+            '400': #78909C,
+            '500': #607D8B,
+            '600': #546E7A,
+            '700': #455A64,
+            '800': #37474F,
+            '900': #263238,
+            'A100': #CFD8DC,
+            'A200': #B0BEC5,
+            'A400': #78909C,
+            'A700': #455A64,
+        ),
+        'contrasts':(
+            '50': 'dark',
+            '100': 'dark',
+            '200': 'dark',
+            '300': 'dark',
+            '400': 'strong-light',
+            '500': 'strong-light',
+            '600': 'light', // default
+            '700': 'light', // default
+            '800': 'light', // default
+            '900': 'light', // default
+            'A100': 'light', // default
+            'A200': 'light', // default
+            'A400': 'light', // default
+            'A700': 'light' // default
+        )
+    ),
+    'white': (
+        'hues':(
+            '500': #FFFFFF
+        ),
+        'contrasts':(
+            '500': 'dark' // default
+        )
+    ),
+    'black': (
+        'hues':(
+            '500': #000000
+        ),
+        'contrasts':(
+            '500': 'light' // default
+        )
+    )
+);
+$palette-red:
+#FFEBEE,
+#FFCDD2,
+#EF9A9A,
+#E57373,
+#EF5350,
+#F44336,
+#E53935,
+#D32F2F,
+#C62828,
+#B71C1C,
+#FF8A80,
+#FF5252,
+#FF1744,
+#D50000
+;
+
+$palette-red-50: nth($palette-red, 1);
+$palette-red-100: nth($palette-red, 2);
+$palette-red-200: nth($palette-red, 3);
+$palette-red-300: nth($palette-red, 4);
+$palette-red-400: nth($palette-red, 5);
+$palette-red-500: nth($palette-red, 6);
+$palette-red-600: nth($palette-red, 7);
+$palette-red-700: nth($palette-red, 8);
+$palette-red-800: nth($palette-red, 9);
+$palette-red-900: nth($palette-red, 10);
+$palette-red-A100: nth($palette-red, 11);
+$palette-red-A200: nth($palette-red, 12);
+$palette-red-A400: nth($palette-red, 13);
+$palette-red-A700: nth($palette-red, 14);
+
+$palette-pink:
+#FCE4EC,
+#F8BBD0,
+#F48FB1,
+#F06292,
+#EC407A,
+#E91E63,
+#D81B60,
+#C2185B,
+#AD1457,
+#880E4F,
+#FF80AB,
+#FF4081,
+#F50057,
+#C51162
+;
+
+$palette-pink-50: nth($palette-pink, 1);
+$palette-pink-100: nth($palette-pink, 2);
+$palette-pink-200: nth($palette-pink, 3);
+$palette-pink-300: nth($palette-pink, 4);
+$palette-pink-400: nth($palette-pink, 5);
+$palette-pink-500: nth($palette-pink, 6);
+$palette-pink-600: nth($palette-pink, 7);
+$palette-pink-700: nth($palette-pink, 8);
+$palette-pink-800: nth($palette-pink, 9);
+$palette-pink-900: nth($palette-pink, 10);
+$palette-pink-A100: nth($palette-pink, 11);
+$palette-pink-A200: nth($palette-pink, 12);
+$palette-pink-A400: nth($palette-pink, 13);
+$palette-pink-A700: nth($palette-pink, 14);
+
+$palette-purple:
+#F3E5F5,
+#E1BEE7,
+#CE93D8,
+#BA68C8,
+#AB47BC,
+#9C27B0,
+#8E24AA,
+#7B1FA2,
+#6A1B9A,
+#4A148C,
+#EA80FC,
+#E040FB,
+#D500F9,
+#AA00FF
+;
+
+$palette-purple-50: nth($palette-purple, 1);
+$palette-purple-100: nth($palette-purple, 2);
+$palette-purple-200: nth($palette-purple, 3);
+$palette-purple-300: nth($palette-purple, 4);
+$palette-purple-400: nth($palette-purple, 5);
+$palette-purple-500: nth($palette-purple, 6);
+$palette-purple-600: nth($palette-purple, 7);
+$palette-purple-700: nth($palette-purple, 8);
+$palette-purple-800: nth($palette-purple, 9);
+$palette-purple-900: nth($palette-purple, 10);
+$palette-purple-A100: nth($palette-purple, 11);
+$palette-purple-A200: nth($palette-purple, 12);
+$palette-purple-A400: nth($palette-purple, 13);
+$palette-purple-A700: nth($palette-purple, 14);
+
+$palette-deep-purple:
+#EDE7F6,
+#D1C4E9,
+#B39DDB,
+#9575CD,
+#7E57C2,
+#673AB7,
+#5E35B1,
+#512DA8,
+#4527A0,
+#311B92,
+#B388FF,
+#7C4DFF,
+#651FFF,
+#6200EA
+;
+
+$palette-deep-purple-50: nth($palette-deep-purple, 1);
+$palette-deep-purple-100: nth($palette-deep-purple, 2);
+$palette-deep-purple-200: nth($palette-deep-purple, 3);
+$palette-deep-purple-300: nth($palette-deep-purple, 4);
+$palette-deep-purple-400: nth($palette-deep-purple, 5);
+$palette-deep-purple-500: nth($palette-deep-purple, 6);
+$palette-deep-purple-600: nth($palette-deep-purple, 7);
+$palette-deep-purple-700: nth($palette-deep-purple, 8);
+$palette-deep-purple-800: nth($palette-deep-purple, 9);
+$palette-deep-purple-900: nth($palette-deep-purple, 10);
+$palette-deep-purple-A100: nth($palette-deep-purple, 11);
+$palette-deep-purple-A200: nth($palette-deep-purple, 12);
+$palette-deep-purple-A400: nth($palette-deep-purple, 13);
+$palette-deep-purple-A700: nth($palette-deep-purple, 14);
+
+$palette-indigo:
+#E8EAF6,
+#C5CAE9,
+#9FA8DA,
+#7986CB,
+#5C6BC0,
+#3F51B5,
+#3949AB,
+#303F9F,
+#283593,
+#1A237E,
+#8C9EFF,
+#536DFE,
+#3D5AFE,
+#304FFE
+;
+
+$palette-indigo-50: nth($palette-indigo, 1);
+$palette-indigo-100: nth($palette-indigo, 2);
+$palette-indigo-200: nth($palette-indigo, 3);
+$palette-indigo-300: nth($palette-indigo, 4);
+$palette-indigo-400: nth($palette-indigo, 5);
+$palette-indigo-500: nth($palette-indigo, 6);
+$palette-indigo-600: nth($palette-indigo, 7);
+$palette-indigo-700: nth($palette-indigo, 8);
+$palette-indigo-800: nth($palette-indigo, 9);
+$palette-indigo-900: nth($palette-indigo, 10);
+$palette-indigo-A100: nth($palette-indigo, 11);
+$palette-indigo-A200: nth($palette-indigo, 12);
+$palette-indigo-A400: nth($palette-indigo, 13);
+$palette-indigo-A700: nth($palette-indigo, 14);
+
+$palette-blue:
+#E3F2FD,
+#BBDEFB,
+#90CAF9,
+#64B5F6,
+#42A5F5,
+#2196F3,
+#1E88E5,
+#1976D2,
+#1565C0,
+#0D47A1,
+#82B1FF,
+#448AFF,
+#2979FF,
+#2962FF
+;
+
+$palette-blue-50: nth($palette-blue, 1);
+$palette-blue-100: nth($palette-blue, 2);
+$palette-blue-200: nth($palette-blue, 3);
+$palette-blue-300: nth($palette-blue, 4);
+$palette-blue-400: nth($palette-blue, 5);
+$palette-blue-500: nth($palette-blue, 6);
+$palette-blue-600: nth($palette-blue, 7);
+$palette-blue-700: nth($palette-blue, 8);
+$palette-blue-800: nth($palette-blue, 9);
+$palette-blue-900: nth($palette-blue, 10);
+$palette-blue-A100: nth($palette-blue, 11);
+$palette-blue-A200: nth($palette-blue, 12);
+$palette-blue-A400: nth($palette-blue, 13);
+$palette-blue-A700: nth($palette-blue, 14);
+
+$palette-light-blue:
+#E1F5FE,
+#B3E5FC,
+#81D4FA,
+#4FC3F7,
+#29B6F6,
+#03A9F4,
+#039BE5,
+#0288D1,
+#0277BD,
+#01579B,
+#80D8FF,
+#40C4FF,
+#00B0FF,
+#0091EA
+;
+
+$palette-light-blue-50: nth($palette-light-blue, 1);
+$palette-light-blue-100: nth($palette-light-blue, 2);
+$palette-light-blue-200: nth($palette-light-blue, 3);
+$palette-light-blue-300: nth($palette-light-blue, 4);
+$palette-light-blue-400: nth($palette-light-blue, 5);
+$palette-light-blue-500: nth($palette-light-blue, 6);
+$palette-light-blue-600: nth($palette-light-blue, 7);
+$palette-light-blue-700: nth($palette-light-blue, 8);
+$palette-light-blue-800: nth($palette-light-blue, 9);
+$palette-light-blue-900: nth($palette-light-blue, 10);
+$palette-light-blue-A100: nth($palette-light-blue, 11);
+$palette-light-blue-A200: nth($palette-light-blue, 12);
+$palette-light-blue-A400: nth($palette-light-blue, 13);
+$palette-light-blue-A700: nth($palette-light-blue, 14);
+
+$palette-cyan:
+#E0F7FA,
+#B2EBF2,
+#80DEEA,
+#4DD0E1,
+#26C6DA,
+#00BCD4,
+#00ACC1,
+#0097A7,
+#00838F,
+#006064,
+#84FFFF,
+#18FFFF,
+#00E5FF,
+#00B8D4
+;
+
+$palette-cyan-50: nth($palette-cyan, 1);
+$palette-cyan-100: nth($palette-cyan, 2);
+$palette-cyan-200: nth($palette-cyan, 3);
+$palette-cyan-300: nth($palette-cyan, 4);
+$palette-cyan-400: nth($palette-cyan, 5);
+$palette-cyan-500: nth($palette-cyan, 6);
+$palette-cyan-600: nth($palette-cyan, 7);
+$palette-cyan-700: nth($palette-cyan, 8);
+$palette-cyan-800: nth($palette-cyan, 9);
+$palette-cyan-900: nth($palette-cyan, 10);
+$palette-cyan-A100: nth($palette-cyan, 11);
+$palette-cyan-A200: nth($palette-cyan, 12);
+$palette-cyan-A400: nth($palette-cyan, 13);
+$palette-cyan-A700: nth($palette-cyan, 14);
+
+$palette-teal:
+#E0F2F1,
+#B2DFDB,
+#80CBC4,
+#4DB6AC,
+#26A69A,
+#009688,
+#00897B,
+#00796B,
+#00695C,
+#004D40,
+#A7FFEB,
+#64FFDA,
+#1DE9B6,
+#00BFA5
+;
+
+$palette-teal-50: nth($palette-teal, 1);
+$palette-teal-100: nth($palette-teal, 2);
+$palette-teal-200: nth($palette-teal, 3);
+$palette-teal-300: nth($palette-teal, 4);
+$palette-teal-400: nth($palette-teal, 5);
+$palette-teal-500: nth($palette-teal, 6);
+$palette-teal-600: nth($palette-teal, 7);
+$palette-teal-700: nth($palette-teal, 8);
+$palette-teal-800: nth($palette-teal, 9);
+$palette-teal-900: nth($palette-teal, 10);
+$palette-teal-A100: nth($palette-teal, 11);
+$palette-teal-A200: nth($palette-teal, 12);
+$palette-teal-A400: nth($palette-teal, 13);
+$palette-teal-A700: nth($palette-teal, 14);
+
+$palette-green:
+#E8F5E9,
+#C8E6C9,
+#A5D6A7,
+#81C784,
+#66BB6A,
+#4CAF50,
+#43A047,
+#388E3C,
+#2E7D32,
+#1B5E20,
+#B9F6CA,
+#69F0AE,
+#00E676,
+#00C853
+;
+
+$palette-green-50: nth($palette-green, 1);
+$palette-green-100: nth($palette-green, 2);
+$palette-green-200: nth($palette-green, 3);
+$palette-green-300: nth($palette-green, 4);
+$palette-green-400: nth($palette-green, 5);
+$palette-green-500: nth($palette-green, 6);
+$palette-green-600: nth($palette-green, 7);
+$palette-green-700: nth($palette-green, 8);
+$palette-green-800: nth($palette-green, 9);
+$palette-green-900: nth($palette-green, 10);
+$palette-green-A100: nth($palette-green, 11);
+$palette-green-A200: nth($palette-green, 12);
+$palette-green-A400: nth($palette-green, 13);
+$palette-green-A700: nth($palette-green, 14);
+
+$palette-light-green:
+#F1F8E9,
+#DCEDC8,
+#C5E1A5,
+#AED581,
+#9CCC65,
+#8BC34A,
+#7CB342,
+#689F38,
+#558B2F,
+#33691E,
+#CCFF90,
+#B2FF59,
+#76FF03,
+#64DD17
+;
+
+$palette-light-green-50: nth($palette-light-green, 1);
+$palette-light-green-100: nth($palette-light-green, 2);
+$palette-light-green-200: nth($palette-light-green, 3);
+$palette-light-green-300: nth($palette-light-green, 4);
+$palette-light-green-400: nth($palette-light-green, 5);
+$palette-light-green-500: nth($palette-light-green, 6);
+$palette-light-green-600: nth($palette-light-green, 7);
+$palette-light-green-700: nth($palette-light-green, 8);
+$palette-light-green-800: nth($palette-light-green, 9);
+$palette-light-green-900: nth($palette-light-green, 10);
+$palette-light-green-A100: nth($palette-light-green, 11);
+$palette-light-green-A200: nth($palette-light-green, 12);
+$palette-light-green-A400: nth($palette-light-green, 13);
+$palette-light-green-A700: nth($palette-light-green, 14);
+
+$palette-lime:
+#F9FBE7,
+#F0F4C3,
+#E6EE9C,
+#DCE775,
+#D4E157,
+#CDDC39,
+#C0CA33,
+#AFB42B,
+#9E9D24,
+#827717,
+#F4FF81,
+#EEFF41,
+#C6FF00,
+#AEEA00
+;
+
+$palette-lime-50: nth($palette-lime, 1);
+$palette-lime-100: nth($palette-lime, 2);
+$palette-lime-200: nth($palette-lime, 3);
+$palette-lime-300: nth($palette-lime, 4);
+$palette-lime-400: nth($palette-lime, 5);
+$palette-lime-500: nth($palette-lime, 6);
+$palette-lime-600: nth($palette-lime, 7);
+$palette-lime-700: nth($palette-lime, 8);
+$palette-lime-800: nth($palette-lime, 9);
+$palette-lime-900: nth($palette-lime, 10);
+$palette-lime-A100: nth($palette-lime, 11);
+$palette-lime-A200: nth($palette-lime, 12);
+$palette-lime-A400: nth($palette-lime, 13);
+$palette-lime-A700: nth($palette-lime, 14);
+
+$palette-yellow:
+#FFFDE7,
+#FFF9C4,
+#FFF59D,
+#FFF176,
+#FFEE58,
+#FFEB3B,
+#FDD835,
+#FBC02D,
+#F9A825,
+#F57F17,
+#FFFF8D,
+#FFFF00,
+#FFEA00,
+#FFD600
+;
+
+$palette-yellow-50: nth($palette-yellow, 1);
+$palette-yellow-100: nth($palette-yellow, 2);
+$palette-yellow-200: nth($palette-yellow, 3);
+$palette-yellow-300: nth($palette-yellow, 4);
+$palette-yellow-400: nth($palette-yellow, 5);
+$palette-yellow-500: nth($palette-yellow, 6);
+$palette-yellow-600: nth($palette-yellow, 7);
+$palette-yellow-700: nth($palette-yellow, 8);
+$palette-yellow-800: nth($palette-yellow, 9);
+$palette-yellow-900: nth($palette-yellow, 10);
+$palette-yellow-A100: nth($palette-yellow, 11);
+$palette-yellow-A200: nth($palette-yellow, 12);
+$palette-yellow-A400: nth($palette-yellow, 13);
+$palette-yellow-A700: nth($palette-yellow, 14);
+
+$palette-amber:
+#FFF8E1,
+#FFECB3,
+#FFE082,
+#FFD54F,
+#FFCA28,
+#FFC107,
+#FFB300,
+#FFA000,
+#FF8F00,
+#FF6F00,
+#FFE57F,
+#FFD740,
+#FFC400,
+#FFAB00
+;
+
+$palette-amber-50: nth($palette-amber, 1);
+$palette-amber-100: nth($palette-amber, 2);
+$palette-amber-200: nth($palette-amber, 3);
+$palette-amber-300: nth($palette-amber, 4);
+$palette-amber-400: nth($palette-amber, 5);
+$palette-amber-500: nth($palette-amber, 6);
+$palette-amber-600: nth($palette-amber, 7);
+$palette-amber-700: nth($palette-amber, 8);
+$palette-amber-800: nth($palette-amber, 9);
+$palette-amber-900: nth($palette-amber, 10);
+$palette-amber-A100: nth($palette-amber, 11);
+$palette-amber-A200: nth($palette-amber, 12);
+$palette-amber-A400: nth($palette-amber, 13);
+$palette-amber-A700: nth($palette-amber, 14);
+
+$palette-orange:
+#FFF3E0,
+#FFE0B2,
+#FFCC80,
+#FFB74D,
+#FFA726,
+#FF9800,
+#FB8C00,
+#F57C00,
+#EF6C00,
+#E65100,
+#FFD180,
+#FFAB40,
+#FF9100,
+#FF6D00
+;
+
+$palette-orange-50: nth($palette-orange, 1);
+$palette-orange-100: nth($palette-orange, 2);
+$palette-orange-200: nth($palette-orange, 3);
+$palette-orange-300: nth($palette-orange, 4);
+$palette-orange-400: nth($palette-orange, 5);
+$palette-orange-500: nth($palette-orange, 6);
+$palette-orange-600: nth($palette-orange, 7);
+$palette-orange-700: nth($palette-orange, 8);
+$palette-orange-800: nth($palette-orange, 9);
+$palette-orange-900: nth($palette-orange, 10);
+$palette-orange-A100: nth($palette-orange, 11);
+$palette-orange-A200: nth($palette-orange, 12);
+$palette-orange-A400: nth($palette-orange, 13);
+$palette-orange-A700: nth($palette-orange, 14);
+
+$palette-deep-orange:
+#FBE9E7,
+#FFCCBC,
+#FFAB91,
+#FF8A65,
+#FF7043,
+#FF5722,
+#F4511E,
+#E64A19,
+#D84315,
+#BF360C,
+#FF9E80,
+#FF6E40,
+#FF3D00,
+#DD2C00
+;
+
+$palette-deep-orange-50: nth($palette-deep-orange, 1);
+$palette-deep-orange-100: nth($palette-deep-orange, 2);
+$palette-deep-orange-200: nth($palette-deep-orange, 3);
+$palette-deep-orange-300: nth($palette-deep-orange, 4);
+$palette-deep-orange-400: nth($palette-deep-orange, 5);
+$palette-deep-orange-500: nth($palette-deep-orange, 6);
+$palette-deep-orange-600: nth($palette-deep-orange, 7);
+$palette-deep-orange-700: nth($palette-deep-orange, 8);
+$palette-deep-orange-800: nth($palette-deep-orange, 9);
+$palette-deep-orange-900: nth($palette-deep-orange, 10);
+$palette-deep-orange-A100: nth($palette-deep-orange, 11);
+$palette-deep-orange-A200: nth($palette-deep-orange, 12);
+$palette-deep-orange-A400: nth($palette-deep-orange, 13);
+$palette-deep-orange-A700: nth($palette-deep-orange, 14);
+
+$palette-brown:
+#EFEBE9,
+#D7CCC8,
+#BCAAA4,
+#A1887F,
+#8D6E63,
+#795548,
+#6D4C41,
+#5D4037,
+#4E342E,
+#3E2723,
+#D7CCC8,
+#BCAAA4,
+#8D6E63,
+#5D4037
+;
+
+$palette-brown-50: nth($palette-brown, 1);
+$palette-brown-100: nth($palette-brown, 2);
+$palette-brown-200: nth($palette-brown, 3);
+$palette-brown-300: nth($palette-brown, 4);
+$palette-brown-400: nth($palette-brown, 5);
+$palette-brown-500: nth($palette-brown, 6);
+$palette-brown-600: nth($palette-brown, 7);
+$palette-brown-700: nth($palette-brown, 8);
+$palette-brown-800: nth($palette-brown, 9);
+$palette-brown-900: nth($palette-brown, 10);
+$palette-brown-A100: nth($palette-brown, 11);
+$palette-brown-A200: nth($palette-brown, 12);
+$palette-brown-A400: nth($palette-brown, 13);
+$palette-brown-A700: nth($palette-brown, 14);
+
+$palette-grey:
+#FAFAFA,
+#F5F5F5,
+#EEEEEE,
+#E0E0E0,
+#BDBDBD,
+#9E9E9E,
+#757575,
+#616161,
+#424242,
+#212121,
+#000000,
+#FFFFFF,
+#EEEEEE,
+#BDBDBD,
+#616161
+;
+
+$palette-grey-50: nth($palette-grey, 1);
+$palette-grey-100: nth($palette-grey, 2);
+$palette-grey-200: nth($palette-grey, 3);
+$palette-grey-300: nth($palette-grey, 4);
+$palette-grey-400: nth($palette-grey, 5);
+$palette-grey-500: nth($palette-grey, 6);
+$palette-grey-600: nth($palette-grey, 7);
+$palette-grey-700: nth($palette-grey, 8);
+$palette-grey-800: nth($palette-grey, 9);
+$palette-grey-900: nth($palette-grey, 10);
+$palette-grey-1000: nth($palette-grey, 11);
+$palette-grey-A100: nth($palette-grey, 12);
+$palette-grey-A200: nth($palette-grey, 13);
+$palette-grey-A400: nth($palette-grey, 14);
+$palette-grey-A700: nth($palette-grey, 15);
+
+$palette-black:
+#ECEFF1,
+#CFD8DC,
+#B0BEC5,
+#90A4AE,
+#78909C,
+#607D8B,
+#546E7A,
+#455A64,
+#37474F,
+#263238,
+#CFD8DC,
+#B0BEC5,
+#78909C,
+#455A64
+;
+
+$palette-black-50: nth($palette-black, 1);
+$palette-black-100: nth($palette-black, 2);
+$palette-black-200: nth($palette-black, 3);
+$palette-black-300: nth($palette-black, 4);
+$palette-black-400: nth($palette-black, 5);
+$palette-black-500: nth($palette-black, 6);
+$palette-black-600: nth($palette-black, 7);
+$palette-black-700: nth($palette-black, 8);
+$palette-black-800: nth($palette-black, 9);
+$palette-black-900: nth($palette-black, 10);
+$palette-black-A100: nth($palette-black, 11);
+$palette-black-A200: nth($palette-black, 12);
+$palette-black-A400: nth($palette-black, 13);
+$palette-black-A700: nth($palette-black, 14);
+
+@each $colorName, $colorMap in $materialColorsMap {
+
+    @each $hue, $hexValue in map-get($colorMap, 'hues') {
+
+        .#{$colorName}-#{$hue}-bg {
+            background-color: $hexValue !important;
+        }
+
+        .md-#{$colorName}-#{$hue}-bg {
+            background-color: $hexValue !important;
+            color: map-get($contrastsMap, map-get(map-get($colorMap, 'contrasts'), $hue));
+        }
+
+        .#{$colorName}-#{$hue}-fg {
+            color: $hexValue !important;
+        }
+
+        .#{$colorName}-#{$hue}-border {
+            border-color: $hexValue !important;
+        }
+
+        .#{$colorName}-#{$hue}-border-top {
+            border-top-color: $hexValue !important;
+        }
+
+        .#{$colorName}-#{$hue}-border-right {
+            border-right-color: $hexValue !important;
+        }
+
+        .#{$colorName}-#{$hue}-border-bottom {
+            border-bottom-color: $hexValue !important;
+        }
+
+        .#{$colorName}-#{$hue}-border-left {
+            border-left-color: $hexValue !important;
+        }
+
+        @if ($hue == '500') {
+
+            .md-#{$colorName}-bg {
+                background-color: $hexValue !important;
+                color: map-get($contrastsMap, map-get(map-get($colorMap, 'contrasts'), $hue));
+            }
+
+            .#{$colorName}-bg {
+                background-color: $hexValue !important;
+            }
+
+            .#{$colorName}-fg {
+                color: $hexValue !important;
+            }
+
+            .#{$colorName}-border {
+                border-color: $hexValue !important;
+            }
+
+            .#{$colorName}-border-top {
+                border-top-color: $hexValue !important;
+            }
+
+            .#{$colorName}-border-right {
+                border-right-color: $hexValue !important;
+            }
+
+            .#{$colorName}-border-bottom {
+                border-bottom-color: $hexValue !important;
+            }
+
+            .#{$colorName}-border-left {
+                border-left-color: $hexValue !important;
+            }
+        }
+    }
+}
+// Font weight helpers
+@for $weight from 1 through 9 {
+
+    .font-weight-#{$weight * 100} {
+        font-weight: #{$weight * 100};
+    }
+}
+
+// Font size helpers
+@for $size from 1 through 60 {
+
+    .font-size-#{$size * 2} {
+        font-size: #{$size * 2}px;
+    }
+}
+
+// Line height helpers
+@for $lineHeight from 1 through 60 {
+
+    .line-height-#{$lineHeight * 2} {
+        line-height: #{$lineHeight * 2}px;
+    }
+}
+
+// Truncate
+.text-truncate {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// Nowrap
+.text-nowrap {
+    white-space: nowrap;
+}
+.text-left {
+    text-align: left;
+}
+.text-center {
+    text-align: center;
+}
+.text-right {
+    text-align: right;
+}
+.fullwidth {
+    display: block;
+    width: 100%;
+}
+@for $i from 0 through 20 {
+
+    .padding-#{$i * 5},
+    .p-#{$i * 5} {
+        padding: #{($i * 5) + 'px'};
+    }
+
+    .padding-top-#{$i * 5},
+    .pt-#{$i * 5} {
+        padding-top: #{($i * 5) + 'px'};
+    }
+
+    .padding-right-#{$i * 5},
+    .pr-#{$i * 5} {
+        padding-right: #{($i * 5) + 'px'};
+    }
+
+    .padding-bottom-#{$i * 5},
+    .pb-#{$i * 5} {
+        padding-bottom: #{($i * 5) + 'px'};
+    }
+
+    .padding-left-#{$i * 5},
+    .pl-#{$i * 5} {
+        padding-left: #{($i * 5) + 'px'};
+    }
+
+    .padding-horizontal-#{$i * 5},
+    .ph-#{$i * 5} {
+        padding-left: #{($i * 5) + 'px'};
+        padding-right: #{($i * 5) + 'px'};
+    }
+
+    .padding-vertical-#{$i * 5},
+    .pv-#{$i * 5} {
+        padding-top: #{($i * 5) + 'px'};
+        padding-bottom: #{($i * 5) + 'px'};
+    }
+}
+
+// Multiples of 8, Max: 96, Excluding 0 and multiples of 5
+@for $i from 1 through 12 {
+
+    @if (($i * 8) % 5 != 0) {
+
+        .padding-#{$i * 8},
+        .p-#{$i * 8} {
+            padding: #{($i * 8) + 'px'};
+        }
+
+        .padding-top-#{$i * 8},
+        .pt-#{$i * 8} {
+            padding-top: #{($i * 8) + 'px'};
+        }
+
+        .padding-right-#{$i * 8},
+        .pr-#{$i * 8} {
+            padding-right: #{($i * 8) + 'px'};
+        }
+
+        .padding-bottom-#{$i * 8},
+        .pb-#{$i * 8} {
+            padding-bottom: #{($i * 8) + 'px'};
+        }
+
+        .padding-left-#{$i * 8},
+        .pl-#{$i * 8} {
+            padding-left: #{($i * 8) + 'px'};
+        }
+
+        .padding-horizontal-#{$i * 8},
+        .ph-#{$i * 8} {
+            padding-left: #{($i * 8) + 'px'};
+            padding-right: #{($i * 8) + 'px'};
+        }
+
+        .padding-vertical-#{$i * 8},
+        .pv-#{$i * 8} {
+            padding-top: #{($i * 8) + 'px'};
+            padding-bottom: #{($i * 8) + 'px'};
+        }
+    }
+}
+
+// Margin helpers
+// Multiples of 5, max:100
+@for $i from -5 through 20 {
+
+    .margin-#{$i * 5},
+    .m-#{$i * 5} {
+        margin: #{($i * 5) + 'px'} !important;
+    }
+
+    .margin-top-#{$i * 5},
+    .mt-#{$i * 5} {
+        margin-top: #{($i * 5) + 'px'} !important;
+    }
+
+    .margin-right-#{$i * 5},
+    .mr-#{$i * 5} {
+        margin-right: #{($i * 5) + 'px'} !important;
+    }
+
+    .margin-bottom-#{$i * 5},
+    .mb-#{$i * 5} {
+        margin-bottom: #{($i * 5) + 'px'} !important;
+    }
+
+    .margin-left-#{$i * 5},
+    .ml-#{$i * 5} {
+        margin-left: #{($i * 5) + 'px'} !important;
+    }
+
+    .margin-horizontal-#{$i * 5},
+    .mh-#{$i * 5} {
+        margin-left: #{($i * 5) + 'px'} !important;
+        margin-right: #{($i * 5) + 'px'} !important;
+    }
+
+    .margin-vertical-#{$i * 5},
+    .mv-#{$i * 5} {
+        margin-top: #{($i * 5) + 'px'} !important;
+        margin-bottom: #{($i * 5) + 'px'} !important;
+    }
+}
+
+// Multiples of 8, Max: 96, Excluding 0 and multiples of 5
+@for $i from -5 through 12 {
+
+    @if (($i * 8) % 5 != 0) {
+
+        .margin-#{$i * 8},
+        .m-#{$i * 8} {
+            margin: #{($i * 8) + 'px'} !important;
+        }
+
+        .margin-top-#{$i * 8},
+        .mt-#{$i * 8} {
+            margin-top: #{($i * 8) + 'px'} !important;
+        }
+
+        .margin-right-#{$i * 8},
+        .mr-#{$i * 8} {
+            margin-right: #{($i * 8) + 'px'} !important;
+        }
+
+        .margin-bottom-#{$i * 8},
+        .mb-#{$i * 8} {
+            margin-bottom: #{($i * 8) + 'px'} !important;
+        }
+
+        .margin-left-#{$i * 8},
+        .ml-#{$i * 8} {
+            margin-left: #{($i * 8) + 'px'} !important;
+        }
+
+        .margin-horizontal-#{$i * 8},
+        .mh-#{$i * 8} {
+            margin-left: #{($i * 8) + 'px'} !important;
+            margin-right: #{($i * 8) + 'px'} !important;
+        }
+
+        .margin-vertical-#{$i * 8},
+        .mv-#{$i * 8} {
+            margin-top: #{($i * 8) + 'px'} !important;
+            margin-bottom: #{($i * 8) + 'px'} !important;
+        }
+    }
+}
+
+// Height and width helpers
+// Multiples of 5, Max: 500
+@for $i from 0 through 100 {
+
+    .height-#{$i * 5},
+    .h-#{$i * 5} {
+        height: #{($i * 5) + 'px'} !important;
+        min-height: #{($i * 5) + 'px'} !important;
+        max-height: #{($i * 5) + 'px'} !important;
+    }
+
+    .width-#{$i * 5},
+    .w-#{$i * 5} {
+        width: #{($i * 5) + 'px'} !important;
+        min-width: #{($i * 5) + 'px'} !important;
+        max-width: #{($i * 5) + 'px'} !important;
+    }
+}
+
+// Height and width helpers
+// Multiples of 8, Max: 800, Excluding 0 and multiples of 5
+@for $i from 1 through 100 {
+
+    @if (($i * 8) % 5 != 0) {
+
+        .height-#{$i * 8},
+        .h-#{$i * 8} {
+            height: #{($i * 8) + 'px'} !important;
+            min-height: #{($i * 8) + 'px'} !important;
+            max-height: #{($i * 8) + 'px'} !important;
+        }
+
+        .width-#{$i * 8},
+        .w-#{$i * 8} {
+            width: #{($i * 8) + 'px'} !important;
+            min-width: #{($i * 8) + 'px'} !important;
+            max-width: #{($i * 8) + 'px'} !important;
+        }
+    }
+}
+
+// Height and width helpers
+// Multiples of 5, Max: 500
+@for $i from 0 through 100 {
+
+    .height-#{$i * 5},
+    .h-#{$i * 5} {
+        height: #{($i * 5) + 'px'} !important;
+        min-height: #{($i * 5) + 'px'} !important;
+        max-height: #{($i * 5) + 'px'} !important;
+    }
+
+    .width-#{$i * 5},
+    .w-#{$i * 5} {
+        width: #{($i * 5) + 'px'} !important;
+        min-width: #{($i * 5) + 'px'} !important;
+        max-width: #{($i * 5) + 'px'} !important;
+    }
+}
+
+// Height and width helpers
+// Multiples of 8, Max: 800, Excluding 0 and multiples of 5
+@for $i from 1 through 100 {
+
+    @if (($i * 8) % 5 != 0) {
+
+        .height-#{$i * 8},
+        .h-#{$i * 8} {
+            height: #{($i * 8) + 'px'} !important;
+            min-height: #{($i * 8) + 'px'} !important;
+            max-height: #{($i * 8) + 'px'} !important;
+        }
+
+        .width-#{$i * 8},
+        .w-#{$i * 8} {
+            width: #{($i * 8) + 'px'} !important;
+            min-width: #{($i * 8) + 'px'} !important;
+            max-width: #{($i * 8) + 'px'} !important;
+        }
+    }
+}
+
+.c-white{
+    color: #ffffff !important;
+}
+
+.t-align-right{
+    text-align: right!important;
+}
+.t-align-left{
+    text-align: left!important;
+}
+.t-align-center{
+    text-align: center!important;
+}
+.no-border{
+    border: none !important;
+}

@@ -1,0 +1,104 @@
+<div id="login" class="inner-scroll" fxLayout="row" fxLayoutAlign="start">
+
+    <div id="login-intro" fxFlex fxHide fxShow.gt-xs>
+
+        <!--<div class="logo" [@animate]="{value:'*',params:{scale:'0.2'}}">-->
+            <!--<img src="assets/images/logos/fuse.svg">-->
+        <!--</div>-->
+
+        <div class="title" [@animate]="{value:'*',params:{delay:'50ms',y:'25px'}}">
+            {{ 'app.login.welcome_msg' | translate }}
+        </div>
+
+        <div class="description" [@animate]="{value:'*',params:{delay:'100ms',y:'25px'}}">
+            {{ 'app.login.welcome_msg.sub' | translate }}
+        </div>
+
+    </div>
+
+    <div id="login-form-wrapper" fusePerfectScrollbar
+         [@animate]="{value:'*',params:{delay:'300ms',x:'100%'}}">
+
+        <div id="login-form">
+
+            <div class="logo">
+                <img src="assets/images/logos/lexforis_online.png" alt="Logo">
+            </div>
+
+<!--            <div class="title center">-->
+<!--                <div>{{ 'app.login' | translate }}</div>-->
+<!--            </div>-->
+
+            <div class="center">
+                <button mat-button *ngFor="let lang of languages" (click)="setLanguage(lang)">
+                    <img class="flag mr-8" [src]="'assets/images/flags/'+lang.flag+'.png'">
+                    <span class="iso">{{lang.title}}</span>
+                </button>
+            </div>
+
+            <form name="loginForm" [formGroup]="loginForm" novalidate (submit)="login()">
+
+                <mat-form-field appearance="outline">
+                    <mat-label>{{ 'app.login.mail' | translate }}</mat-label>
+                    <input matInput formControlName="email" name="email">
+                    <mat-icon matSuffix class="secondary-text">mail</mat-icon>
+                    <mat-error *ngIf="loginForm.get('email').hasError('required')">
+                        <span [translate]="'validation.required'" [translateParams]="{attribute: 'email'}"></span>
+                    </mat-error>
+                    <mat-error
+                        *ngIf="!loginForm.get('email').hasError('required') &&
+                                loginForm.get('email').hasError('email')">
+                        <span [translate]="'validation.email'" [translateParams]="{attribute: 'Email'}"></span>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>{{ 'app.login.password' | translate }}</mat-label>
+                    <input matInput type="password" formControlName="password">
+                    <mat-icon matSuffix class="secondary-text">vpn_key</mat-icon>
+                    <mat-error>
+                        <span [translate]="'validation.required'" [translateParams]="{attribute: 'password'}"></span>
+                    </mat-error>
+                </mat-form-field>
+
+                <div class="remember-forgot-password" fxLayout="row" fxLayout.xs="column"
+                     fxLayoutAlign="space-between center">
+                    <mat-checkbox class="remember-me" aria-label="Remember Me">
+                        {{ 'app.login.remember_password' | translate }}
+                    </mat-checkbox>
+
+                    <a class="forgot-password" [routerLink]="'/pages/auth/forgot-password-2'">
+                        {{ 'app.login.forgot_password' | translate }}
+                    </a>
+                </div>
+
+                <button mat-raised-button color="accent" class="submit-button" aria-label="LOGIN"
+                        [disabled]="loginForm.invalid">
+                    {{ 'app.login' | translate }}
+                </button>
+
+            </form>
+
+            <!--<div class="separator">-->
+                <!--<span class="text">OR</span>-->
+            <!--</div>-->
+
+            <!--<div fxLayout="column" fxLayoutAlign="start center">-->
+
+                <!--<button mat-raised-button class="google">-->
+                    <!--Log in with Google-->
+                <!--</button>-->
+
+                <!--<button mat-raised-button class="facebook">-->
+                    <!--Log in with Facebook-->
+                <!--</button>-->
+
+            <!--</div>-->
+
+            <div class="register" fxLayout="column" fxLayoutAlign="center center">
+                <span class="text">{{ 'app.login.create_account_msg' | translate }}</span>
+                <a class="link" [routerLink]="'/auth/register'">{{ 'app.login.create_account' | translate }}</a>
+            </div>
+        </div>
+    </div>
+</div>

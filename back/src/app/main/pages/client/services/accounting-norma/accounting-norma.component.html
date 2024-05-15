@@ -1,0 +1,219 @@
+<mat-sidenav-container class="h-100-p">
+  <mat-sidenav
+    #uploadedSidenav id="invoices-filter-sidenav"
+    mode="over" position="end"
+  >
+    <mat-toolbar id="uploaded-sidenav-toolbar" class="compact">
+      <button (click)="uploadedSidenav.toggle()" mat-button>
+        <mdi-icon>arrow-expand-right</mdi-icon>
+        <span class="ml-4">{{'toolbar.filter_hide'|translate}}</span>
+      </button>
+      <span fxFlex></span>
+      <button (click)="clearFilter()" mat-button>
+        <mdi-icon>broom</mdi-icon>
+        <span class="ml-4">{{'toolbar.filter_clear'|translate}}</span>
+      </button>
+      <button (click)="search(true)" mat-raised-button color="accent">
+        <mdi-icon>filter</mdi-icon>
+        <span class="ml-4">{{'toolbar.filter_now'|translate}}</span>
+      </button>
+    </mat-toolbar>
+    <div fxLayout="column" fxLayoutAlign="start stretch" class="px-16">
+      <mat-form-field>
+        <mdi-icon matPrefix>magnify</mdi-icon>
+        <input matInput [(ngModel)]="newFilter.search"
+               type="text" (keyup.enter)="search(true)"
+               placeholder="{{'app.search'|translate}}">
+
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput [matDatepicker]="createdAtMobile0" placeholder="Desde" [(ngModel)]="newFilter.all.created_at[0]" [max]="newFilter.all.created_at[1]">
+        <mat-datepicker-toggle matPrefix [for]="createdAtMobile0"></mat-datepicker-toggle>
+        <mat-datepicker #createdAtMobile0></mat-datepicker>
+        <mdi-icon *ngIf="newFilter.all.created_at[0]" style="cursor:pointer;" matSuffix (click)="newFilter.all.created_at[0]=null">broom</mdi-icon>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput [matDatepicker]="createdAtMobile1" placeholder="Hasta" [(ngModel)]="newFilter.all.created_at[1]" [min]="newFilter.all.created_at[0]">
+        <mat-datepicker-toggle matPrefix [for]="createdAtMobile1"></mat-datepicker-toggle>
+        <mat-datepicker #createdAtMobile1></mat-datepicker>
+        <mdi-icon *ngIf="newFilter.all.created_at[1]" style="cursor:pointer;" matSuffix (click)="newFilter.all.created_at[1]=null">broom</mdi-icon>
+      </mat-form-field>
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content id="accounting-main">
+    <mat-toolbar id="accounting-toolbar" class="compact" fxLayoutAlign="start center">
+      <button [routerLink]="'/client/services/accounting'" mat-button><mdi-icon fontSize="24">chevron-left</mdi-icon> <span>{{ 'pages.services.accounting_norma.back_to_accounting' | translate }}</span></button>
+      <span fxFlex></span>
+      <span class="mr-68">{{ 'pages.services.accounting_norma.title' | translate }}</span>
+      <span fxFlex></span>
+      <!--<ai-loading-spinner *ngIf="loadingPeriods" class="mx-48"></ai-loading-spinner>
+      <mat-form-field *ngIf="!loadingPeriods">
+        <mat-label>Seleccionar períodos de facturación</mat-label>
+        <mat-select [(ngModel)]="selectedPeriods" multiple>
+          <mat-option *ngFor="let p of periods" [value]="p">{{ p.start_at | date:'dd/MM/yyyy HH:mm:ss' }} - {{ p.end_at ? (p.end_at | date:'d/M/yy hh:mm:ss') : 'presente' }}</mat-option>
+        </mat-select>
+      </mat-form-field>-->
+      <!--<button mat-button class="mr-12"><mat-icon class="font-size-24" svgIcon="settings"></mat-icon></button>-->
+    </mat-toolbar>
+    <div id="files-list-wrapper" fusePerfectScrollbar="false">
+      <div id="files-list-content" fxLayout="row wrap">
+        <div fxFlex="100%" fxFlex.gt-md="35%" class="px-16 mb-24">
+          <mat-card class="w-100-p p-0">
+            <mat-card-content>
+              <div ng2FileDrop
+                   *ngIf="uploader"
+                   [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
+                   (fileOver)="fileOverBase($event)"
+                   [uploader]="uploader"
+                   class="drop-zone">
+                <div class="queued-files">
+                  <mat-toolbar class="compact" color="primary">
+                    <mdi-icon class="mx-16">cloud-upload</mdi-icon>
+                    <span class="font-size-14">{{ 'pages.services.accounting_norma.queued_files' | translate }}</span>
+                    <span fxFlex></span>
+                    <button
+                        class="ml-16"
+                        mat-button (click)="uploader.clearQueue()"
+                        [disabled]="uploader.isUploading || uploader.queue.length == 0">
+                      <mdi-icon>broom</mdi-icon> <span>{{'info.upload.clear_queue'|translate}}</span>
+                    </button>
+                  </mat-toolbar>
+                  <mat-list dense *ngIf="uploader.queue.length > 0">
+                    <mat-list-item *ngFor="let file of uploader.queue">
+                      <mdi-icon *ngIf="!file.isUploaded && file.isUploading" mat-list-icon class="mat-accent">progress-upload</mdi-icon>
+                      <mdi-icon *ngIf="file.isUploaded && !file.isError" mat-list-icon class="green-500-fg">check</mdi-icon>
+                      <mdi-icon *ngIf="file.isError" mat-list-icon class="red">exclamation</mdi-icon>
+                      <p mat-line><strong>{{ file.file.name }}</strong></p>
+                      <p mat-line [class.grey-500-fg]="file.file.size != 0" [class.red-500-fg]="file.file.size == 0">{{ file.file.size == 0 ? 0 : parseFileSize(file.file.size, 3, 'KiB') }} KiB</p>
+                      <div *ngIf="file.isUploading" class="progress-bar mr-12">
+                        <mat-progress-bar mode="determinate" [value]="file.progress" color="accent"></mat-progress-bar>
+                        <span class="status">{{ file.progress }}%</span>
+                      </div>
+                      <button
+                          *ngIf="file.isUploaded"
+                          mat-button
+                          (click)="uploader.removeFromQueue(file)"
+                      >
+                        <mdi-icon>close</mdi-icon> <span class="ml-12">{{'app.hide'|translate}}</span>
+                      </button>
+                    </mat-list-item>
+                  </mat-list>
+                </div>
+                <div class="uploader-dropzone">
+                  <label *ngIf="!isCompleted && !isUploading" for="uploader-input" class="upload-button">
+                    <input id="uploader-input" type="file" style="display: none;" ng2FileSelect  [uploader]="uploader">
+                    <ng-template [ngIf]="!isUploading && !isCompleted">
+                      <p [class.hide]="isSm || hasBaseDropZoneOver">{{ 'pages.services.accounting_norma.upload_message_desktop' | translate }}</p>
+                      <p [class.hide]="!isSm || hasBaseDropZoneOver">{{ 'pages.services.accounting_norma.upload_message_mobile' | translate }}</p>
+                      <p [class.hide]="!hasBaseDropZoneOver" class="over">Suelta para subir el documento.</p>
+                    </ng-template>
+                  </label>
+                  <ai-loading-spinner *ngIf="isUploading"></ai-loading-spinner>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        <div fxFlex="100%" fxFlex.gt-md="65%" class="px-16">
+          <mat-card class="p-0">
+            <mat-card-content>
+              <mat-toolbar id="files-list-toolbar" class="compact" color="primary"[class.has-adv-filter]="advFilter">
+                <mat-toolbar-row>
+                  <mdi-icon class="mx-16">cloud-search</mdi-icon>
+                  <span class="font-size-14">{{ 'pages.services.accounting_norma.uploaded_files' | translate }}</span>
+                  <span fxFlex></span>
+                  <mat-form-field *ngIf="!isXs" floatLabel="never">
+                    <mdi-icon matPrefix>magnify</mdi-icon>
+                    <input matInput [(ngModel)]="newFilter.search"
+                           type="text" (keyup.enter)="search(true)"
+                           placeholder="{{'app.search'|translate}}">
+                  </mat-form-field>
+                  <button *ngIf="!isXs" (click)="clearFilter()" mat-button class="ml-16">
+                    <mdi-icon>broom</mdi-icon>
+                    <span class="ml-4">{{'toolbar.filter_clear'|translate}}</span>
+                  </button>
+                  <button *ngIf="!isXs" (click)="search()" mat-raised-button color="accent" class="ml-16">
+                    <mdi-icon>magnify</mdi-icon> <span>{{'toolbar.filter_now'|translate}}</span>
+                  </button>
+                  <button *ngIf="!isXs" (click)="advFilter = !advFilter" mat-button [color]="advFilter ? 'accent':null" class="toggle-adv-filter">
+                    <mdi-icon fontSize="24">chevron-down</mdi-icon>
+                  </button>
+                  <button *ngIf="isXs" (click)="uploadedSidenav.open()" mat-button>
+                    <mdi-icon fontSize="24">filter</mdi-icon>
+                  </button>
+                </mat-toolbar-row>
+                <mat-toolbar-row *ngIf="!isXs" class="adv-filter" [class.show]="advFilter" fxLayoutAlign="end center">
+                  <mat-form-field fxFlex="0 1 auto" class="ml-16">
+                    <input matInput [matDatepicker]="createdAt0" placeholder="{{'app.from'|translate}}" [(ngModel)]="newFilter.all.created_at[0]" [max]="newFilter.all.created_at[1]">
+                    <mat-datepicker-toggle matPrefix [for]="createdAt0"></mat-datepicker-toggle>
+                    <mat-datepicker #createdAt0></mat-datepicker>
+                    <mdi-icon *ngIf="newFilter.all.created_at[0]" style="cursor:pointer;" matSuffix (click)="newFilter.all.created_at[0]=null">broom</mdi-icon>
+                  </mat-form-field>
+                  <mat-form-field fxFlex="0 1 auto" class="ml-16 mr-16">
+                    <input matInput [matDatepicker]="createdAt1" placeholder="{{'app.to'|translate}}" [(ngModel)]="newFilter.all.created_at[1]" [min]="newFilter.all.created_at[0]">
+                    <mat-datepicker-toggle matPrefix [for]="createdAt1"></mat-datepicker-toggle>
+                    <mat-datepicker #createdAt1></mat-datepicker>
+                    <mdi-icon *ngIf="newFilter.all.created_at[1]" style="cursor:pointer;" matSuffix (click)="newFilter.all.created_at[1]=null">broom</mdi-icon>
+                  </mat-form-field>
+                </mat-toolbar-row>
+              </mat-toolbar>
+              <div class="grey-100-bg px-16 py-4"><span *ngIf="paginationConfig && paginationConfig.totalItems">{{'pagination.showing'|translate}} {{ paginationConfig.from }} - {{ paginationConfig.to }} / {{ paginationConfig.totalItems }}</span></div>
+              <div class="files-list">
+                <table cellspacing="0" cellpadding="0">
+                  <thead>
+                  <tr>
+                    <th class="id">
+                      <ai-custom-th sortField="id" [(filter)]="filter" (sortChanged)="loadData(1)">ID</ai-custom-th>
+                    </th>
+                    <th class="name" colspan="2">
+                      <ai-custom-th sortField="upload.original_name" [(filter)]="filter" (sortChanged)="loadData(1)">
+                        {{'app.name'|translate}}</ai-custom-th>
+                    </th>
+                    <th class="date">
+                      <ai-custom-th sortField="created_at" [(filter)]="filter" (sortChanged)="loadData(1)">
+                        {{'app.date'|translate}}</ai-custom-th>
+                    </th>
+                    <th class="actions"></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr
+                      (click)="openFile(au.id)"
+                      *ngFor="let au of accUploads | paginate: paginationConfig"
+                      [class.cancelled]="au.cancelled_at"
+                  >
+                    <td class="id">{{au.id}}</td>
+                    <td class="icon">
+                      <mdi-icon>{{ au.upload.getIcon() }}</mdi-icon>
+                    </td>
+                    <td class="name">
+                      <strong>{{ au.upload.original_name }}</strong>
+                    </td>
+                    <td class="date">
+                      <span class="grey-600-fg">{{ au.created_at | date : 'dd/MM/yyyy HH:mm:ss' }}</span>
+                    </td>
+                    <td class="actions">
+                      <button (click)="download(au)"
+                          mat-icon-button
+                      ><mdi-icon>download</mdi-icon></button>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+                <div class="loader" [class.hide]="!loadingUploads">
+                  <ai-loading-spinner></ai-loading-spinner>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+    <ai-pagination-template
+        id="invoices-pagination"
+        [pagination]="paginationConfig"
+        (pageChange)="loadData($event)"
+    ></ai-pagination-template>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+

@@ -1,0 +1,7 @@
+<div class="th-container" (click)="click($event)" [ngClass]="{'pointer':sortField}">
+    <ng-content>
+    </ng-content>
+    <mdi-icon *ngIf="status=='asc' && sortField==filter.sort[0]">sort-ascending</mdi-icon>
+    <mdi-icon *ngIf="status=='desc' && sortField==filter.sort[0]" >sort-descending</mdi-icon>
+</div>
+

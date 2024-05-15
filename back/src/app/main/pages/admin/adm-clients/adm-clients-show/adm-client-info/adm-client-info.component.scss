@@ -1,0 +1,26 @@
+:host {
+  width: 100%;
+}
+
+.client_info {
+  padding: 12px 0 0;
+  list-style: none;
+  .info_item {
+    border: 1px solid rgba(0,0,0,.12);
+    background-color: rgba(0,0,0,.03);
+    padding: 6px 16px;
+    margin-right: 12px;
+    margin-bottom: 12px;
+    .label {
+      display: block;
+      line-height: 1;
+    }
+    .data {
+      display: block;
+      font-weight: 700;
+      font-size: 1.125em;
+      letter-spacing: .05em;
+      line-height: 1;
+    }
+  }
+}

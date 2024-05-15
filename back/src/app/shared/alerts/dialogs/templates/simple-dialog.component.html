@@ -1,0 +1,5 @@
+<div>
+    <h3 *ngIf="data.title">{{ data.title }}</h3>
+    <p *ngIf="data.text">{{ data.text }}</p>
+    <button class="btn-w-md" mat-button-raised color="primary" (click)="dialogRef.close(true)">Aceptar</button>
+</div>

@@ -1,0 +1,376 @@
+<!-- HEADER PANEL -->
+
+<div class="m-20" *ngIf="declaration">
+    <mat-accordion>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <span title="{{ 'app.back' | translate }}"><a (click)="goToModels()" style="cursor: pointer;text-decoration: none;">{{'app.models.management' | translate}}</a> / {{'app.models.model' | translate}} 720</span>
+                </mat-panel-title>
+                <mat-panel-description>
+                    <span>{{ 'model.draft' | translate }} #{{this.draft_id}} - {{'model.year' | translate }} {{ declaration.draft.year }} - {{ getDraftState(this.declaration.draft.state) | translate }}</span>
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                <mat-form-field fxFlex="100%" fxFlex.gt-sm="80%">
+                    <input matInput placeholder="{{'client.name' | translate }}" readonly [(ngModel)]="declaration.declarant.full_name">
+                </mat-form-field>
+
+                <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                    <input matInput placeholder="{{'client.identification' | translate }}" readonly [(ngModel)]="declaration.declarant.additionalInfo.identification">
+                </mat-form-field>
+            </div>
+
+            <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                    <input matInput placeholder="{{'draft.created' | translate }}" readonly
+                           [ngModel]="declaration.draft.created_at ? (declaration.draft.created_at | date:'dd/MM/yyyy HH:mm') : ('draft.no.date' | translate)">
+                </mat-form-field>
+
+                <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                    <input matInput placeholder="{{'draft.last.update' | translate }}" readonly
+                           [ngModel]="declaration.updated_at ? (declaration.updated_at | date:'dd/MM/yyyy HH:mm') : ('draft.no.date' | translate)">
+                </mat-form-field>
+
+                <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                    <mat-select [(ngModel)]="declaration.draft.year" placeholder="{{'model.year' | translate }}" required>
+                        <mat-option *ngFor="let year of years" [value]="year">
+                            {{year}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                <span><small>{{ 'declaration.tip.year.required' | translate }}</small></span>
+            </div>
+
+        </mat-expansion-panel>
+    </mat-accordion>
+</div>
+
+<!-- ERRORS PANEL -->
+
+<div class="m-20">
+    <mat-accordion>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <span [ngClass]="this.colorError">{{ 'app.log.errors' | translate }}: {{ this.draftErrors.length }}</span>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div fxLayout="row" fxLayoutAlign="space-around center">
+                <span><strong>{{ 'app.declaration.progress' | translate }}: {{ this.progress }}%</strong></span>
+            </div>
+            <div fxLayout="column" fxLayoutAlign="space-around center">
+                <div *ngIf="draftErrors.length > 0 && progress == 33">
+                    <span class="redClass">{{'declaration.720.errors.in.property' | translate }}</span>
+                </div>
+<!--                <div *ngIf="draftErrors.length > 0">-->
+<!--                    <div *ngFor="let i of draftErrors; index as pos">-->
+<!--                        <span class="redClass">{{'app.error.in.section' | translate }} {{ i.section+1 }}: {{ i.name | translate }}</span>-->
+<!--                    </div>-->
+<!--                </div>-->
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-around center">
+                <div fxLayout="column" fxLayoutAlign="center center">
+                    <div *ngFor="let i of draftAlerts">
+                        <span class="greenClass">{{ i.name | translate }}</span>
+                    </div>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-around center" class="pt-4">
+                <mat-progress-bar mode="determinate" [value]="this.progress"></mat-progress-bar>
+            </div>
+        </mat-expansion-panel>
+    </mat-accordion>
+</div>
+
+<!-- CONTENT PANEL -->
+
+<mat-card class="mx-20" *ngIf="declaration">
+<!--    <div class="pb-16" fxLayout="row" fxLayoutAlign="space-between start">-->
+    <div class="pb-16" fxLayout="row" fxLayoutAlign="center center">
+        <div fxLayout="column" fxLayoutAlign="start start" >
+            <div fxLayout="row">
+<!--                <button mat-button (click)="save()" class="grey-900-fg">{{'app.save' | translate}}</button>-->
+<!--                <button mat-button (click)="validateDeclaration(true,0)" class="green-900-fg" [disabled]="this.loadProperty">{{'app.validate' | translate}}</button>-->
+<!--                <button mat-button class="grey-900-fg">{{'app.export' | translate}}</button>-->
+            </div>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="start start">
+            <mat-chip-list>
+                <mat-chip color="primary" selected>{{ 'declaration.section' | translate }} {{ selectedIndex+1 }}</mat-chip>
+            </mat-chip-list>
+        </div>
+    </div>
+    <mat-divider></mat-divider>
+
+    <mat-horizontal-stepper linear #stepper class="pt-4" (selectionChange)="stepperStateChange($event)">
+
+        <!-- SECTION 1 -->
+
+        <mat-step [stepControl]="userForm">
+            <ng-template matStepLabel>{{ 'declaration.declarant.tab' | translate }}</ng-template>
+            <form #userForm="ngForm">
+                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                    <fieldset class="w-100-p" style="border-color: rgba(255, 255, 255, 0.4);">
+                        <legend>&nbsp;{{'client.declarant_person' | translate }}&nbsp;</legend>
+                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                <input matInput
+                                       [(ngModel)]="declaration.declarant.additionalInfo.identification" #nif="ngModel"
+                                       placeholder="NIF"
+                                       type="text"
+                                       name="NIF"
+                                       required
+                                       readonly
+                                >
+                            </mat-form-field>
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="80%">
+                                <input matInput
+                                       placeholder="{{'client.bussines_name' | translate}}"
+                                       [(ngModel)]="declaration.declarant.full_name" #bussinesName="ngModel"
+                                       type="text"
+                                       name="bussinesName"
+                                       required
+                                       readonly
+                                >
+                            </mat-form-field>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start" style="margin-top: 10px">
+                    <fieldset class="w-100-p" style="border-color: rgba(255, 255, 255, 0.4);">
+                        <legend>&nbsp;{{'client.declarant_contact_person' | translate }}&nbsp;</legend>
+                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="70%">
+                                <input matInput
+                                       placeholder="{{'client.contact_person' | translate}}"
+                                       [(ngModel)]="declaration.person_contact_name" #ContactPersonName="ngModel"
+                                       name="contacPersonName"
+                                       type="text"
+                                       readonly
+                                       required>
+                            </mat-form-field>
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="30%">
+                                <input matInput
+                                       placeholder="{{'client.phone_contact_person' | translate}}"
+                                       [(ngModel)]="declaration.person_contact_phone" #ContactPersonPhone="ngModel"
+                                       name="contacPersonPhone"
+                                       type="text"
+                                       maxlength="9"
+                                       minlength="9"
+                                       readonly
+                                       required>
+                                <mat-hint align="end">{{declaration.person_contact_phone ? declaration.person_contact_phone.length : 0}} / 9</mat-hint>
+                            </mat-form-field>
+                        </div>
+                    </fieldset>
+                </div>
+            </form>
+            <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="space-between start" style="margin-top: 10px">
+                <div fxLayout="column">
+                    <span><small>{{ 'declaration.tip.fields.required' | translate }}</small></span>
+                </div>
+                <div fxLayout="column">
+                    <button class="grey-900-fg" mat-button matStepperNext>{{'app.next' | translate}}</button>
+                </div>
+            </div>
+        </mat-step>
+
+        <!-- SECTION 2 -->
+
+        <mat-step>
+            <form>
+                <ng-template matStepLabel>{{ 'declaration.property.tab' | translate }}</ng-template>
+
+                <div class="w-100-p pb-4" fxLayout="row wrap" fxLayoutAlign="space-between start" style="margin-top: 10px">
+                    <div fxLayout="column" fxLayoutAlign="start start">
+                        <div fxLayout="row" *ngIf="declaration.properties.length > 0">
+                            <button mat-button (click)="showListOfProperties()" class="grey-900-fg" *ngIf="!this.loadProperty">
+                                {{ 'app.declaration.registers' | translate }}: {{ this.declaration.properties.length}}
+                            </button>
+                            <button mat-button (click)="showListOfProperties()" class="grey-900-fg" *ngIf="this.loadProperty">
+                                {{ 'app.declaration.show.list.of.properties' | translate }} ({{ this.declaration.properties.length}})
+                            </button>
+                        </div>
+                        <div fxLayout="row" *ngIf="declaration.properties.length == 0">
+                            <!-- Dummy -->
+                        </div>
+                    </div>
+                    <div fxLayout="column" fxLayoutAlign="end end">
+                        <button mat-button (click)="addProperty()" color="accent" *ngIf="!this.loadProperty">
+                            <mat-icon>add_circle_outline</mat-icon>
+                            {{ 'app.declaration.add.register' | translate }}
+                        </button>
+                    </div>
+                </div>
+                <mat-divider></mat-divider>
+
+                <div *ngIf="!this.loadingProperties">
+
+                <!-- Tabla de propiedades -->
+                <div class="w-100-p" style="margin-top: 10px" *ngIf="(declaration.properties.length > 0) && !this.loadProperty">
+                    <table mat-table [dataSource]="dataSource" class="models-table" style="width: 100%" matSort>
+
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> # </th>
+                            <td mat-cell *matCellDef="let element">
+                                <span>{{ element.id }}</span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="created_at">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'model.created_at' | translate }}</th>
+                            <td mat-cell *matCellDef="let element">
+                                <span>{{ element.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="updated_at">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'model.updated_at' | translate }}</th>
+                            <td mat-cell *matCellDef="let element">
+                                <span>{{ element.updated_at | date:'dd/MM/yyyy HH:mm' }}</span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="errors">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'app.log.errors' | translate }}</th>
+                            <td mat-cell *matCellDef="let element">
+                                <span [ngClass]="element.colorError"> {{getErrorsInProperty(element.id)}} </span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="val1">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'declaration.property.val1' | translate }} (€)</th>
+                            <td mat-cell *matCellDef="let element">
+                                <span *ngIf="element.valoration1_id.sign === 'N' && element.valoration1_id.value">-</span>
+                                <span *ngIf="element.valoration1_id.sign === 'P' && element.valoration1_id.value">+</span>
+                                <span>{{ element.valoration1_id.completeValoration }}</span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="val2">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'declaration.property.val2' | translate }} (€)</th>
+                            <td mat-cell *matCellDef="let element">
+                                <span *ngIf="element.valoration2_id.sign === 'N' && element.valoration2_id.value">-</span>
+                                <span *ngIf="element.valoration2_id.sign === 'P' && element.valoration2_id.value">+</span>
+                                <span>{{ element.valoration2_id.completeValoration }}</span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="options">
+                            <th mat-header-cell *matHeaderCellDef></th>
+                            <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation();">
+                                <button mat-button (click)="deleteProperty(element.id)" color="warn" title="{{ 'app.delete' | translate }}">
+                                    <mat-icon aria-hidden="false" aria-label="Example home icon">delete</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="showProperty(row.id)"></tr>
+                    </table>
+                </div>
+                <div class="w-100-p" fxLayout="column" fxLayoutAlign="center center" style="margin-top: 20px" *ngIf="declaration.properties.length == 0">
+                    <span>{{ 'app.declaration.without.properties' | translate }}</span>
+                    <button mat-button class="blue-900-fg" (click)="addProperty()">
+                        {{ 'app.declaration.add.property' | translate }}
+                        <mat-icon aria-hidden="false" aria-label="Example home icon">add_circle_outline</mat-icon>
+                    </button>
+                </div>
+
+                </div>
+                <!-- FIN Tabla de propiedades -->
+
+                <!-- Formulario de propiedad -->
+                <div *ngIf="loadProperty">
+                    <app-adm-seven-tow-cero-property [property]="declaration.properties[property_index]" (changeValue)="saveProperty($event)"></app-adm-seven-tow-cero-property>
+                </div>
+
+                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="space-between start" style="margin-top: 10px">
+                    <div fxLayout="column">
+<!--                        <span><small>{{ 'declaration.tip.fields.required' | translate }}</small></span>-->
+                    </div>
+                    <div fxLayout="column">
+                        <div fxLayout="row">
+                            <button mat-button matStepperPrevious>{{'app.back' | translate}}</button>
+                            <button mat-button matStepperNext>{{'app.next' | translate}}</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </mat-step>
+
+        <!-- SECTION 3 -->
+
+        <mat-step>
+            <ng-template matStepLabel>{{ 'declaration.summary.tab' | translate }}</ng-template>
+
+            <div class="w-100-p" fxLayout="column" fxLayoutAlign="start start" style="margin-top: 10px" *ngIf="draftErrors.length > 0">
+                <span>{{ 'declaration.with.errors.please.complete' | translate }}</span>
+            </div>
+
+            <div class="w-100-p" fxLayout="column" fxLayoutAlign="start start" style="margin-top: 10px" *ngIf="draftErrors.length == 0">
+
+                <div class="w-100-p" fxLayout="column" fxLayoutAlign="start start">
+                    <span>{{ 'declaration.ok' | translate }}</span>
+                    <span>{{ 'app.declaration.registers.final' | translate }}: {{declaration.properties.length}}</span>
+                </div>
+
+                <div class="w-100-p" fxLayout="row" fxLayoutAlign="center center" style="margin-top: 10px">
+                    <mat-card>
+                        <mat-card-header>
+                            <mat-card-title>{{ declaration.declarant.full_name }}</mat-card-title>
+                            <mat-card-subtitle>{{ declaration.declarant.additionalInfo.identification }}</mat-card-subtitle>
+                        </mat-card-header>
+
+                        <mat-card-content>
+                            <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                                <mat-form-field fxFlex="100%" fxFlex.gt-sm="100%">
+                                    <input matInput
+                                           placeholder="{{'declarant.property.total.valoration.1' | translate}}"
+                                           type="text"
+                                           [value]="totalValoration1"
+                                           readonly
+                                    >
+                                    <mat-icon matSuffix>euro_symbol</mat-icon>
+                                </mat-form-field>
+                            </div>
+                            <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                                <mat-form-field fxFlex="100%" fxFlex.gt-sm="100%">
+                                    <input matInput
+                                           placeholder="{{'declarant.property.total.valoration.2' | translate}}"
+                                           type="text"
+                                           [value]="totalValoration2"
+                                           readonly
+                                    >
+                                    <mat-icon matSuffix>euro_symbol</mat-icon>
+                                </mat-form-field>
+                            </div>
+                        </mat-card-content>
+                        <mat-card-actions>
+                            <button mat-button (click)="exportDeclaration()">{{'declaration.export' | translate}}</button>
+                            <button mat-button disabled>Validar (AEAT)</button>
+                            <button mat-button disabled>Validar y subir (AEAT)</button>
+                        </mat-card-actions>
+                    </mat-card>
+                </div>
+            </div>
+
+
+            <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="space-between start" style="margin-top: 10px">
+                <div fxLayout="column">
+<!--                    <span><small>{{ 'declaration.tip.fields.required' | translate }}</small></span>-->
+                </div>
+                <div fxLayout="column">
+                    <div fxLayout="row">
+                        <button mat-button matStepperPrevious>{{'app.back' | translate}}</button>
+                    </div>
+                </div>
+            </div>
+        </mat-step>
+    </mat-horizontal-stepper>
+</mat-card>

@@ -1,0 +1,11 @@
+
+
+    <!--<mat-progress-spinner *ngIf="isUploading"></mat-progress-spinner>-->
+    <label [for]="idInput">
+        <!--<md-icon md-font-icon="icon-upload"></md-icon>-->
+        <input  style="display:none" [id]="idInput" type="file" ng2FileSelect  [uploader]="uploader" [multiple]="multiple" />
+        <ng-content></ng-content>
+        <!--<a mat-raised-button color="{{config.color}}" [ngClass]="config.class" >{{config.text | translate}}</a>-->
+    </label>
+    <!--<span *ngIf="file">{{file.original_name}}</span>-->
+

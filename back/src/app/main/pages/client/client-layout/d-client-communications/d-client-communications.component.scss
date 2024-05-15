@@ -1,0 +1,162 @@
+@import "src/@fuse/scss/fuse";
+
+#client-help-modal {
+    padding: 0;
+}
+
+.client-help-modal {
+    margin-right: auto !important;
+    margin-left: auto !important;
+}
+
+app-d-client-communications {
+    //width: 100%;
+    //height: 100%;
+    .layout {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: center;
+        background-color: map-get($mat-gray, 300);
+        @media (min-width: 1200px) {
+            padding: 24px;
+        }
+    }
+
+    .loading-result-icon {
+        width: 1em;
+        height: 1em;
+        font-size: 96px;
+        > svg {
+            width: 1em;
+            height: 1em;
+            font-size: inherit;
+        }
+    }
+
+    #help-sidenav-container {
+        width: 100%;
+        height: 100%;
+        > mat-sidenav-content {
+            background-color: map-get($mat-gray, 200);
+        }
+    }
+
+    #help-sidenav {
+        width: 100%;
+        @media (min-width: 960px) {
+            max-width: 400px;
+        }
+    }
+
+    .issues-wrapper {
+        height: 100%;
+        .ai-pagination {
+            margin: 0;
+            background: map-get($mat-grey, 100);
+            li {
+                width: 50%;
+                span,
+                a {
+                    width: 100%;
+                    height: 48px;
+                    line-height: 48px;
+                    text-align: center;
+                    .mat-icon {
+                        height: 100%;
+                        line-height: inherit;
+                        font-size: 3rem;
+                        margin: 0 auto;
+                        i {
+                            height: 100%;
+                            line-height: inherit;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .issues {
+        .issues-list {
+            margin: 0;
+            padding: 0;
+            > mat-list-item {
+                transition: background-color .25s ease;
+                cursor: pointer;
+                &:not(:last-child) {
+                    border-bottom: 1px solid rgba(#000, .12);
+                }
+                &:hover {
+                    background-color: rgba(#000, .06);
+                }
+            }
+        }
+    }
+
+    .current-issue {
+        height: 100%;
+    }
+
+    .messages-list {
+        padding: 12px 12px 48px;
+        .message {
+            display: block;
+            width: 90%;
+            max-width: 600px;
+            margin-bottom: 6px;
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 8px 12px 20px;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .12);
+            .header {
+                display: flex;
+                flex-flow: row nowrap;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 4px;
+            }
+            .sender {
+                font-weight: 700;
+            }
+            .content {
+                margin: 0;
+                white-space: pre-wrap;
+            }
+            .date {
+                text-align: right;
+                font-size: 1.25rem;
+                color: rgba(0, 0, 0, 0.36);
+                //margin: 3px 0 0;
+            }
+            &.last {
+                margin-bottom: 24px;
+            }
+            &.self {
+                margin-left: auto;
+                background-color: map-get($mat-blue, 50);
+            }
+        }
+    }
+    .message-form {
+        background-color: map-get($mat-grey, 100);
+        //padding: 11px;
+        .input-wrapper {
+            display: block;
+            width: 100%;
+            //border-radius: 5px;
+            background-color: #fff;
+            border-right: 1px solid rgba(0, 0, 0, .12);
+            padding: 16px 15px 16px 16px;
+            cursor: text;
+        }
+        textarea {
+            display: block;
+            width: 100%;
+            border: none;
+        }
+    }
+}
+

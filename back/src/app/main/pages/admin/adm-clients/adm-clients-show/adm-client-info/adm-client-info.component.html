@@ -1,0 +1,126 @@
+<div
+    class="w-100-p h-100-p"
+    fxLayout="row wrap" fxLayoutAlign="center start"
+>
+  <ai-loading-spinner [class.hide]="client" class="my-48"></ai-loading-spinner>
+  <div *ngIf="client" class="page-layout simple w-100-p" fxLayout="row wrap" fxLayoutAlign="center start">
+    <div fxFlex="100%" fxFlex.gt-sm="60%" class="p-16">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ 'pages.clients.client_info' | translate }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <ul *ngIf="!showClientForm" class="client_info" fxLayout="row wrap" fxLayoutAlign="start start">
+            <li class="info_item">
+              <span class="label">{{ 'model.client.firstname' | translate }}</span>
+              <span class="data">{{ client.firstname }}</span>
+            </li>
+            <li class="info_item">
+              <span class="label">{{ 'model.client.lastname' | translate }}</span>
+              <span class="data">{{ client.lastname }}</span>
+            </li>
+            <li class="info_item">
+              <span class="label">{{ 'model.client.email' | translate }}</span>
+              <span class="data">{{ client.email }}</span>
+            </li>
+            <li class="info_item">
+              <span class="label">{{ 'model.client.phone' | translate }}</span>
+              <span class="data">{{ client.formattedPhone() }}</span>
+            </li>
+          </ul>
+          <form
+              *ngIf="showClientForm"
+              [formGroup]="clientForm" (submit)="updateClient()"
+              class="px-16" fxLayout="row wrap" fxLayoutAlign="center start"
+          >
+            <mat-form-field fxFlex="50%" class="no-padding">
+              <mat-label>{{ 'model.client.firstname' | translate }}</mat-label>
+              <mdi-icon matPrefix class="grey-700-fg">account</mdi-icon>
+              <input type="text" matInput formControlName="firstname" name="firstname">
+            </mat-form-field>
+            <mat-form-field fxFlex="50%" class="no-padding">
+              <mat-label>{{ 'model.client.lastname' | translate }}</mat-label>
+              <input type="text" matInput formControlName="lastname" name="lastname">
+            </mat-form-field>
+            <mat-form-field fxFlex="50%" fxFlex.gt-sm="60%" class="pl-0">
+              <mat-label>{{ 'model.client.email' | translate }}</mat-label>
+              <mdi-icon matPrefix class="grey-700-fg">email</mdi-icon>
+              <input type="email" email matInput formControlName="email" name="email">
+               <mat-error *ngIf="clientForm.get('email').hasError('duplicated')">
+                      {{clientForm.get('email').getError('duplicated') |translate}}
+               </mat-error>
+            </mat-form-field>
+            <mat-form-field fxFlex="50%" fxFlex.gt-sm="40%" class="pr-0">
+              <mat-label>{{ 'model.client.phone' | translate }}</mat-label>
+              <mdi-icon matPrefix class="grey-700-fg">phone</mdi-icon>
+              <input type="phone" matInput formControlName="phone" name="phone">
+            </mat-form-field>
+          </form>
+        </mat-card-content>
+<!--        <mat-card-actions align="end">-->
+<!--          <button *ngIf="!showClientForm" mat-raised-button color="primary" (click)="showClientForm = true">-->
+<!--            <mdi-icon>account-edit</mdi-icon>-->
+<!--            <span>{{ 'pages.clients.edit_client' | translate }}</span>-->
+<!--          </button>-->
+<!--          <button *ngIf="showClientForm" mat-raised-button color="primary" (click)="showClientForm = false">-->
+<!--            <span>{{ 'app.cancel' | translate }}</span>-->
+<!--          </button>-->
+<!--          <button *ngIf="showClientForm" (click)="updateClient()" type="submit" mat-raised-button color="accent" [disabled]="!clientForm.valid">-->
+<!--            <mdi-icon>account-check</mdi-icon>-->
+<!--            <span>{{ 'pages.clients.submit_update_client' | translate }}</span>-->
+<!--          </button>-->
+<!--        </mat-card-actions>-->
+      </mat-card>
+      <mat-card class="mt-24">
+        <mat-card-header>
+          <mat-card-title>{{ 'pages.clients.change_password' | translate }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="passwordForm" fxLayout="column" fxLayoutAlign="start start">
+            <div class="w-100-p" fxLayout="row wrap">
+              <mat-form-field fxFlex="100%" fxFlex.gt-sm="50%">
+              <mat-label>{{ 'pages.clients.new_password' | translate }}</mat-label>
+              <mdi-icon matPrefix>key</mdi-icon>
+              <input matInput  formControlName="password" name="password"
+                     [type]="bIsPwdVisible?'text':'password'"
+                     required>
+              <mdi-icon *ngIf="!bIsPwdVisible" matSuffix (click)="bIsPwdVisible = true" style="cursor:pointer;">eye</mdi-icon>
+              <mdi-icon *ngIf="bIsPwdVisible" matSuffix (click)="bIsPwdVisible = false" style="cursor:pointer;">eye-off</mdi-icon>
+            </mat-form-field>
+              <mat-form-field fxFlex="100%" fxFlex.gt-sm="50%">
+              <mat-label>{{ 'pages.clients.confirm_new_password' | translate }}</mat-label>
+              <mdi-icon matPrefix>key</mdi-icon>
+              <input matInput formControlName="confirm_password" name="confirm_password"
+                     [type]="bIsPwdVisible?'text':'password'"
+                     required>
+            </mat-form-field>
+            </div>
+            <mat-checkbox formControlName="passChangedNotification" class="ml-4" name="passChangedNotification" [(ngModel)] = "passChangedNotification">
+              <label><span  [innerHTML]="'pages.client.pass_changed_notification' | translate : {value:client?.email}"></span></label>
+            </mat-checkbox>
+          </form>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button mat-raised-button (click)="savePassword()" [disabled]="!passwordForm.valid||disableSendPass" color="primary">
+            <mdi-icon>key-change</mdi-icon>
+            <span>{{ 'pages.clients.update_password' | translate }}</span>
+          </button>
+
+        </mat-card-actions>
+      </mat-card>
+      <mat-card class="mt-24">
+        <mat-card-content>
+          <div class="px-16" style="opacity: 0.5"  fxLayout="row nowrap" fxLayoutAlign="space-between center">
+            <span class="font-size-20 font-weight-600">{{ 'pages.clients.change_status' | translate }}</span>
+            <div fxLayout="row nowrap" fxLayoutAlign="end center">
+              <span class="mr-8 font-size-16 font-weight-600" [class.red-500-fg]="!bEnableClient">{{ 'pages.clients.disabled' | translate }}</span>
+              <mat-slide-toggle disabled [(ngModel)]="bEnableClient" (change)="changeClientStatus()">
+                <span class="font-size-16 font-weight-600" [class.green-500-fg]="bEnableClient">{{ 'pages.clients.activated' | translate }}</span>
+              </mat-slide-toggle>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,204 @@
+<mat-tab-group id="accounting-wrapper" [selectedIndex]="this.selectedIndex" (selectedIndexChange)="tabChange($event)">
+    <mat-tab [label]="'pages.clients.services.models.tab_listOfModels' | translate">
+        <div fxLayout="column" fxLayoutAlign="start stretch" class="p-16">
+            <mat-card class="p-0">
+                <mat-card-content class="p-8">
+                    <table mat-table [dataSource]="dataSource" class="models-table" style="width: 100%" matSort>
+
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> # </th>
+                            <td mat-cell *matCellDef="let element">
+                                <span>{{ element.id }}</span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="name">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'model.name' | translate }}</th>
+                            <td mat-cell *matCellDef="let element">
+                                <span>{{ element.trans().name }}</span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="description">
+                            <th mat-header-cell *matHeaderCellDef>{{ 'model.description' | translate }}</th>
+                            <td mat-cell *matCellDef="let element">
+                                <span>{{ element.trans().description }}</span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="drafts">
+                            <th mat-header-cell *matHeaderCellDef>{{ 'model.drafts' | translate }}</th>
+                            <td mat-cell *matCellDef="let element">
+                                <span>{{ this.getDrafts(element.id) }}</span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="state">
+                            <th mat-header-cell *matHeaderCellDef>{{ 'model.state' | translate }}</th>
+                            <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation();">
+                                <mat-slide-toggle color="primary" [checked]="getModelState(element)" (toggleChange)="commuteModel(element)" [disabled]="element.name == '720'"></mat-slide-toggle>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectedTab(row.id)"></tr>
+                    </table>
+                    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </mat-tab>
+    <mat-tab *ngFor="let result of taxModelsHiredDistinct; index as i" label="{{ result.trans().name }}">
+        <div fxLayout="column" fxLayoutAlign="start stretch" class="p-16" *ngIf="client">
+            <mat-card class="mb-20">
+                <mat-card-content>
+                    <div fxLayout="row" fxLayoutAlign="space-between start">
+                        <div fxLayout="column" fxLayoutAlign="start start" >
+                            <strong>{{ this.nDrafts }} {{ this.getTranslationOfDraft(taxModelsHiredDistinct[i].id) | translate }}</strong>
+                            <small>{{ 'client.declarant' | translate }}:&nbsp;{{ this.client.additionalInfo.identification }}</small>
+                        </div>
+                        <div fxLayout="column" fxLayoutAlign="start start" >
+                            <button (click)="addDraft(taxModelsHiredDistinct[i].id)" mat-button>
+                                <mdi-icon>plus</mdi-icon>
+                                <span>{{ 'model.add_model' | translate }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <mat-card class="p-0">
+                <mat-card-content class="p-8">
+                    <!-- TABLE DRAFT CONTENT -->
+                    <div class="content p-24">
+                        <div class="px-16 py-4"><span *ngIf="paginationConfig && paginationConfig.totalItems">{{ 'app.table.showing' | translate }} {{ paginationConfig.from }} - {{ paginationConfig.to }} / {{ paginationConfig.totalItems }}</span></div>
+                        <table class="simple models-table">
+                            <thead>
+                            <tr>
+                                <th><ai-custom-th sortField="id" [(filter)]="filter" (sortChanged)="getDraftsFromService(1)">#</ai-custom-th></th>
+                                <th><ai-custom-th sortField="created_at" [(filter)]="filter" (sortChanged)="getDraftsFromService(1)">{{ 'model.created_at' | translate }}</ai-custom-th></th>
+                                <th><ai-custom-th sortField="year" [(filter)]="filter" (sortChanged)="getDraftsFromService(1)">{{ 'model.year' | translate }}</ai-custom-th></th>
+                                <th><ai-custom-th sortField="state" [(filter)]="filter" (sortChanged)="getDraftsFromService(1)">{{ 'model.state' | translate }}</ai-custom-th></th>
+                                <th><ai-custom-th>{{ 'model.declaration.import' | translate }}</ai-custom-th></th>
+                                <th><ai-custom-th>{{ 'model.draft.identification' | translate }}</ai-custom-th></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let t of drafts | paginate :  paginationConfig" (click)="goToDraft(t.id,this.model_id)">
+                                <!--<tr *ngFor="let p of posts">-->
+                                <td>{{ t.id }}</td>
+                                <td>{{ t.created_at ? (t.created_at | date:'dd/MM/yyyy HH:mm') : null }}</td>
+                                <td>{{ t.declaration.earn_period_year ? t.declaration.earn_period_year : '-' }}</td>
+                                <td>
+                                    <div class="labels mt-8" fxLayout="row wrap">
+                                        <div class="label" fxLayout="row" fxLayoutAlign="start center" *ngIf="t.state == 'active'">
+                                            <div class="label-color blue-500" ></div>
+                                            <div class="label-title">{{ 'model.state.active' | translate}}</div>
+                                        </div>
+                                        <div class="label" fxLayout="row" fxLayoutAlign="start center" *ngIf="t.state == 'complete'">
+                                            <div class="label-color yellow-500" ></div>
+                                            <div class="label-title">{{ 'model.state.complete' | translate}}</div>
+                                        </div>
+                                        <div class="label" fxLayout="row" fxLayoutAlign="start center" *ngIf="t.state == 'presented'">
+                                            <div class="label-color green-500" ></div>
+                                            <div class="label-title">{{ 'model.state.presented' | translate}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ t.declaration.liq_result ? t.declaration.liq_result : '-' }}</td>
+                                <td>{{ t.id }}-{{ t.model.name }}-{{ this.client.additionalInfo.identification }}</td>
+                                <td>
+                                    <button
+                                        mat-raised-button color="warn"
+                                        title="{{ 'model.delete' | translate }}"
+                                        (click)="deleteDraft($event,t.id)">
+                                        <mdi-icon [fontSize]="20">delete</mdi-icon>
+                                    </button>
+                                    <button
+                                        mat-raised-button class="green-600 ml-4"
+                                        title="{{ 'model.presented_action' | translate }}"
+                                        (click)="presentedDraft($event,t.id)"
+                                        *ngIf="t.state == 'complete'">
+                                            <mdi-icon [fontSize]="20">file-check</mdi-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div fxHide fxShow.gt-xs class="pt-4">
+                            <div class="labels mt-8" fxLayout="row wrap">
+                                <div class="label" fxLayout="row" fxLayoutAlign="start center">
+                                    <div class="label-color blue-500" ></div>
+                                    <div class="label-title">{{ 'model.state.active' | translate}}</div>
+                                </div>
+                                <div class="label" fxLayout="row" fxLayoutAlign="start center">
+                                    <div class="label-color yellow-500" ></div>
+                                    <div class="label-title">{{ 'model.state.complete' | translate}}</div>
+                                </div>
+                                <div class="label" fxLayout="row" fxLayoutAlign="start center">
+                                    <div class="label-color green-500" ></div>
+                                    <div class="label-title">{{ 'model.state.presented' | translate}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <ai-pagination-template
+                            [pagination]="paginationConfig"
+                            (pageChange)="getDraftsFromService($event)">
+                        </ai-pagination-template>
+                    </div>
+                    <!-- / TABLE DRAFT CONTENT -->
+<!--                    <table mat-table [dataSource]="dataSourceHiredModels[i]" class="mat-elevation-z8 models-table" style="width: 100%" matSort>-->
+
+<!--                        <ng-container matColumnDef="id">-->
+<!--                            <th mat-header-cell *matHeaderCellDef mat-sort-header> # </th>-->
+<!--                            <td mat-cell *matCellDef="let element">-->
+<!--                                <span>{{ element.id }}</span>-->
+<!--                            </td>-->
+<!--                        </ng-container>-->
+
+<!--                        <ng-container matColumnDef="created_at">-->
+<!--                            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'model.created_at' | translate }}</th>-->
+<!--                            <td mat-cell *matCellDef="let element">-->
+<!--                                <span>{{ element.created_at ? (element.created_at | date:'dd/MM/yyyy HH:mm') : null }}</span>-->
+<!--                            </td>-->
+<!--                        </ng-container>-->
+
+<!--                        <ng-container matColumnDef="updated_at">-->
+<!--                            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'model.updated_at' | translate }}</th>-->
+<!--                            <td mat-cell *matCellDef="let element">-->
+<!--                                <span>{{ element.updated_at ? (element.updated_at | date:'dd/MM/yyyy HH:mm') : null }}</span>-->
+<!--                            </td>-->
+<!--                        </ng-container>-->
+
+<!--                        <ng-container matColumnDef="year">-->
+<!--                            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'model.year' | translate }}</th>-->
+<!--                            <td mat-cell *matCellDef="let element">-->
+<!--                                <span>{{ element.year }}</span>-->
+<!--                            </td>-->
+<!--                        </ng-container>-->
+
+<!--                        <ng-container matColumnDef="state">-->
+<!--                            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'model.state' | translate }}</th>-->
+<!--                            <td mat-cell *matCellDef="let element">-->
+<!--                                <span>{{ getDraftState(element.state) | translate }}</span>-->
+<!--                            </td>-->
+<!--                        </ng-container>-->
+
+<!--                        <ng-container matColumnDef="options">-->
+<!--                            <th mat-header-cell *matHeaderCellDef></th>-->
+<!--                            <td mat-cell *matCellDef="let element">-->
+<!--                                <button (click)="deleteDraft($event,element.id)" mat-button>-->
+<!--                                    <mdi-icon>delete</mdi-icon>-->
+<!--                                </button>-->
+<!--                            </td>-->
+<!--                        </ng-container>-->
+
+<!--                        <tr mat-header-row *matHeaderRowDef="displayedColumnsHiredModels"></tr>-->
+<!--                        <tr mat-row *matRowDef="let row; columns: displayedColumnsHiredModels;" (click)="goToDraft(row.id,taxModelsHiredDistinct[i].id)"></tr>-->
+<!--                    </table>-->
+<!--                    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>-->
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </mat-tab>
+</mat-tab-group>

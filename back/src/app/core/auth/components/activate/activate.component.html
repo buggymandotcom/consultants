@@ -1,0 +1,57 @@
+<div id="activate" fxLayout="column">
+    <div id="activate-form-wrapper" fxLayout="column" fxLayoutAlign="center center">
+        <div id="activate-form" [@animate]="{value:'*',params:{duration:'300ms',y:'100px'}}">
+            <mat-progress-bar *ngIf="activating" mode="indeterminate" color="accent"></mat-progress-bar>
+            <div class="p-32">
+                <div class="logo" [routerLink]="'/auth/login'" style="cursor: pointer">
+                    <img src="assets/images/logos/lexforis_online.png">
+                </div>
+                <div fxLayout="row wrap" fxLayoutAlign="center center" class="mb-24">
+                    <button mat-button *ngFor="let lang of languages" (click)="setLanguage(lang)">
+                        <img class="flag mr-8" [src]="'assets/images/flags/'+lang.flag+'.png'">
+                        <span class="iso">{{ lang.title }}</span>
+                    </button>
+                </div>
+                <div *ngIf="!activated" class="not-activated">
+                    <div class="main-hint">{{ 'app.activate.main_hint' | translate }}</div>
+                    <form name="activateForm" [formGroup]="activateForm" novalidate>
+                        <mat-form-field class="code-input" appearance="standard" floatLabel="always">
+                            <mat-label>{{ 'app.activate.input_label' | translate }}</mat-label>
+                            <input #codeInputEl type="text" formControlName="code" matInput
+                                   minlength="5" maxlength="5">
+                            <mat-error *ngIf="codeInput.dirty && wrongActivationCode">{{ 'error.client.wrong_activate_token' | translate }}</mat-error>
+                            <mat-error *ngIf="codeInput.hasError('required')">{{ 'error.client.wrong_activate_token' | translate }}</mat-error>
+                            <mat-error *ngIf="!wrongActivationCode && !codeInput.hasError('required') &&
+                                       (codeInput.hasError('minlength') || codeInput.hasError('maxlength'))">
+                                {{ 'error.client.form_activation_len' | translate }}
+                            </mat-error>
+                        </mat-form-field>
+                        <!--<button mat-raised-button color="accent" class="submit-button" aria-label="CREATE AN ACCOUNT"
+                                [disabled]="activating || activateForm.invalid">
+                            <span *ngIf="!activating">{{ 'app.activate.send_activation' | translate }}</span>
+                            <ng-template [ngIf]="activating">
+                                <mat-icon class="mdi-spin">loading</mat-icon>
+                                <span>{{ 'app.activate.activating' | translate }}</span>
+                            </ng-template>
+                        </button>-->
+                    </form>
+                </div>
+                <div *ngIf="activated" class="activated">
+                    <mat-icon svgIcon="check" class="green-fg"></mat-icon>
+                    <p class="mat-headline mt-12 mb-36">{{ 'app.activate.already_activated' | translate }}</p>
+                    <button mat-raised-button color="primary" [routerLink]="['/auth/login']" [queryParams]="{n: 1}">{{ 'app.register.login' | translate }}</button>
+                </div>
+            </div>
+            <div *ngIf="!activated" class="border-top px-16 pb-16" fxLayout="column" fxLayoutAlign="start center">
+                <p fxFlex.gt-md><small>{{ 'app.activate.token_not_received' | translate }}</small></p>
+                <button (click)="resendToken()" mat-raised-button [disabled]="sending">
+                    <span *ngIf="!sending">{{ 'app.activate.send_token_again' | translate }}</span>
+                    <ng-template [ngIf]="sending">
+                        <mat-icon svgIcon="loading" class="mdi-spin"></mat-icon>
+                        <span>{{ 'app.activate.sending_token' | translate }}</span>
+                    </ng-template>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

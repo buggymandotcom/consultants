@@ -1,0 +1,42 @@
+:host {
+  width: 100%;
+  height: 100%;
+}
+.content {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.page-layout {
+  height: 100%;
+  padding-top: 48px;
+  overflow-y: auto;
+}
+
+#client-toolbar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+}
+
+.client_name {
+  width: 200px;
+  height: 48px;
+  border-right: 1px solid rgba(0,0,0,.24);
+  border-left: 1px solid rgba(0,0,0,.24);
+  background-color: rgba(0,0,0,.12);
+  span {
+    white-space: nowrap;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
+
+button {
+  &.active {
+    background-color: rgb(3, 155, 229);
+  }
+}

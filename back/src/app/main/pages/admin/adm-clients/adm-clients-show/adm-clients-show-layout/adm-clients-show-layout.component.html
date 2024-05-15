@@ -1,0 +1,28 @@
+<div class="page-layout simple">
+  <mat-toolbar id="client-toolbar" class="compact" color="primary">
+    <button [routerLink]="'/admin/clients'" mat-button><mdi-icon fontSize="30">chevron-left</mdi-icon></button>
+    <div
+        *ngIf="client" class="client_name"
+        fxLayout="row nowrap" fxLayoutAlign="start center"
+    >
+      <mdi-icon class="mx-8" fontSize="24">account-circle</mdi-icon>
+      <span class="mr-16 font-size-14">{{ client.firstname }} {{ client.lastname }}</span>
+    </div>
+    <button [routerLink]="['/admin/clients',this.id,'information']" [routerLinkActive]="['active', 'accent']"
+            [routerLinkActiveOptions]="{exact:false}" mat-button>
+      <mdi-icon>card-bulleted</mdi-icon>
+      <span>{{ 'pages.clients.nav.info' | translate }}</span>
+    </button>
+    <button [routerLink]="['/admin/clients',this.id,'services']" [routerLinkActive]="['active', 'accent']"
+            [routerLinkActiveOptions]="{exact:false}" mat-button
+    >
+      <mdi-icon>account-tie</mdi-icon>
+      <span matBadge="{{client?.hired_services_count}}" matBadgeColor="warn" matBadgeOverlap="false">{{ 'pages.clients.nav.services' | translate }}</span>
+    </button>
+
+    <!--<button mat-button>Services</button>-->
+  </mat-toolbar>
+  <div class="content" fusePerfectScrollbar>
+    <router-outlet></router-outlet>
+  </div>
+</div>

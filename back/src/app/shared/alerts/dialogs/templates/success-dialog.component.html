@@ -1,0 +1,12 @@
+<div>
+    <mat-dialog-content>
+        <mat-icon class="green-400-fg" svgIcon="check"></mat-icon>
+        <!--<h3 class="title" *ngIf="data.title">{{ data.title | translate}}</h3>-->
+        <p class="title" *ngIf="data.title">{{ data.title | translate}}</p>
+        <div *ngIf="data.text">{{data.text | translate}}</div>
+
+    </mat-dialog-content>
+    <mat-dialog-actions align="center">
+        <button  mat-raised-button color="primary" class="btn-w-md mr-10" (click)="dialogRef.close()">{{'app.accept'|translate}}</button>
+    </mat-dialog-actions>
+</div>

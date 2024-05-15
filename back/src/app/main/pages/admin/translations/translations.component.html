@@ -1,0 +1,96 @@
+<div class="page-layout simple fullwidth">
+  <mat-card>
+    <mat-card-title>{{'pages.translations.title' | translate}}</mat-card-title>
+    <mat-card-content fxLayout="column">
+      <div (keyup.enter)="newTrans()"  fxLayout="column" fxLayout.gt-md="row">
+        <mat-form-field class="px-16" fxFlex>
+          <input [(ngModel)]="newTranslation.key" id="key-trans" matInput placeholder="Nombre">
+        </mat-form-field>
+        <mat-form-field class="px-16" fxFlex>
+          <textarea  rows="3" matInput [(ngModel)]="newTranslation.text" placeholder="Texto"></textarea>
+        </mat-form-field>
+        <mat-form-field class="px-16">
+          <mat-select  [(ngModel)]="currentLang">
+            <mat-option value ='es'>ES</mat-option>
+            <mat-option value ='en'>EN</mat-option>
+            <mat-option value ='nl'>NL</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div fxLayout="column" fxLayoutAlign="center center">
+        <button mat-raised-button  color="primary" class="pt-10" fxFlex="1 1 10%" (click)="newTrans()">Enviar</button>
+      </div>
+
+      <!--<mat-divider></mat-divider>-->
+
+    </mat-card-content>
+
+  </mat-card>
+
+  <mat-toolbar fxLayout="row nowrap" color="primary" fxFlex="90" fxLayoutAlign="start center">
+    <mat-form-field fxFlex="30%" class="font-size-16">
+      <input  (ngModelChange)='searchChanged($event)'
+              (keyup.enter)="searchChanged($event)"
+              [(ngModel)]="term" matInput
+              placeholder="{{'nav.search'| translate}}"
+      >
+    </mat-form-field>
+    <mat-chip-list>
+      <mat-chip class="green-300-bg white-fg mx-16">{{countTranslations}} Traducciones</mat-chip>
+    </mat-chip-list>
+    <span fxFlex></span>
+    <button (click)="toggleExpand()"  mat-raised-button class="m-10">
+      <span *ngIf="!toggle">{{'nav.open_all' | translate}}</span>
+      <span *ngIf="toggle">{{'nav.close_all' | translate}}</span>
+    </button>
+    <ai-custom-upload
+            (onSuccess)="handleSuccessUploaded()"
+            (onError)="handleErrorUploaded($event)"
+            [allowedMimeTypes]="['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']"
+            [uploader]="uploader">
+      <a  class="ml-4"  mat-raised-button>
+        <mdi-icon>cloud-upload</mdi-icon> Subir Excel
+      </a>
+    </ai-custom-upload>
+    <button matTooltip="Descargar excel" (click)="downloadExcel()" mat-raised-button class="ml-4">
+      Descarga Excel
+      <mdi-icon>download</mdi-icon>
+    </button>
+
+  </mat-toolbar>
+  <!--Grupos de traducciones-->
+  <!--<mat-accordion class="example-headers-align">
+    <mat-expansion-panel
+        *ngFor="let group of translationAll; let i = index"
+        [expanded]="step === i" (opened)="setStep(i)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{ group.name }}
+        </mat-panel-title>
+        <mat-panel-description>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <mat-form-field>
+        <input matInput placeholder="First name">
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="number" min="1" placeholder="Age">
+      </mat-form-field>
+    </mat-expansion-panel>
+  </mat-accordion>-->
+
+  <ai-group-translations *ngFor="let group of translationAll"
+                         [group]="group"
+                         [toggle]="toggle"
+                         [open]="false"
+                         (updateGroupTrans$)="updateGroupTrans($event)"
+                         (deleteTrans$)="deleteTrans($event)"
+                         fxFlex="90%"
+                         class="mt-10">
+  </ai-group-translations>
+
+</div>
+
+

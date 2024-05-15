@@ -1,0 +1,37 @@
+<pagination-template
+    *ngIf="pagination.totalItems>pagination.itemsPerPage" #p="paginationApi"
+    [id]="pagination.id"
+    (pageChange)="emitPage($event)">
+    <ul class="ai-pagination">
+        <li class="pagination-previous" [class.disabled]="p.isFirstPage()">
+            <a *ngIf="!p.isFirstPage()" (click)="p.previous()">
+                <mdi-icon>chevron-left</mdi-icon>
+            </a>
+
+            <span *ngIf="p.isFirstPage()">
+        <mdi-icon>chevron-left</mdi-icon>
+      </span>
+        </li>
+
+        <ng-template [ngIf]="!disableNumbers">
+            <li *ngFor="let page of p.pages" [class.current]="p.getCurrent() === page.value">
+                <a (click)="p.setCurrent(page.value)" *ngIf="p.getCurrent() !== page.value">
+                    <span>{{ page.label }}</span>
+                </a>
+                <span *ngIf="p.getCurrent() === page.value">
+                <span>{{ page.label }}</span>
+            </span>
+            </li>
+        </ng-template>
+
+        <li class="pagination-next" [class.disabled]="p.isLastPage()">
+            <a *ngIf="!p.isLastPage()" (click)="p.next()">
+                <mdi-icon>chevron-right</mdi-icon>
+            </a>
+            <span *ngIf="p.isLastPage()">
+                <mdi-icon>chevron-right</mdi-icon>
+            </span>
+        </li>
+    </ul>
+
+</pagination-template>

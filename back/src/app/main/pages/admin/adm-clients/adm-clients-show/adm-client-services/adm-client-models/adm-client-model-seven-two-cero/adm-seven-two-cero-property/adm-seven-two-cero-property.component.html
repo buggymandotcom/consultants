@@ -1,0 +1,453 @@
+<div class="pt-8" *ngIf="newProperty">
+
+    <div class="w-100-p my-8" fxLayout="row wrap" fxLayoutAlign="center center">
+        <button mat-raised-button color="primary" (click)="validateProperty()">
+            <mat-icon>check</mat-icon>
+            {{ 'app.declaration.property.validate' | translate }} #{{ this.newProperty.id }}
+        </button>
+    </div>
+
+    <div *ngFor="let i of newProperty.propertyErrors; let ind = index" class="w-100-p" fxLayout="row wrap" fxLayoutAlign="center center">
+        <small style="color: red">{{ 'app.error' | translate }} {{ind+1}}: {{ i.name | translate }}</small>
+    </div>
+
+    <div *ngFor="let i of newProperty.propertyAlerts; let ind = index" class="w-100-p" fxLayout="row wrap" fxLayoutAlign="center center">
+        <small style="color: green">{{ i.name | translate }}</small>
+    </div>
+
+    <div class="mt-16" *ngIf="val1 && val2">
+
+        <mat-accordion class="example-headers-align">
+            <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <strong>{{'client.declarant_person' | translate }}</strong>
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        {{'client.declarant_person.information' | translate }}
+                        <mat-icon>account_circle</mat-icon>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <form #declarantForm="ngForm">
+                    <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                        <!-- FILA 1 -->
+                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                <input matInput
+                                       [(ngModel)]="newProperty.representative.identification" #nif="ngModel"
+                                       placeholder="{{'declarant.representative.nif' | translate}}"
+                                       type="text"
+                                       disabled
+                                       name="NIF"
+                                >
+                            </mat-form-field>
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                <mat-select [(ngModel)]="newProperty.declarant_condition"
+                                            placeholder="{{'declarant.key.condition' | translate}}"
+                                            #declarantKeyCondition="ngModel"
+                                            name="declarantKeyCondition"
+                                            (selectionChange)="declarantKeyConditionClick()"
+                                            required>
+                                    <mat-option *ngFor="let element of declarantKeyConditions" [value]="element.key">
+                                        {{element.key}} | <small>{{element.value | translate}}</small>
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="57%">
+                                <input matInput
+                                       placeholder="{{'declarant.type.ownership' | translate}}"
+                                       [(ngModel)]="newProperty.declarant_type_ownership" #declarantTypeOwnership="ngModel"
+                                       type="text"
+                                       [disabled]="newProperty.PropertyTypeRequire"
+                                       [required]="!newProperty.PropertyTypeRequire"
+                                       name="declarantTypeOwnership"
+                                >
+                            </mat-form-field>
+                        </div>
+                        <!-- FILA 2 -->
+                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                            <mat-form-field fxFlex="97%" fxFlex.gt-sm="100%">
+                                <mat-select [(ngModel)]="newProperty.property_key_type"
+                                            placeholder="{{'declarant.property.key.type' | translate}}"
+                                            #declarantPropertyKeyType="ngModel"
+                                            name="declarantPropertyKeyType"
+                                            (selectionChange)="propertySubKeyTypeAvailable()"
+                                            required>
+                                    <mat-option *ngFor="let element of declarantPropertyKeys" [value]="element.key">
+                                        {{element.key}} | <small>{{element.value | translate}}</small>
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <!-- FILA 3 -->
+                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="48%">
+                                <mat-select [(ngModel)]="newProperty.property_subkey_type.id"
+                                            placeholder="{{'declarant.property.subkey.type' | translate}}"
+                                            #declarantPropertySubKey="ngModel"
+                                            name="declarantPropertySubKey"
+                                            required>
+                                    <mat-option *ngFor="let element of subkeysAvailables" [value]="element.id" (click)="propertySubkeySelected(element.id)">
+                                        <span>{{element.value}} | <small>{{ 'property.subkey.type.'+element.id+element.property_key_type+element.value | translate }}</small></span>
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="50%">
+                                <input matInput
+                                       placeholder="{{'declarant.type.real.ownership' | translate}}"
+                                       [(ngModel)]="newProperty.property_real_ownership" #declarantTypeRealOwnership="ngModel"
+                                       type="text"
+                                       [disabled]="newProperty.RealOwnershipRequire"
+                                       [required]="!newProperty.RealOwnershipRequire"
+                                       name="declarantTypeRealOwnership"
+                                >
+                            </mat-form-field>
+                        </div>
+                        <!-- FILA 4 -->
+                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                <mat-select [(ngModel)]="newProperty.country_cod.id"
+                                            placeholder="{{'declarant.property.country.cod' | translate}}"
+                                            #declarantPropertyCountryCod="ngModel"
+                                            name="declarantPropertyCountryCod"
+                                            required>
+                                    <mat-option *ngFor="let element of countryCodes" [value]="element.id" (click)="countryCodSelected(element.id)">
+                                        <span>{{element.cod}} | <small>{{ element.value }}</small></span>
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                <mat-select [(ngModel)]="newProperty.identity_key"
+                                            placeholder="{{'declarant.property.identity.key' | translate}}"
+                                            #declarantPropertyIdentityKey="ngModel"
+                                            name="declarantPropertyIdentityKey"
+                                            [disabled]="newProperty.IdentityKeyRequire"
+                                            [required]="!newProperty.IdentityKeyRequire"
+                                            >
+                                    <mat-option *ngFor="let element of declarantPropertyIdentityKeys" [value]="element.id">
+                                        <span>{{element.id}} | <small>{{ element.text | translate }}</small></span>
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="57%">
+                                <input matInput
+                                       placeholder="{{'declarant.property.identity.values' | translate}}"
+                                       [(ngModel)]="newProperty.identity_values" #declarantPropertyIdentityValues="ngModel"
+                                       type="text"
+                                       [disabled]="newProperty.IdentityValuesRequire"
+                                       [required]="!newProperty.IdentityValuesRequire"
+                                       name="declarantPropertyIdentityValues"
+                                >
+                            </mat-form-field>
+                        </div>
+                        <!-- FILA 5 -->
+                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                <mat-select [(ngModel)]="newProperty.identity_key_account"
+                                            placeholder="{{'declarant.property.identity.key.acccount' | translate}}"
+                                            #declarantPropertyIdentityKeyAccount="ngModel"
+                                            name="declarantPropertyIdentityKeyAccount"
+                                            [disabled]="newProperty.IdentityKeyAccountRequire"
+                                            [required]="!newProperty.IdentityKeyAccountRequire"
+                                            (selectionChange)="propertyAccountCodeChange()"
+                                >
+                                    <mat-option *ngFor="let element of declarantPropertyIdentityAccounts" [value]="element.id">
+                                        <span>{{element.id}} | <small>{{ element.text | translate}}</small></span>
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                                <input matInput
+                                    [(ngModel)]="newProperty.bic_code"
+                                            placeholder="{{'declarant.property.bic.code' | translate}}"
+                                            #declarantPropertyBicCode="ngModel"
+                                            type="text"
+                                            name="declarantPropertyBicCode"
+                                            required
+                                >
+                            </mat-form-field>
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="57%">
+                                <input matInput
+                                       placeholder="{{'declarant.property.account.code' | translate}}"
+                                       [(ngModel)]="newProperty.account_code" #declarantPropertyAccountCode="ngModel"
+                                       type="text"
+                                       [disabled]="newProperty.AccountCodRequire"
+                                       [required]="!newProperty.AccountCodRequire"
+                                       name="declarantPropertyAccountCode"
+                                >
+                            </mat-form-field>
+                        </div>
+                        <!-- FILA 6 -->
+                        <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="57%">
+                                <input matInput
+                                       placeholder="{{'declarant.property.entity.identification' | translate}}"
+                                       [(ngModel)]="newProperty.entity_identity" #declarantPropertyEntityIdentity="ngModel"
+                                       type="text"
+                                       [disabled]="newProperty.EntityIdentityRequire"
+                                       [required]="!newProperty.EntityIdentityRequire"
+                                       name="declarantPropertyEntityIdentity"
+                                >
+                            </mat-form-field>
+                            <mat-form-field fxFlex="100%" fxFlex.gt-sm="40%">
+                                <input matInput
+                                       placeholder="{{'declarant.property.residential.nif' | translate}}"
+                                       [(ngModel)]="newProperty.residential_country_nif" #declarantPropertyResidentialNif="ngModel"
+                                       type="text"
+                                       [disabled]="newProperty.ResidentialNIFRequire"
+                                       [required]="!newProperty.ResidentialNIFRequire"
+                                       name="declarantPropertyResidentialNif"
+                                >
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </form>
+
+    <!--            <mat-action-row>-->
+    <!--                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="space-between start">-->
+    <!--                    <div fxLayout="column">-->
+    <!--                        <span><small>{{ 'declaration.tip.fields.required' | translate }}</small></span>-->
+    <!--                    </div>-->
+    <!--                    <div fxLayout="column">-->
+    <!--                        <button mat-button color="primary" (click)="nextStep()">{{'property.name' | translate }}</button>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--            </mat-action-row>-->
+            </mat-expansion-panel>
+
+            <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)" hideToggle>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <strong>{{'property.name' | translate }}</strong>
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        {{'property.adress.name' | translate }}
+                        <mat-icon>map</mat-icon>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <form #propertyForm="ngForm">
+                    <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                        <!-- FILA 1 -->
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="90%">
+                            <input matInput
+                                   placeholder="{{'declarant.property.address' | translate}}"
+                                   [(ngModel)]="newProperty.address" #declarantPropertyAddress="ngModel"
+                                   type="text"
+                                   required
+                                   name="declarantPropertyAddress">
+                        </mat-form-field>
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="7%">
+                            <input matInput
+                                   placeholder="{{'declarant.property.address.number' | translate}}"
+                                   [(ngModel)]="newProperty.number" #declarantPropertyAddressNumber="ngModel"
+                                   type="text"
+                                   required
+                                   name="declarantPropertyAddressNumber">
+                        </mat-form-field>
+                        <!-- FILA 2 -->
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="98%">
+                            <input matInput
+                                   placeholder="{{'declarant.property.address.complement' | translate}}"
+                                   [(ngModel)]="newProperty.complement" #declarantPropertyAddressComplement="ngModel"
+                                   type="text"
+                                   name="declarantPropertyAddressComplement">
+                        </mat-form-field>
+                        <!-- FILA 3 -->
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="25%">
+                            <input matInput
+                                   placeholder="{{'declarant.property.address.city' | translate}}"
+                                   [(ngModel)]="newProperty.city" #declarantPropertyAddressCity="ngModel"
+                                   type="text"
+                                   required
+                                   name="declarantPropertyAddressCity">
+                        </mat-form-field>
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="25%">
+                            <input matInput
+                                   placeholder="{{'declarant.property.address.state' | translate}}"
+                                   [(ngModel)]="newProperty.address_state" #declarantPropertyAddressState="ngModel"
+                                   type="text"
+                                   required
+                                   name="declarantPropertyAddressState">
+                        </mat-form-field>
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="25%">
+                            <input matInput
+                                   placeholder="{{'declarant.property.address.zip.code' | translate}}"
+                                   [(ngModel)]="newProperty.zip_code" #declarantPropertyAddressZipCode="ngModel"
+                                   type="text"
+                                   maxlength="5"
+                                   minlength="5"
+                                   required
+                                   name="declarantPropertyAddressZipCode">
+                            <mat-hint align="end">{{newProperty.zip_code ? newProperty.zip_code.length : 0}} / 5</mat-hint>
+                        </mat-form-field>
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="20%">
+                            <mat-select [(ngModel)]="newProperty.country_address_cod.id"
+                                        placeholder="{{'declarant.property.address.country.cod' | translate}}"
+                                        #declarantPropertyAdressCountryCod="ngModel"
+                                        name="declarantPropertyAdressCountryCod"
+                                        required>
+                                <mat-option *ngFor="let element of countryCodes" [value]="element.id" (click)="countryAddressCodSelected(element.id)">
+                                    <span>{{element.cod}} | <small>{{ element.value }}</small></span>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </form>
+
+    <!--            <mat-action-row>-->
+    <!--                <button mat-button color="warn" (click)="prevStep()">Previous</button>-->
+    <!--                <button mat-button color="primary" (click)="nextStep()">Next</button>-->
+    <!--            </mat-action-row>-->
+            </mat-expansion-panel>
+
+            <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)" hideToggle>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <strong>{{'property.metadata' | translate }}</strong>
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        {{'property.metadata.info' | translate }}
+                        <mat-icon>info</mat-icon>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <form #metadataForm="ngForm">
+                    <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                        <!-- FILA 1 -->
+                        <mat-form-field fxFlex="100%" fxFlex.gt-md="15%">
+                            <input name="declarantMetadataIncorporationDate" [(ngModel)]="newProperty.incorporation_date" matInput [matDatepicker]="declarantMetadataIncorporationDate" placeholder="{{'declarant.property.incorporation.date' | translate }}">
+                            <mat-datepicker-toggle matSuffix [for]="declarantMetadataIncorporationDate"></mat-datepicker-toggle>
+                        </mat-form-field>
+                        <mat-datepicker  #declarantMetadataIncorporationDate></mat-datepicker>
+<!--                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="15%">-->
+<!--                            <input matInput [matDatepicker]="inDate" #declarantMetadataIncorporationDate="ngModel"-->
+<!--                                   [ngModel]="newProperty.incorporation_date"-->
+<!--                                   name="declarantMetadataIncorporationDate"-->
+<!--                                   placeholder="{{'declarant.property.incorporation.date' | translate }}"-->
+<!--                                   (dateInput)="inDateValue($event)"-->
+<!--                                   required>-->
+<!--                            <mat-datepicker-toggle matSuffix [for]="inDate"></mat-datepicker-toggle>-->
+<!--                            <mat-datepicker touchUi #inDate></mat-datepicker>-->
+<!--                        </mat-form-field>-->
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="82%">
+                            <mat-select [(ngModel)]="newProperty.origin"
+                                        placeholder="{{'declarant.property.origin' | translate}}"
+                                        #declarantPropertyOrigin="ngModel"
+                                        name="declarantPropertyOrigin"
+                                        required
+                                        (selectionChange)="propertyOriginChange()">
+                                <mat-option *ngFor="let element of declarantPropertyOriginKeys" [value]="element.id">
+                                    <span>{{element.id}} | <small>{{ element.text | translate}}</small></span>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                        <!-- FILA 1 -->
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="15%">
+                            <input matInput [matDatepicker]="extDate" #declarantMetadataExtinctionDate="ngModel"
+                                   [ngModel]="newProperty.extinction_date"
+                                   name="declarantMetadataExtinctionDate"
+                                   placeholder="{{'declarant.property.extinction.date' | translate }}"
+                                   (dateInput)="exDateValue($event)"
+                                   [disabled]="newProperty.ExtinctionDate"
+                                   [required]="!newProperty.ExtinctionDate">
+                            <mat-datepicker-toggle matSuffix [for]="extDate"></mat-datepicker-toggle>
+                            <mat-datepicker touchUi #extDate></mat-datepicker>
+                        </mat-form-field>
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="41%">
+                            <input matInput
+                                   placeholder="{{'declarant.property.valoration.1' | translate}}"
+                                   type="text"
+                                   [value]="val1.completeValoration"
+                                   (input)="valorationChange(val1,$event)"
+                                   name="valoration1value"
+                                   required>
+                            <mat-icon matPrefix (click)="selectSign(val1)" style="cursor: pointer" matTooltip="{{ 'declaration.property.change.sign' | translate }}">{{ val1.icon }}</mat-icon>
+                            <mat-icon matSuffix>euro_symbol</mat-icon>
+<!--                            <mat-hint>{{ 'declaration.property.decimal.alert' | translate }}</mat-hint>-->
+                        </mat-form-field>
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="41%">
+                            <input matInput
+                                   placeholder="{{'declarant.property.valoration.2' | translate}}"
+                                   type="text"
+                                   [value]="val2.completeValoration"
+                                   (input)="valorationChange(val2,$event)"
+                                   name="valoration2value"
+                                   required>
+                            <mat-icon matPrefix (click)="selectSign(val2)" style="cursor: pointer" matTooltip="{{ 'declaration.property.change.sign' | translate }}">{{ val2.icon }}</mat-icon>
+                            <mat-icon matSuffix>euro_symbol</mat-icon>
+<!--                            <mat-hint>{{ 'declaration.property.decimal.alert' | translate }}</mat-hint>-->
+                        </mat-form-field>
+                    </div>
+                    <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start start">
+                        <!-- FILA 3 -->
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="25%">
+                            <mat-select [(ngModel)]="newProperty.value_representation_key"
+                                        placeholder="{{'declarant.property.value.representation.key' | translate}}"
+                                        #declarantPropertyValueRepreKey="ngModel"
+                                        name="declarantPropertyValueRepreKey"
+                                        [disabled]="newProperty.ValueRepresentationKeyRequired"
+                                        [required]="!newProperty.ValueRepresentationKeyRequired"
+                                >
+                                <mat-option *ngFor="let element of declarantPropertyRepresentationKeys" [value]="element.id">
+                                    <span>{{element.id}} | <small>{{ element.text | translate}}</small></span>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="21%">
+                            <input matInput
+                                   placeholder="{{'declarant.property.value.number' | translate}}"
+                                   type="text"
+                                   [value]="newProperty.value_numbers"
+                                   name="valueNumbers"
+                                   [disabled]="newProperty.ValueNumbersRequired"
+                                   [required]="!newProperty.ValueNumbersRequired"
+                                   (input)="numberOfValuesChange($event)"
+                                   >
+<!--                            <mat-hint>{{ 'declaration.property.decimal.alert' | translate }}</mat-hint>-->
+                        </mat-form-field>
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="25%">
+                            <mat-select [(ngModel)]="newProperty.real_state_key_type"
+                                        placeholder="{{'declarant.property.value.representation.key' | translate}}"
+                                        #declarantPropertyRealStateKey="ngModel"
+                                        name="declarantPropertyRealStateKey"
+                                        [disabled]="newProperty.RealStateKeyRequired"
+                                        [required]="!newProperty.RealStateKeyRequired"
+                            >
+                                <mat-option *ngFor="let element of declarantRealStateKeys" [value]="element.id">
+                                    <span>{{element.id}} | <small>{{ element.text | translate}}</small></span>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field fxFlex="100%" fxFlex.gt-sm="21%">
+                            <input matInput
+                                   placeholder="{{'declarant.property.participation' | translate}}"
+                                   type="text"
+                                   [value]="newProperty.participation"
+                                   name="valueNumbers"
+                                   (input)="ParticipationChange($event)"
+                            >
+<!--                            <mat-hint>{{ 'declaration.property.decimal.alert' | translate }}</mat-hint>-->
+                        </mat-form-field>
+                    </div>
+                </form>
+
+                <mat-action-row>
+                    <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="center center">
+                        <small>{{ 'declaration.property.decimal.alert' | translate }}</small>
+                    </div>
+                </mat-action-row>
+            </mat-expansion-panel>
+
+        </mat-accordion>
+    </div>
+</div>
+    <script>
+        import CamelCaseToDash from "../../../../../../../../../../@fuse/pipes/camelCaseToDash.pipe";
+        export default {
+            components: {CamelCaseToDash}
+        }
+    </script>

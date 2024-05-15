@@ -1,0 +1,129 @@
+<mat-sidenav-container
+    class="w-100-p h-100-p"
+    [hasBackdrop]="isSm"
+>
+  <mat-sidenav
+      id="create-user-sidenav" #createUserSidenav
+      mode="over" align="start"
+  >
+    <mat-toolbar class="compact grey-100-bg">
+      <button (click)="createUserSidenav.close()" mat-button>
+        <mdi-icon>arrow-expand-left</mdi-icon>
+        <span class="ml-4">{{'app.hide'|translate}}</span>
+      </button>
+      <span fxFlex></span>
+    </mat-toolbar>
+
+    <form
+        [formGroup]="clientForm" (submit)="createClient()" autocomplete="off"
+        class="px-16" fxLayout="row wrap" fxLayoutAlign="center start"
+    >
+      <mat-form-field fxFlex="50%" class="no-padding">
+        <mat-label>{{ 'model.client.firstname' | translate }}</mat-label>
+        <mdi-icon matPrefix class="grey-700-fg">account</mdi-icon>
+        <input type="text" matInput formControlName="firstname" name="firstname">
+      </mat-form-field>
+      <mat-form-field fxFlex="50%" class="no-padding">
+        <mat-label>{{ 'model.client.lastname' | translate }}</mat-label>
+        <input type="text" matInput formControlName="lastname" name="lastname">
+      </mat-form-field>
+      <mat-form-field fxFlex="100%" class="no-padding">
+        <mat-label>{{ 'model.client.email' | translate }}</mat-label>
+        <mdi-icon matPrefix class="grey-700-fg">email</mdi-icon>
+        <input type="email" email matInput formControlName="email" name="email">
+         <mat-error *ngIf="clientForm.get('email').hasError('duplicated')">
+                      {{clientForm.get('email').getError('duplicated') |translate}}
+         </mat-error>
+
+      </mat-form-field>
+      <mat-form-field fxFlex="100%" class="no-padding">
+        <mat-label>{{ 'model.client.phone' | translate }}</mat-label>
+        <mdi-icon matPrefix class="grey-700-fg">phone</mdi-icon>
+        <input type="phone" matInput formControlName="phone" name="phone">
+      </mat-form-field>
+      <button type="submit" mat-raised-button color="accent" [disabled]="!clientForm.valid">
+        <mdi-icon>account-check</mdi-icon>
+        <span>{{ 'pages.clients.submit_new_client' | translate }}</span>
+      </button>
+    </form>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar class="compact grey-100-bg">
+      <mdi-icon class="mx-8 grey-500-fg" fontSize="30">account-circle</mdi-icon>
+      <span>{{'app.clients' | translate}}</span>
+      <span fxFlex></span>
+<!--      <button (click)="createUserSidenav.toggle()" mat-raised-button color="accent">-->
+<!--        <mdi-icon fontSize="24">account-plus</mdi-icon>-->
+<!--        <span>{{ 'pages.clients.create' | translate }}</span>-->
+<!--      </button>-->
+    </mat-toolbar>
+    <mat-card class="p-0">
+      <mat-card-content>
+          <div class="px-16 py-4">
+              <mat-form-field
+                  class="ai-fullwidth"
+                  fxFlex.gt-xs="50%" fxFlex.gt-sm="33%">
+                  <mat-label>{{ 'app.client.search' | translate }}</mat-label>
+                  <mdi-icon matPrefix>folder-account</mdi-icon>
+                  <input matInput name="client_name"
+                         [matAutocomplete]="clientAutocomplete"
+                         [(ngModel)]="searchClient">
+                  <button mat-button *ngIf="this.searchForClient" matSuffix mat-icon-button aria-label="Clear" (click)="searchForClientReset()"
+                    matTooltip="{{ 'app.clear.search' | translate}}">
+                      <mat-icon>close</mat-icon>
+                  </button>
+                  <mat-autocomplete #clientAutocomplete="matAutocomplete"
+                                    (optionSelected)="setClient($event)"
+                                    [displayWith]="displayClientName">
+                      <mat-option *ngFor="let client of filteredClients()" [value]="client">
+                          {{ client.firstname }} {{ client.lastname }}
+                      </mat-option>
+                  </mat-autocomplete>
+              </mat-form-field>
+          </div>
+        <div class="grey-100-bg px-16 py-4"><span *ngIf="paginationConfig && paginationConfig.totalItems">Mostrando {{ paginationConfig.from }} - {{ paginationConfig.to }} / {{ paginationConfig.totalItems }}</span></div>
+        <div class="client-list">
+          <table cellspacing="0" cellpadding="0">
+            <thead>
+            <tr>
+              <th class="id">
+                <ai-custom-th sortField="id" [(filter)]="filter" (sortChanged)="loadData(1)">ID</ai-custom-th>
+              </th>
+              <th class="name">
+                <ai-custom-th sortField="firstname" [(filter)]="filter" (sortChanged)="loadData(1)">{{'app.name'|translate}}</ai-custom-th>
+              </th>
+              <th>
+                {{'pages.clients.nav.services'|translate}}
+              </th>
+              <th class="actions">
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr
+                *ngFor="let c of clients | paginate: paginationConfig"
+                [routerLink]="['/admin/clients',c.id,'information']"
+            >
+              <td class="id">{{c.id}}</td>
+              <td class="name">{{ c.full_name }}</td>
+              <td ><mat-chip-list><mat-chip>{{c.hired_services_count}}</mat-chip></mat-chip-list></td>
+
+              <td class="actions">
+                <button mat-icon-button ><mdi-icon>file-find</mdi-icon></button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    <ai-pagination-template
+        id="invoices-pagination"
+        [pagination]="paginationConfig"
+        (pageChange)="loadData($event)"
+    ></ai-pagination-template>
+
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+
