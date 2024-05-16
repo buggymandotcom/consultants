@@ -49,8 +49,8 @@ class CreateSvDeclaration210Table extends Migration
             $table->string('contributor_residential_nif')->nullable();
             $table->dateTime('contributor_born_date')->nullable();
             $table->string('contributor_born_locality')->nullable();
-            $table->string('contributor_country_cod')->unsigned()->nullable();
-            $table->string('contributor_fiscal_residential')->unsigned()->nullable();
+            $table->string('contributor_country_cod')->nullable();
+            $table->string('contributor_fiscal_residential')->nullable();
             $table->string('contributor_address')->nullable();
             $table->string('contributor_complementary_address')->nullable();
             $table->string('contributor_locality')->nullable();
